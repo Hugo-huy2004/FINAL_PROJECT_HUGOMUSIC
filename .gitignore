@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment files (any .env variant, including backups — they hold secrets)
+.env*
+*.env
+!.env.example
+
+# Media & audio files (Cloudflare R2 is used instead of repository storage)
+*.zip
+backend/seed_audio/
+backend/seed_audio/*
+backend/seed_audio_*/
+
+# Build and caches
+.expo/
+dist/
+web-build/
+*.log
+.DS_Store
+
+# Tooling caches
+.wrangler/
+.report-build/
+
+# Tài liệu và bản nháp báo cáo: không đưa lên repo
+docs/

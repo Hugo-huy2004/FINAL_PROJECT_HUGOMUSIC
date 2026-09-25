@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Audio and media files
+seed_audio/
+seed_audio/*
+uploads/
+uploads/*
+!uploads/.gitkeep
+
+# Logs and temp
+*.log
+npm-debug.log*
+.DS_Store
+
+# ViSQOL (PSL) và log tiến trình nền
+.venv/
+logs/
+__pycache__/

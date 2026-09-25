@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Hugo Music",
+    "slug": "hugo-music",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/logo.png",
+      "name": "Hugo Music",
+      "shortName": "Hugo Music",
+      "description": "Nghe nhạc trực tuyến, đồng bộ đa thiết bị và radio trực tiếp 24/7.",
+      "lang": "vi",
+      "backgroundColor": "#000000",
+      "display": "standalone",
+      "orientation": "portrait",
+      "startUrl": "/"
+    }
+  }
+}

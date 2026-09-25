@@ -1,0 +1,11 @@
+name = "hugomusic-cdn"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Đọc thẳng bucket R2 qua binding: không tốn egress, không phải ký request S3.
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "hugomusic"
+
+# JWT_SECRET không để ở đây (đây là file commit vào git).
+# Nạp bằng: wrangler secret put JWT_SECRET

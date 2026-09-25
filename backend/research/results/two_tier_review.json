@@ -1,0 +1,5893 @@
+[
+  {
+    "id": "6aa061cbb6f59a29e3eea8b5",
+    "title": "Ships",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa061f4b6f59a29e3eea8b8",
+    "title": "Flutter By, Butterfly",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0623e3e31c775bc00458f",
+    "title": "Dingding Thing",
+    "artist": "Asaguare",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06316b6f59a29e3eea8b9",
+    "title": "On Brevity",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06324b6f59a29e3eea8ba",
+    "title": "Don't Close Your Eyes",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06347b6f59a29e3eea8bb",
+    "title": "Me and Billy Barnum",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0635a514bb749545d0e1f",
+    "title": "Dodgy Lodgers In Bohemian Grove",
+    "artist": "Toxic Chicken",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0635e514bb749545d0e20",
+    "title": "15/05/2010",
+    "artist": "Pisitakun",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0635f514bb749545d0e21",
+    "title": "Sampled Love",
+    "artist": "Toxic Chicken",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0635f514bb749545d0e22",
+    "title": "18/05/2010",
+    "artist": "Pisitakun",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06360514bb749545d0e23",
+    "title": "Enmity of Hedgehogs and Chicken",
+    "artist": "Avs Silvester & Toxic Chicken",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06360514bb749545d0e24",
+    "title": "Great Hedgehogs in the Chicken Coup",
+    "artist": "Avs Silvester & Toxic Chicken",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06369514bb749545d0e25",
+    "title": "You Are Not The Only One",
+    "artist": "Toxic Chicken & Ech(o)",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa063b96dd4cb35682bea18",
+    "title": "Radiomania 2",
+    "artist": "Kmtr",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa063be6dd4cb35682bea19",
+    "title": "Wait a second",
+    "artist": "Viktor Van River",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa063c06dd4cb35682bea1a",
+    "title": "Intelligence",
+    "artist": "Viktor Van River",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa064d5b6f59a29e3eea8bc",
+    "title": "Good to Go",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06643b6f59a29e3eea8bd",
+    "title": "Shadows in the Moonlight",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06645b6f59a29e3eea8be",
+    "title": "Memorized",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0676280d6fd9ccfaab63f",
+    "title": "Journeyman",
+    "artist": "Khavn De La Cruz",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0676280d6fd9ccfaab640",
+    "title": "Klara",
+    "artist": "Khavn De La Cruz",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0676480d6fd9ccfaab641",
+    "title": "Kamusta Araw",
+    "artist": "Khavn De La Cruz",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0676880d6fd9ccfaab642",
+    "title": "What We Gonna Do",
+    "artist": "qd-4258 Nyko Maca + PLAYgROUND",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0676980d6fd9ccfaab643",
+    "title": "Take It Home",
+    "artist": "qd-4258 Nyko Maca + PLAYgROUND",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0676a80d6fd9ccfaab644",
+    "title": "Light in color",
+    "artist": "Moki McFly",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0676a80d6fd9ccfaab645",
+    "title": "Angela",
+    "artist": "qd-4258 Nyko Maca + PLAYgROUND",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0676d80d6fd9ccfaab646",
+    "title": "Tiger Seed",
+    "artist": "Moki McFly",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0676d80d6fd9ccfaab647",
+    "title": "Mercury",
+    "artist": "Moki McFly",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0676e80d6fd9ccfaab648",
+    "title": "Nega Jesus",
+    "artist": "K▼l▲m†††b▲r▲ng",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0676e80d6fd9ccfaab649",
+    "title": "Νσ βαπαπαδ",
+    "artist": "K▼l▲m†††b▲r▲ng",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0677080d6fd9ccfaab64a",
+    "title": "Requiem",
+    "artist": "Paosin The Well",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0677180d6fd9ccfaab64b",
+    "title": "All That's Left Inside",
+    "artist": "Paosin The Well",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0677180d6fd9ccfaab64c",
+    "title": "Waves And The Shorelines",
+    "artist": "Not In The Mood For Dancing",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0677380d6fd9ccfaab64d",
+    "title": "Chico",
+    "artist": "The Brockas",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0677480d6fd9ccfaab64e",
+    "title": "Symphony of Lies",
+    "artist": "Paosin The Well",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa067d6b6f59a29e3eea8bf",
+    "title": "The Mission",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06857b6f59a29e3eea8c0",
+    "title": "I Wanna Know",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa068dab6f59a29e3eea8c1",
+    "title": "Afterglow",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa069a9e5e3104904977329",
+    "title": "Asa.Dusta.Membangkai",
+    "artist": "Sodadosa",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa069bbe5e310490497732a",
+    "title": "Del suelo no pasas",
+    "artist": "Vietnam",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa069bde5e310490497732b",
+    "title": "Bolsillos sangrantes - Ácido domingo",
+    "artist": "Vietnam",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa069bde5e310490497732c",
+    "title": "Call Of The Guibons",
+    "artist": "Deep Dive Sound GFR",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa069bee5e310490497732d",
+    "title": "Fanáticos del silencio",
+    "artist": "Vietnam",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa069c2e5e310490497732e",
+    "title": "River Boat",
+    "artist": "Deep Dive Sound GFR",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa069cce5e310490497732f",
+    "title": "Bamboo Rain",
+    "artist": "Deep Dive Sound GFR",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06a03b6f59a29e3eea8c2",
+    "title": "Hey Ruth",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a6db6f59a29e3eea8c3",
+    "title": "Sundown",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a74b6f59a29e3eea8c4",
+    "title": "Waiting Takes Time",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a75b6f59a29e3eea8c5",
+    "title": "Making Me Nervous",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a76b6f59a29e3eea8c6",
+    "title": "Thanks For Coming",
+    "artist": "Josh Woodward",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a8eb6f59a29e3eea8c7",
+    "title": "Look and Feel Years Younger",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a8fb6f59a29e3eea8c8",
+    "title": "Bad Attraction",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a94b6f59a29e3eea8c9",
+    "title": "Fixing My Brain",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a99b6f59a29e3eea8ca",
+    "title": "Sick as a Dog",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06a9fb6f59a29e3eea8cb",
+    "title": "Never Get Out",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06aa0587fd0c71ab05b40",
+    "title": "T1234",
+    "artist": "Nullbomb",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06aa1b6f59a29e3eea8cc",
+    "title": "Borderline",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06aa1587fd0c71ab05b42",
+    "title": "[LCL11] Dubin Taiwan - 02 Volfoniq feat. Pier - Tsunamix",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 102 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06aa2587fd0c71ab05b43",
+    "title": "[LCL11] Dubin Taiwan - 03 Volfoniq remix KouChouChing - My dub is taiwan",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 105 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06aa4587fd0c71ab05b44",
+    "title": "[LCL11] Dubin Taiwan - 01 Volfoniq feat. Tribuman - Panique sur le dancefloor",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 113 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06aa9b6f59a29e3eea8cd",
+    "title": "I Think I Started a Trend",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06aab587fd0c71ab05b46",
+    "title": "Sociopath 018 Sonic Deadhorse Hard Works for Shits Film score Remix select Volume1 Sociopath Recordings - 16 Boring Song no 353",
+    "artist": "Sonic Deadhorse",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06aabb6f59a29e3eea8ce",
+    "title": "Overreacting",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06ab1587fd0c71ab05b49",
+    "title": "Zerofloor",
+    "artist": "Buben",
+    "licenseType": "cc-by-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (252 -> 330 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ab1587fd0c71ab05b4a",
+    "title": "Sociopath 018 Sonic Deadhorse Hard Works for Shits Film score Remix select Volume1 Sociopath Recordings - 04 Bent Under Rushes Yearing Kru Hyperpeed Remix",
+    "artist": "Sonic Deadhorse",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06ab3b6f59a29e3eea8cf",
+    "title": "Dirtbag",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06ab4587fd0c71ab05b4c",
+    "title": "Mechanized Wisdom (Burzum Rmx)",
+    "artist": "Nullbomb",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ab8587fd0c71ab05b4e",
+    "title": "Groove-0x002",
+    "artist": "Nullbomb",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06abbb6f59a29e3eea8d0",
+    "title": "Work Out Fine",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06abeb6f59a29e3eea8d1",
+    "title": "Time to Take Out the Trash",
+    "artist": "Brad Sucks",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06ac5587fd0c71ab05b52",
+    "title": "Matheus - The Breakcore Junglist You Love To Hate",
+    "artist": "Amousement & Matheus",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ace8e09846ca2de4243",
+    "title": "Argon",
+    "artist": "Hoon Tah Wei",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ace8e09846ca2de4244",
+    "title": "Early Reworked",
+    "artist": "Adrian Lo",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ad18e09846ca2de4245",
+    "title": "Equality",
+    "artist": "Victor Pang",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ad88e09846ca2de4246",
+    "title": "Bonus Track (Misfits Cover)",
+    "artist": "Jigsaw Massacre",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ada8e09846ca2de4247",
+    "title": "Xperimental",
+    "artist": "Lord Ming",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06adb8e09846ca2de4248",
+    "title": "Garis Massa",
+    "artist": "Infithor",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06adc8e09846ca2de4249",
+    "title": "Babak Ka-Dua (II) (Industrial Club Mix)",
+    "artist": "Jigsaw Massacre",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06ae68e09846ca2de424a",
+    "title": "Pi ology",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06aeb8e09846ca2de424b",
+    "title": "G L B",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06b28dad28ac299f4b8ff",
+    "title": "A Sound Like Razors Through Flesh",
+    "artist": "Nurgul Jones & The School Shooter Society",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06b47dad28ac299f4b901",
+    "title": "Jerusalem Of The East",
+    "artist": "David K O Hannah",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06b4adad28ac299f4b902",
+    "title": "Knife Sticking In Me",
+    "artist": "David K O Hannah",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06b55dad28ac299f4b903",
+    "title": "Samak Desert",
+    "artist": "Wolfgrowl",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06b56dad28ac299f4b904",
+    "title": "San Mountain",
+    "artist": "Wolfgrowl",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06b59dad28ac299f4b905",
+    "title": "Tal Moon",
+    "artist": "Wolfgrowl",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06bd563bdb55ef30d31f2",
+    "title": "Feng",
+    "artist": "Rolf-Erik Nystrom",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06bd763bdb55ef30d31f3",
+    "title": "Amargedon",
+    "artist": "DextDee",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06bd763bdb55ef30d31f4",
+    "title": "Sadness or Love",
+    "artist": "DextDee",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06bde63bdb55ef30d31f5",
+    "title": "Yes To All",
+    "artist": "DextDee",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06be363bdb55ef30d31f6",
+    "title": "Woo Yan Final Mix 01",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (197 -> 833 kbps)"
+    ]
+  },
+  {
+    "id": "6aa06bf063bdb55ef30d31f9",
+    "title": "Ru Meng Ling Final Master",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (201 -> 841 kbps)"
+    ]
+  },
+  {
+    "id": "6aa06bf463bdb55ef30d31fb",
+    "title": "I Want to China",
+    "artist": "Chikiss",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06bfa63bdb55ef30d31fc",
+    "title": "Firecrackers",
+    "artist": "Red Hot Wok",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06bfa63bdb55ef30d31fd",
+    "title": "Li Jian Hong",
+    "artist": "Bivouacmusic",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06bfb63bdb55ef30d31fe",
+    "title": "Mobidextrous & Miss Melody - Huan - ft. Miss Melody -jarome peking duck refix-",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (199 -> 853 kbps)"
+    ]
+  },
+  {
+    "id": "6aa06dfd75134b927d24a661",
+    "title": "Papa Mama Gangbang",
+    "artist": "Aftersundown",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06dfd75134b927d24a662",
+    "title": "Drinking fast with power",
+    "artist": "Aftersundown",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06dfe75134b927d24a663",
+    "title": "Alcohol or Miligram",
+    "artist": "Aftersundown",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06dff75134b927d24a664",
+    "title": "Got My Mojo Workin'",
+    "artist": "Adrian Adioetomo",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e0275134b927d24a665",
+    "title": "Do You Know",
+    "artist": "Aziz S",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e0575134b927d24a666",
+    "title": "Friend Or Foe",
+    "artist": "Aziz S",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e0975134b927d24a667",
+    "title": "Love Letter",
+    "artist": "Afternoon Talk",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e0b75134b927d24a668",
+    "title": "Underdog Staygold",
+    "artist": "Aziz S",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e0b75134b927d24a669",
+    "title": "Please Tell Me How To Turn Back The Time",
+    "artist": "Afternoon Talk",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e0e75134b927d24a66a",
+    "title": "So Far Away",
+    "artist": "Afternoon Talk",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e0e75134b927d24a66b",
+    "title": "Bunga Jalang",
+    "artist": "Barakatak",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e1375134b927d24a66c",
+    "title": "Penyusup",
+    "artist": "Belkastrelka",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e1575134b927d24a66d",
+    "title": "Musnahlah Panen Raya Tahun Ini Yang Membuat Kami Tidak Bahagia",
+    "artist": "Bvrtan",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e1675134b927d24a66e",
+    "title": "Lirik Untuk Lagu Pop",
+    "artist": "Belkastrelka",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e1875134b927d24a66f",
+    "title": "Ritual Menanam Singkong di Dalam Kebun Kegelapan",
+    "artist": "Bvrtan",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e1e75134b927d24a673",
+    "title": "Early Flowering Spring Bulbs Of Love",
+    "artist": "Cause",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e1f75134b927d24a674",
+    "title": "Pacul Pusaka Dari Pak Kades",
+    "artist": "Bvrtan",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e2075134b927d24a675",
+    "title": "Spoonful",
+    "artist": "Adrian Adioetomo",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e2175134b927d24a676",
+    "title": "Message From Gaza (Intro)",
+    "artist": "Death Artery",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e2275134b927d24a677",
+    "title": "Go On",
+    "artist": "Cause",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e2475134b927d24a678",
+    "title": "Hirup Tanpa Jiwa",
+    "artist": "Death Artery",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e2575134b927d24a679",
+    "title": "Fiksi Pencuri Mimpi",
+    "artist": "Belkastrelka",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e2775134b927d24a67a",
+    "title": "Musiknya Asyik",
+    "artist": "Barakatak",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e2a75134b927d24a67b",
+    "title": "Ujian",
+    "artist": "Frau",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e2c75134b927d24a67c",
+    "title": "Something More",
+    "artist": "Frau",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e2e75134b927d24a67d",
+    "title": "Di Kaki-Kaki Tangkuban Perahu",
+    "artist": "Sisir Tanah, Frau & Lintang Radittya",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e2e75134b927d24a67e",
+    "title": "Tarian Sari",
+    "artist": "Frau",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e3075134b927d24a67f",
+    "title": "Rafaah",
+    "artist": "Death Artery",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e3275134b927d24a680",
+    "title": "Dosa Besar",
+    "artist": "Gabber Modus Operandi",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e3375134b927d24a681",
+    "title": "Under Your Attention",
+    "artist": "Cause",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e3475134b927d24a682",
+    "title": "Hazardous",
+    "artist": "Mademoi Selle",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e3675134b927d24a683",
+    "title": "Manic Depressive",
+    "artist": "Mademoi Selle",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e3775134b927d24a684",
+    "title": "Water",
+    "artist": "Frau",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e3975134b927d24a685",
+    "title": "Rock Live at Roller Coaster",
+    "artist": "Sangkakala",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e3c75134b927d24a686",
+    "title": "Tong Setan",
+    "artist": "Sangkakala",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e3f75134b927d24a687",
+    "title": "Hotel Berhala",
+    "artist": "Sangkakala",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e3f75134b927d24a688",
+    "title": "Pariah",
+    "artist": "Gabber Modus Operandi",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4175134b927d24a689",
+    "title": "Himitsu",
+    "artist": "Mademoi Selle",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e4175134b927d24a68a",
+    "title": "Cerebro",
+    "artist": "Sigmun",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4175134b927d24a68b",
+    "title": "Kerjakaki Jawa",
+    "artist": "Gabber Modus Operandi",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4475134b927d24a68c",
+    "title": "The Long Haul",
+    "artist": "Sigmun",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4675134b927d24a68d",
+    "title": "Electric Complex",
+    "artist": "The Kuda",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4875134b927d24a68e",
+    "title": "Warum Solite Ich Pfiege",
+    "artist": "The Kuda",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4975134b927d24a690",
+    "title": "Sampai Jumpa",
+    "artist": "Silampukau",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e4975134b927d24a691",
+    "title": "Mistery Torpedo",
+    "artist": "The Kuda",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4a75134b927d24a692",
+    "title": "Cinta Itu",
+    "artist": "Silampukau",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e4a75134b927d24a693",
+    "title": "Berbenah (Bonus Track)",
+    "artist": "Silampukau",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e4a75134b927d24a694",
+    "title": "Since A Damned Nightmare Chained Myself",
+    "artist": "Electronical Destruction",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4b75134b927d24a695",
+    "title": "Inoisenesia",
+    "artist": "Bibir Merah Berdarah",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e4d75134b927d24a696",
+    "title": "Hidup Itu Pendek Seni Itu Panjang",
+    "artist": "Indie Art Wedding",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e5075134b927d24a697",
+    "title": "Hati Yang Luka",
+    "artist": "Johan Untung",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e5375134b927d24a698",
+    "title": "Ahr-Taba",
+    "artist": "Zoo",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e5775134b927d24a699",
+    "title": "Khawagaka",
+    "artist": "Zoo",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e5975134b927d24a69a",
+    "title": "Cinta Itu Sengit",
+    "artist": "Indie Art Wedding",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e5975134b927d24a69b",
+    "title": "De Manajer",
+    "artist": "{Tantrum}",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e5b75134b927d24a69c",
+    "title": "Parah feat. Maria Stereomantic",
+    "artist": "{Tantrum}",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e5c75134b927d24a69d",
+    "title": "Flor",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 90 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e5f75134b927d24a69e",
+    "title": "Go Away",
+    "artist": "Dhendy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6175134b927d24a69f",
+    "title": "Layung",
+    "artist": "Aceem",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6275134b927d24a6a0",
+    "title": "Dua Langkah Kecil",
+    "artist": "Indie Art Wedding",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6375134b927d24a6a1",
+    "title": "Umpatengkar",
+    "artist": "Seralola",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e6475134b927d24a6a2",
+    "title": "Beach Bum",
+    "artist": "{Tantrum}",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e6575134b927d24a6a3",
+    "title": "The Sun, The Moon And The Earth",
+    "artist": "Angga Bangun Subur",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6775134b927d24a6a4",
+    "title": "Pelesir",
+    "artist": "Aceem",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6975134b927d24a6a5",
+    "title": "Collapse",
+    "artist": "Etza",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e6a75134b927d24a6a6",
+    "title": "This Be Over",
+    "artist": "Dhendy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6a75134b927d24a6a7",
+    "title": "Sajak Sebatang Lisong (a Tribute to WS Rendra)",
+    "artist": "Bibir Merah Berdarah",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e6c75134b927d24a6a8",
+    "title": "This Be Over (Acoustic Version)",
+    "artist": "Dhendy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6d75134b927d24a6a9",
+    "title": "Still Waiting",
+    "artist": "Angga Bangun Subur",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e6e75134b927d24a6aa",
+    "title": "Downfall",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 95 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e6e75134b927d24a6ab",
+    "title": "Better",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 98 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e6f75134b927d24a6ac",
+    "title": "Bad Lovers Company - Heart Harmony (nice sleep,flowers..)",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e7175134b927d24a6ad",
+    "title": "Heaven And Angels",
+    "artist": "Angga Bangun Subur",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e7275134b927d24a6af",
+    "title": "There's Something I Need To Tell You",
+    "artist": "The Silent Love",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e7375134b927d24a6b0",
+    "title": "Yang Kau Butuhkan Ke Depan",
+    "artist": "Seralola",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e7675134b927d24a6b2",
+    "title": "La Dermouse",
+    "artist": "Aceem",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e7c75134b927d24a6b8",
+    "title": "Bad Lovers Company - Still..,I'm dancing with your wet eyes",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 82 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e7c75134b927d24a6b9",
+    "title": "Autisasi",
+    "artist": "Seralola",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e7d75134b927d24a6ba",
+    "title": "Bad Lovers Company - Go back..,with a good man",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 83 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06e8175134b927d24a6bd",
+    "title": "Sarah",
+    "artist": "The Silent Love",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06e8275134b927d24a6be",
+    "title": "Lost",
+    "artist": "The Silent Love",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06f6812ab048b26f95b9e",
+    "title": "Kids Say The Darndest Things (",
+    "artist": "Cassette Tape Bandits",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f6812ab048b26f95b9f",
+    "title": "Spot Rockers (Blank Mixx)",
+    "artist": "Cassette Tape Bandits",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f6912ab048b26f95ba0",
+    "title": "The 1 Upper (BreakBeat Mixx)",
+    "artist": "Cassette Tape Bandits",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f6912ab048b26f95ba1",
+    "title": "Savanna Blues (I Still See The Lights And A Way To Go)",
+    "artist": "Yugo",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06f6b12ab048b26f95ba2",
+    "title": "The 1 Upper (CrashCourse Mixx)",
+    "artist": "Cassette Tape Bandits",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f6b12ab048b26f95ba3",
+    "title": "The 1 Upper (Wildcat Mixx)",
+    "artist": "Cassette Tape Bandits",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f6c12ab048b26f95ba4",
+    "title": "Bloc Party the Bland-King appr",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f6e12ab048b26f95ba5",
+    "title": "CNP At Tha Same Time Part 2",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7012ab048b26f95ba6",
+    "title": "C-N-P's Otogibanashi",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7312ab048b26f95ba7",
+    "title": "Create Something Great (Featur",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7312ab048b26f95ba8",
+    "title": "Bayou Road Lullaby (In Your Arms)",
+    "artist": "Yugo",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06f7312ab048b26f95ba9",
+    "title": "Spot Rockers (Extra Pint Mixx)",
+    "artist": "Cassette Tape Bandits",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7412ab048b26f95baa",
+    "title": "Breakfast Slice",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7412ab048b26f95bab",
+    "title": "Eat Some Cake",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7612ab048b26f95bac",
+    "title": "Givin' Ya Stress",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7712ab048b26f95bad",
+    "title": "Hey You Guys (Electric Undergr",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7812ab048b26f95bae",
+    "title": "Hey You Guys (My Guys Mixx)",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7a12ab048b26f95baf",
+    "title": "Hey You Guys (Sloth Cause Mixx",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7a12ab048b26f95bb0",
+    "title": "Ronin Blues (I Still See The Lights And A Way To Go)",
+    "artist": "Yugo",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06f7b12ab048b26f95bb1",
+    "title": "Hanging Around",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7b12ab048b26f95bb2",
+    "title": "PS Love Always",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7d12ab048b26f95bb3",
+    "title": "Flamez Too (Album Version)",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7d12ab048b26f95bb4",
+    "title": "Noroikan featuring Magari",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7d12ab048b26f95bb5",
+    "title": "Pizza Party (OG Version) (Feat",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7e12ab048b26f95bb6",
+    "title": "Roll Playing Game",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06f7f12ab048b26f95bb7",
+    "title": "Fukui (Featuring Donnie Ozone)",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f7f12ab048b26f95bb8",
+    "title": "Pizza Party (Smokey Bubbles Re",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8012ab048b26f95bb9",
+    "title": "Ten Kai Master Funk Flames",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06f8312ab048b26f95bba",
+    "title": "Bloc Party 2 (Featuring CM aka",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8512ab048b26f95bbb",
+    "title": "Bloc Party 2 (Instrumental)",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8712ab048b26f95bbc",
+    "title": "Fidelity (Featuring Pot-C & IC",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8912ab048b26f95bbd",
+    "title": "Pints Of Ale (Featuring Pot-C)",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8a12ab048b26f95bbe",
+    "title": "Wknd @ Rounins",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8a12ab048b26f95bbf",
+    "title": "Talking Microphones (Featuring",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8c12ab048b26f95bc0",
+    "title": "U Got It Bad (Acapella)",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8c12ab048b26f95bc1",
+    "title": "U Got It Bad (Album Instrument",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8d12ab048b26f95bc2",
+    "title": "U Got It Bad (Some Guys Mix)",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8e12ab048b26f95bc3",
+    "title": "Snow Crystal Whispering Pines",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06f8e12ab048b26f95bc4",
+    "title": "Rap Style (Pot Instrumental Mix)",
+    "artist": "Donnie Ozone",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06f8f12ab048b26f95bc5",
+    "title": "Bloc Party 2 (Detour Version)",
+    "artist": "D3Zs",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f8f12ab048b26f95bc6",
+    "title": "Rap Style (YMO Mixx)",
+    "artist": "Donnie Ozone",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06f9012ab048b26f95bc7",
+    "title": "Scowlitz Crew",
+    "artist": "Cheese N Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06f9112ab048b26f95bc8",
+    "title": "Asobi",
+    "artist": "Himiko",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06f9212ab048b26f95bc9",
+    "title": "Genbaku (Heavy Version)",
+    "artist": "Himiko",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06f9412ab048b26f95bca",
+    "title": "Kokoro No Omori",
+    "artist": "Himiko",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06f9712ab048b26f95bcd",
+    "title": "Ice Cave @ Ort Cafe 2016",
+    "artist": "Kamura Obscura",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (185 -> 2120 kbps)"
+    ]
+  },
+  {
+    "id": "6aa06f9812ab048b26f95bce",
+    "title": "Rap Style (Pot Mix)",
+    "artist": "Donnie Ozone",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06fa212ab048b26f95bd3",
+    "title": "Nina Bargain",
+    "artist": "Kamura Obscura",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (168 -> 2121 kbps)"
+    ]
+  },
+  {
+    "id": "6aa06fb012ab048b26f95bda",
+    "title": "Juicy Night",
+    "artist": "Missqulater",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fb312ab048b26f95bdb",
+    "title": "Missing Ya Dream (Nonimx)",
+    "artist": "Missqulater",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fb312ab048b26f95bdc",
+    "title": "Starry Heaven",
+    "artist": "Missqulater",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fb512ab048b26f95bdd",
+    "title": "Tropicana",
+    "artist": "Missqulater",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fb912ab048b26f95be0",
+    "title": "Cold Cut COmbo",
+    "artist": "Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06fbb12ab048b26f95be1",
+    "title": "Get Outtaver",
+    "artist": "Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06fbd12ab048b26f95be2",
+    "title": "Max Awe",
+    "artist": "Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06fbe12ab048b26f95be3",
+    "title": "Stupor Star",
+    "artist": "Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06fc012ab048b26f95be4",
+    "title": "Whatever",
+    "artist": "Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06fc312ab048b26f95be5",
+    "title": "Grey Sky (Cloudy)",
+    "artist": "Tatsu",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06fc612ab048b26f95be7",
+    "title": "Empty Floor",
+    "artist": "Tatsu",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06fc812ab048b26f95be8",
+    "title": "Future",
+    "artist": "Poetize Code",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fc912ab048b26f95be9",
+    "title": "Eternal New Guy",
+    "artist": "Pot-C",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa06fca12ab048b26f95bea",
+    "title": "Tsukimono-osaka Drop-iat",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 102 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fcb12ab048b26f95beb",
+    "title": "Tsukimono-nagoya Rocknroll-iat",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 114 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fcb12ab048b26f95bec",
+    "title": "Jupiter",
+    "artist": "Poetize Code",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06fcc12ab048b26f95bed",
+    "title": "Tsukimono-kyoto Whoopees-iat",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 108 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fcd12ab048b26f95bee",
+    "title": "Don't take life too seriously(bonus)",
+    "artist": "Zinoeki",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fce12ab048b26f95bef",
+    "title": "Just rockin'on a groovy beat",
+    "artist": "Zinoeki",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa06fd812ab048b26f95bf5",
+    "title": "Window",
+    "artist": "Poetize Code",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa06fe112ab048b26f95bf7",
+    "title": "Ethnomite Pux crouch not spoken",
+    "artist": "Ethnomite Pux",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072a09d0b659b7217c9cf",
+    "title": "03ThePhantomsOfAThousandHours",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072a19d0b659b7217c9d0",
+    "title": "06HelterChuckAndDave",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072a19d0b659b7217c9d1",
+    "title": "04HelloGoodbye",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072a69d0b659b7217c9d2",
+    "title": "05PleaseComeHomeForChristmas",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072a69d0b659b7217c9d3",
+    "title": "07IsntSheGood",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072ac9d0b659b7217c9d4",
+    "title": "04VoicesInPassage",
+    "artist": "Charles Rice Goff III Dereck Higgins",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072b29d0b659b7217c9d5",
+    "title": "11BenazirInTheRearViewMirror",
+    "artist": "Charles Rice Goff III Dereck Higgins",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072b59d0b659b7217c9d6",
+    "title": "10DoItForSpiritualFulfillment",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072b79d0b659b7217c9d7",
+    "title": "05PatrollingTheEther",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072b99d0b659b7217c9d8",
+    "title": "Mutually Detached",
+    "artist": "C. Goff III/Dereck Higgins",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072bd9d0b659b7217c9d9",
+    "title": "05GodsChildren",
+    "artist": "Charles Rice Goff III Lord Litter",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072be9d0b659b7217c9da",
+    "title": "07YouPumpMeUp",
+    "artist": "Charles Rice Goff III Lord Litter",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072c19d0b659b7217c9db",
+    "title": "Doomsday",
+    "artist": "Cosmic Funeral",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa072c29d0b659b7217c9dc",
+    "title": "Lucifer Excelsius",
+    "artist": "Cosmic Funeral",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa072c49d0b659b7217c9dd",
+    "title": "Where Demons Emerge",
+    "artist": "Cosmic Funeral",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa072c79d0b659b7217c9de",
+    "title": "Serenade To Fallen",
+    "artist": "Cosmic Funeral",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa072c79d0b659b7217c9df",
+    "title": "08AsbestosICan",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072c99d0b659b7217c9e0",
+    "title": "08TheDreamCameMelting",
+    "artist": "Charles Rice Goff III Lord Litter",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072c99d0b659b7217c9e1",
+    "title": "06TheThingsIClean",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072ca9d0b659b7217c9e2",
+    "title": "13EnemyOfDirt",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072cf9d0b659b7217c9e3",
+    "title": "01Solarian",
+    "artist": "Turkey Makes Me Sleepy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072cf9d0b659b7217c9e4",
+    "title": "09FunToBeClean?",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072d59d0b659b7217c9e5",
+    "title": "Godless War To Eternity",
+    "artist": "Cosmic Funeral",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa072d69d0b659b7217c9e6",
+    "title": "03ImNotUsedToItYet",
+    "artist": "Turkey Makes Me Sleepy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072d89d0b659b7217c9e7",
+    "title": "03HardDriveToDestiny",
+    "artist": "Turkey Makes Me Sleepy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072d89d0b659b7217c9e8",
+    "title": "09SunnyDay",
+    "artist": "Turkey Makes Me Sleepy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072e19d0b659b7217c9e9",
+    "title": "15HelterChuckAndDave",
+    "artist": "Charles Rice Goff III",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072e29d0b659b7217c9ea",
+    "title": "10PaintItWithFeathers",
+    "artist": "Turkey Makes Me Sleepy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072e59d0b659b7217c9eb",
+    "title": "01SalvatorSalvandusAlpha",
+    "artist": "rADio eNd",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa072ea9d0b659b7217c9ec",
+    "title": "02InnerTransmission",
+    "artist": "rADio eNd",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dc71243832971793201",
+    "title": "Plaukia Mano Laivelis, Waltz (",
+    "artist": "A. Jezavito Radio Orkestras;Da",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (202 -> 2549 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dc71243832971793202",
+    "title": "Cielito Lindo (Beautiful Heaven)",
+    "artist": "Arturo Arturos;A. Arturos",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (275 -> 2963 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dc91243832971793203",
+    "title": "Santiago Waltz (restored)",
+    "artist": "A. Corbin;Peerless Orchestra",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (132 -> 1934 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dc91243832971793204",
+    "title": "Light Cavalry Overture",
+    "artist": "A. Palet Gallarini;Franz Von Suppe",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (294 -> 3122 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dcb1243832971793205",
+    "title": "Hot Fiddle Poet & Peasant Overture",
+    "artist": "Al Duffy and the Rhythmasters;Franz von Suppe;A Duffy",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (205 -> 3056 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dcc1243832971793206",
+    "title": "Chopinesque (Minute Waltz)",
+    "artist": "Alberto Socarras his Magic Flu",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (221 -> 2948 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07dce1243832971793207",
+    "title": "Vesti La Giubba",
+    "artist": "Alfred Newman;Hollywood Sympho",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07dce1243832971793208",
+    "title": "Blue Bonnet Waltz",
+    "artist": "Al Clauser;Colleen Carroll",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (197 -> 2764 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07dd01243832971793209",
+    "title": "Minute Waltz 2. The Bee",
+    "artist": "Alfred Newman and his Orchestra;Chopin;Caillet;Schubert",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (224 -> 2635 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dd1124383297179320a",
+    "title": "Blue Danube Waltz",
+    "artist": "American Radio Warblers;Preston Sellers;Arthur C. Barnett",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (237 -> 2818 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dd2124383297179320b",
+    "title": "\"Angel's Dream Waltz\"",
+    "artist": "Andrew Herman",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (75 -> 865 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dd3124383297179320c",
+    "title": "Minuet",
+    "artist": "Arnold J. Felsher;Eddison von Ottenfeld",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (317 -> 2520 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dd4124383297179320d",
+    "title": "Banjo Waltz",
+    "artist": "Arly Nelson;The Tune Toppers;Livet I Finnskogarna",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (192 -> 3015 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dd4124383297179320e",
+    "title": "Come Let Us Dance the Waltz of Love",
+    "artist": "Al. Burt's orchestra;Armstrong;Dyson",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (217 -> 3080 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dd4124383297179320f",
+    "title": "William Tell Overture (Rossini)",
+    "artist": "Arthur Pryor's Band;Rossini",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (220 -> 3536 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dd61243832971793210",
+    "title": "Roses Of The South",
+    "artist": "Waltz Orchestra, J. Strauss, Atzler",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (265 -> 2674 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dd71243832971793211",
+    "title": "Cauldron Rag-Star and Garter Waltz (Rag-In My Racing Car)",
+    "artist": "Axel Christenson",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (303 -> 3460 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dd81243832971793212",
+    "title": "Concerto In D Major, Op. 61",
+    "artist": "BEETHOVEN;YEHUDI MENUHIN and the LUCERNE FESTIVAL ORCHESTRA;WILHELM FURTWÄNGLER",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (309 -> 2640 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dda1243832971793213",
+    "title": "St. Paul Waltz",
+    "artist": "B. Roberts;Bernie Roberts and",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (209 -> 2958 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dda1243832971793214",
+    "title": "Pop Corn Waltz",
+    "artist": "ARCHIE JEFFRIES and his BLUE SKY BOYS;Archie Jeffries;Pop Corn Deatherage",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa07dda1243832971793215",
+    "title": "WALTZ NO. 5 IN A FLAT MAJOR (AS DUR) Op. 42",
+    "artist": "ALFRED CORTOT;Chopin",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (319 -> 3138 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07ddc1243832971793216",
+    "title": "Margherita Waltz",
+    "artist": "Bellini Accordion Orchestra",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (196 -> 2837 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07ddc1243832971793217",
+    "title": "Moonlight Sonata (Adagio Mvt.)",
+    "artist": "Beethoven",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (204 -> 2603 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dde1243832971793218",
+    "title": "A Stolen Waltz",
+    "artist": "Betty Harris;Enoch Light Brigade;Don Larkin",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (196 -> 3227 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07ddf1243832971793219",
+    "title": "Till I Waltz Again with You",
+    "artist": "Betty Harris;Enoch Light and his Orchestra;Sidney Prosen",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (247 -> 3022 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07de0124383297179321a",
+    "title": "The Petite Waltz",
+    "artist": "Bill Roberts And His Orchestra",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (199 -> 2720 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07de1124383297179321b",
+    "title": "Two Penny Waltz",
+    "artist": "Black Mountain Boys;Ross 'N Pe",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (217 -> 2840 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07de2124383297179321c",
+    "title": "Penny Two-Step",
+    "artist": "Black Mountain Rhythm-Aires;Ro",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (182 -> 2783 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07de3124383297179321d",
+    "title": "\"Estudiantina\" Waltz, Op. 191 - Part 1",
+    "artist": "BOSTON PROMENADE ORCHESTRA;Waldteufel;ARTHUR FIEDLER",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (218 -> 2650 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07de5124383297179321f",
+    "title": "My First Waltz",
+    "artist": "Bob Costello",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (314 -> 2839 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07de51243832971793220",
+    "title": "Black Diamonds Band OSCAR STRAUS - The Last Waltz Black Diamonds Band OSCAR STRAUS",
+    "artist": "Black Diamonds Band, OSCAR STRAUS",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa07de61243832971793221",
+    "title": "Twilight Waltz",
+    "artist": "Black Mountain Rhythm-Aires;Sh",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (199 -> 2762 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07de71243832971793222",
+    "title": "Missouri Waltz",
+    "artist": "Bob Stanley and his Orchestra;",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (216 -> 2974 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07de71243832971793223",
+    "title": "Too Old to Cut the Mustard; Mo",
+    "artist": "Bob Sandy, Mimi Martel and the",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (218 -> 2594 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07de81243832971793225",
+    "title": "Two Hearts in Waltz Time",
+    "artist": "Bob Stanley and his Orchestra;Stolz;Reisch;Robinson;Young",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (190 -> 2819 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dea1243832971793226",
+    "title": "Red Moon Waltz",
+    "artist": "CAMEO DANCE ORCHESTRA;De Martini;Kortlander",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (268 -> 3200 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dea1243832971793227",
+    "title": "Waltz Charmaine",
+    "artist": "Bonnie Lee and her Orchestra;P",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (182 -> 2714 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dec1243832971793228",
+    "title": "Sonata",
+    "artist": "Harold Bauer, D. Scarlatti",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (261 -> 3178 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07ded1243832971793229",
+    "title": "Sweet Martha Waltz",
+    "artist": "Brunon Kryger \"King of the Pol",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (222 -> 3305 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dee124383297179322a",
+    "title": "Oberon Overture - Part 2",
+    "artist": "C. M. von Weber",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (187 -> 2728 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07def124383297179322b",
+    "title": "Westphalia Waltz",
+    "artist": "Carl Journell;Grady Hester and",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (233 -> 2753 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07df1124383297179322c",
+    "title": "Black Hawk Waltz (restored)",
+    "artist": "Carl Journell;Grady Hester and his Texsons",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (140 -> 2138 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07df1124383297179322d",
+    "title": "Sonata In C Minor (C Moll) Op. 13 (\"Pathetique\")",
+    "artist": "Edwin Fischer;beethoven",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (321 -> 2841 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07df4124383297179322f",
+    "title": "(a) Peruvian Triste; (b) Pan-American Waltz",
+    "artist": "Carlos Valderrama",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (234 -> 3114 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07df51243832971793230",
+    "title": "Jig Time Quadrille - Fig 6",
+    "artist": "Chalmers Wood's Novelty Trio",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (285 -> 2849 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07df81243832971793231",
+    "title": "Fatasie-Impromptu in C Sharp Minor, Op. 66 (OP. Posth.)-Part 1",
+    "artist": "Jose Iturbi;Chopin",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (283 -> 2495 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07df91243832971793233",
+    "title": "COWBOY DREAM SONG (Waltz)",
+    "artist": "CARL JOURNELL;GRADY HESTER and his Texsons",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (233 -> 2752 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dfa1243832971793234",
+    "title": "Moonlight Texas Waltz",
+    "artist": "Claudie Ham And His Radio Play",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (250 -> 3004 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dfb1243832971793235",
+    "title": "Christmas Waltz",
+    "artist": "Various Artists",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (277 -> 3374 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dfc1243832971793236",
+    "title": "The Blue Danube Waltz",
+    "artist": "Concert Orchestra;Johann Strauss",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (215 -> 2905 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dfc1243832971793237",
+    "title": "I'm A-Longin' Fo' You (The Encore Waltz)",
+    "artist": "Conklin's Society Orchestra;Hathaway;Zamecnik",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (145 -> 2380 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07dfc1243832971793238",
+    "title": "Count of Luxenburg Waltz",
+    "artist": "Continental Waltz Orchestra;Fr",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (285 -> 2802 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07dfe1243832971793239",
+    "title": "You And You Waltz",
+    "artist": "Continental Waltz Orchestra;Su",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (249 -> 2798 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e00124383297179323a",
+    "title": "The Last Waltz",
+    "artist": "Corky Carpenter;The Texas Play",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (251 -> 2916 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e00124383297179323b",
+    "title": "The Blue Waltz",
+    "artist": "Cowboy Copas;Bryant;Copas",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e02124383297179323d",
+    "title": "Blue Waves Waltz",
+    "artist": "DICK THOMAS and his Radio Pals;Thomas",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (197 -> 2740 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e02124383297179323e",
+    "title": "Love Call Waltz",
+    "artist": "DON RENO, RED SMILEY And The Tenn. Cutups, Don Reno and Red Smiley, Magness, Reno",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (210 -> 2718 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e02124383297179323f",
+    "title": "Kentucky Waltz",
+    "artist": "Del Gillman and his Bar X Boys",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (229 -> 2764 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e041243832971793240",
+    "title": "I Guess I'll Have To Change My Plans",
+    "artist": "HAZEL SCOTT;Dietz;Schwartz",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa07e051243832971793241",
+    "title": "Naughty But Nice",
+    "artist": "Doris Cooley",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (192 -> 2851 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e091243832971793244",
+    "title": "Blue Bonnet Waltz",
+    "artist": "Dick Dyson and his Musical Tex",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (213 -> 2817 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07e091243832971793245",
+    "title": "Night Wind Waltz",
+    "artist": "Doc Williams and his Border Ri",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (190 -> 2717 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07e0d1243832971793246",
+    "title": "MANHATTAN CONCERTO (Side Two)",
+    "artist": "Eugene Ettore",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (216 -> 2644 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e0d1243832971793247",
+    "title": "Concerto for Guitar",
+    "artist": "Earle Spencer and His Orchestra;Spencer;Gillett;Bill Gillett",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (216 -> 2696 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e0e1243832971793248",
+    "title": "Kvasar Valsen (Charmer's Waltz",
+    "artist": "Eddie Jarl's Quartet",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (210 -> 2737 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e11124383297179324a",
+    "title": "HOT FIDDLE SALUT A PESTH (Kowalski's Octave March)",
+    "artist": "AL DUFFY and the RHYTHMASTERS, Henri Kowalski, Duffy",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (282 -> 2657 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e11124383297179324b",
+    "title": "William Tell Overture - Part 1",
+    "artist": "Edison Concert Band;G. Rossini",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (163 -> 2896 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e13124383297179324c",
+    "title": "\"Carnival At Town\" (Overture)",
+    "artist": "Dorothy Cameron & Jo Ann Cooper",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (196 -> 2527 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e13124383297179324d",
+    "title": "ADORATION WALTZ (Adoración)",
+    "artist": "CONTINENTAL DANCE ORCHESTRA;A. F. Otis;C. Romano;Frank Magine",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (257 -> 3121 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e13124383297179324e",
+    "title": "Waltz of Long Ago",
+    "artist": "Emerson Dance Orch.;Irving Berlin",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (298 -> 3273 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e14124383297179324f",
+    "title": "Mason's Waltz (Mularze, Mularze)",
+    "artist": "Edward Jasinski;The Aristocrats;F. Przybylski;J. Piwowarski",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (197 -> 3069 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e151243832971793250",
+    "title": "Daffodil Waltz",
+    "artist": "Emerson Xylo-Phiends;Gerlad Ar",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e161243832971793251",
+    "title": "To-Morrow Land Waltz Medley (restored)",
+    "artist": "Ernest L. Stevens;Tandler;Hulton",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (133 -> 2591 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e171243832971793252",
+    "title": "Black Hawk Waltz",
+    "artist": "Ernie Berger;Mary E. Walsh",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (204 -> 2636 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e181243832971793253",
+    "title": "Missouri Waltz",
+    "artist": "Eddy Howard and His Orchestra;",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e181243832971793254",
+    "title": "Merry Widow Waltz",
+    "artist": "FRIEDA HEMPEL;Lehár;Eisler",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (127 -> 2229 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e191243832971793255",
+    "title": "Goosetown Waltz",
+    "artist": "Fezz Fritsche And His Goosetow",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (245 -> 2767 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1a1243832971793256",
+    "title": "Orphan Waltz",
+    "artist": "Floyd Leblanc and his magic fi",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (193 -> 3103 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1c1243832971793257",
+    "title": "Anne Marie Waltz",
+    "artist": "Eric Olzen Quartet",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (194 -> 2836 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1c1243832971793258",
+    "title": "Waltz Together (Together)",
+    "artist": "Frank Messina and The Maverick",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (196 -> 2712 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1d1243832971793259",
+    "title": "Madama Butterfly - L'ultima scena",
+    "artist": "Emmy Destinn;Puccini",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (218 -> 3657 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e1d124383297179325a",
+    "title": "Hand in Hand",
+    "artist": "Frank Messina and the Maverick",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (180 -> 2918 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1d124383297179325b",
+    "title": "Cinderella Waltz",
+    "artist": "Frank Sorrell Trio;Mort Garson",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1e124383297179325c",
+    "title": "Venetian Waltz (Beneski Valcek)",
+    "artist": "Frank Yankovic and His Orchestra;Don H. Gabor",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (183 -> 2971 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e1f124383297179325d",
+    "title": "Orphan Waltz",
+    "artist": "Frank Yankovic and his Orchest",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (182 -> 2999 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e20124383297179325e",
+    "title": "Part V - The Flower Girl Waltz",
+    "artist": "Fred Bergin",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (201 -> 2662 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e22124383297179325f",
+    "title": "Poet and Peasant Overture",
+    "artist": "Franz von Suppe",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (225 -> 3152 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e221243832971793260",
+    "title": "The Irish Waltz (Too-Ra-Loo-Ra",
+    "artist": "Fred Bergin;Shannon",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (177 -> 2525 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e231243832971793261",
+    "title": "Waltz Invitation You're My Swe",
+    "artist": "Fred Bergin and his Music;Berg",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (233 -> 2645 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e251243832971793262",
+    "title": "Sweet Tamara",
+    "artist": "Fred Bergin and his music;Romb",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (240 -> 2664 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e261243832971793263",
+    "title": "Autumn Waltz (I Love You, from",
+    "artist": "Fred Bergin and his music;Arch",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (201 -> 2630 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e261243832971793264",
+    "title": "Chicago Waltz",
+    "artist": "Erv Matti and his Orchestra",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (302 -> 3199 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e281243832971793265",
+    "title": "Progressive Waltz (Alice Blue",
+    "artist": "Fred Bergin at the Twin Organs",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (257 -> 2907 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e281243832971793266",
+    "title": "Innocence Waltz",
+    "artist": "Fezz Fritsche and his Goosetow",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (229 -> 2757 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e291243832971793267",
+    "title": "Spanish Circle (Sari Waltz)",
+    "artist": "Fred Bergin at the twin Organs",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (236 -> 2845 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e291243832971793268",
+    "title": "When It's Springtime in the Ro",
+    "artist": "Fred Bergin and his music;Wool",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (202 -> 2574 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa07e2a1243832971793269",
+    "title": "Piano Concerto In B Flat",
+    "artist": "Freddy Martin and his Orch.;Ts",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (269 -> 2818 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07e2a124383297179326a",
+    "title": "Adoration Waltz",
+    "artist": "Fry's Million Dollar Pier Orch",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (186 -> 3210 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa07e2d124383297179326b",
+    "title": "Minute Waltz",
+    "artist": "GAYLORD CARTER;Chopin",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (204 -> 2743 kbps)"
+    ]
+  },
+  {
+    "id": "6aa07e2d124383297179326c",
+    "title": "Beethoven's Moonlight Sonata",
+    "artist": "GLENN MILLER AND HIS ORCHESTRA;Chummy MacGregor;Wm. Finegan",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (281 -> 2770 kbps)"
+    ]
+  },
+  {
+    "id": "6aa0d3bc7f90c0b4895b0d95",
+    "title": "Tudo E.T",
+    "artist": "Andreia Dacal",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0d3be7f90c0b4895b0d96",
+    "title": "Colapso",
+    "artist": "Andreia Dacal",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0d3bf7f90c0b4895b0d97",
+    "title": "Mother Machine",
+    "artist": "Hatech",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 110 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c07f90c0b4895b0d98",
+    "title": "Liberate",
+    "artist": "Buguinha dub",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c27f90c0b4895b0d99",
+    "title": "Adubando",
+    "artist": "Buguinha dub",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c47f90c0b4895b0d9a",
+    "title": "The Organ Tune \\(Waltzinblack Tribute\\)",
+    "artist": "Headloc",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c57f90c0b4895b0d9b",
+    "title": "O Divertido Hot-Dog",
+    "artist": "ZandoZ Corp.",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 116 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c67f90c0b4895b0d9c",
+    "title": "SolitÃÂ¡rio Picadeiro (As SolitÃÂ¡rias Terras Por Onde Passei)",
+    "artist": "ZandoZ Corp.",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 118 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c87f90c0b4895b0d9d",
+    "title": "SolitÃÂ¡rio Picadeiro (Por TrÃÂ¡s Da MÃÂ¡scara)",
+    "artist": "ZandoZ Corp.",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 117 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3c87f90c0b4895b0d9e",
+    "title": "Every Day Is The Same",
+    "artist": "Tale Twist",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3cd7f90c0b4895b0da1",
+    "title": "Teologia Da Prosperidade",
+    "artist": "Organograma",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d3d07f90c0b4895b0da3",
+    "title": "O Verdadeiro",
+    "artist": "Andreia Dacal",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0d6659fb7d63ef4d97699",
+    "title": "Deaf elephant",
+    "artist": "Fenshu",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 106 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d6689fb7d63ef4d9769a",
+    "title": "Hexagotr picos - Hex 4",
+    "artist": "Hexagotrópicos",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d6689fb7d63ef4d9769b",
+    "title": "Gluglo",
+    "artist": "Fenshu",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 97 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d66a9fb7d63ef4d9769c",
+    "title": "N.A.C. (Não Aguentou, Cagou!)",
+    "artist": "M.n.r.",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d66b9fb7d63ef4d9769d",
+    "title": "Legião",
+    "artist": "M.n.r.",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d66c9fb7d63ef4d9769e",
+    "title": "Doutrina da Religião (DxSxTx Cover)",
+    "artist": "M.n.r.",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d66c9fb7d63ef4d9769f",
+    "title": "Hexagotr picos - Hex 5",
+    "artist": "Hexagotrópicos",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d66f9fb7d63ef4d976a0",
+    "title": "Deranged",
+    "artist": "Highwire Fiction",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0d6729fb7d63ef4d976a1",
+    "title": "Nightly Warmth",
+    "artist": "George Christian",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d6739fb7d63ef4d976a2",
+    "title": "Nothing To Believe In",
+    "artist": "Tatari Gami",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 120 kbps)",
+      "ảnh bìa mặc định",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d6769fb7d63ef4d976a3",
+    "title": "Se Fazendo em Corpo",
+    "artist": "George Christian (with Bruno Nobru)",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0d67b9fb7d63ef4d976a4",
+    "title": "Grand Royal (Die Hard)",
+    "artist": "The Mechanical God",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0d67e9fb7d63ef4d976a5",
+    "title": "Get Ok",
+    "artist": "Ladder Devils",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0d67e9fb7d63ef4d976a6",
+    "title": "Hexagotr picos - Hex 3",
+    "artist": "Hexagotrópicos",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa0e3e7e12765606eb4f436",
+    "title": "Receiver remix",
+    "artist": "Flanicx",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 114 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0e3e9e12765606eb4f437",
+    "title": "THIAGO DJ mashup remix - Lords Of Tranquera Receiver On Your Brain",
+    "artist": "Thiago Dj",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 109 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0e3ebe12765606eb4f438",
+    "title": "That's Better Than",
+    "artist": "Fenshu",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0e3ece12765606eb4f439",
+    "title": "Forget Myself",
+    "artist": "Fenshu",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0e3ece12765606eb4f43a",
+    "title": "Botwenandbyron",
+    "artist": "Fenshu",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa0fb0e04466e0eabdf6f01",
+    "title": "Memories of a machine",
+    "artist": "Mastermind XS",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0fb1104466e0eabdf6f04",
+    "title": "Business of panic (instrumental)",
+    "artist": "Mastermind XS",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa0fb1604466e0eabdf6f07",
+    "title": "Stop that mission (instrumental)",
+    "artist": "Mastermind XS",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa11044e9bd73ecc8f2eb73",
+    "title": "She Goes To France...",
+    "artist": "American Green",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa11044e9bd73ecc8f2eb74",
+    "title": "Monocosmic",
+    "artist": "Bouwakanja",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa11045e9bd73ecc8f2eb75",
+    "title": "Un Trop",
+    "artist": "DK Dance",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa11047e9bd73ecc8f2eb76",
+    "title": "Zalem Suicide Center",
+    "artist": "Bouwakanja",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1104ae9bd73ecc8f2eb77",
+    "title": "La Raison",
+    "artist": "Bouwakanja",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1104be9bd73ecc8f2eb78",
+    "title": "Children Grow Everyday",
+    "artist": "Syndrôm",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1104ce9bd73ecc8f2eb79",
+    "title": "From Studio To Stereo",
+    "artist": "Syndrôm",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1104de9bd73ecc8f2eb7a",
+    "title": "Infernale Tendresse",
+    "artist": "Syndrôm",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa11050e9bd73ecc8f2eb7b",
+    "title": "Quasar",
+    "artist": "Syndrôm",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa11050e9bd73ecc8f2eb7c",
+    "title": "Thalweg",
+    "artist": "Syndrôm",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa11058e9bd73ecc8f2eb7d",
+    "title": "Khrôma Anormaal Anomaly",
+    "artist": "Syndrôm",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1105ce9bd73ecc8f2eb7e",
+    "title": "Underground International",
+    "artist": "Tribuman feat. Solo Banton",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1105fe9bd73ecc8f2eb7f",
+    "title": "Unity Vibz",
+    "artist": "Tribuman feat. Slonesta",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1105fe9bd73ecc8f2eb80",
+    "title": "Pas de Bling Bling style",
+    "artist": "Tribuman feat. KRSA",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1174342982f2d7b1a4815",
+    "title": "Sunday",
+    "artist": "A Shy Boy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174442982f2d7b1a4816",
+    "title": "Escape",
+    "artist": "A Shy Boy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174442982f2d7b1a4817",
+    "title": "Nun, You Are Dead!",
+    "artist": "A Shy Boy",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174642982f2d7b1a4818",
+    "title": "Todos Los Golpes",
+    "artist": "Toronto",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174742982f2d7b1a4819",
+    "title": "Empezo A Nevar",
+    "artist": "Toronto",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174842982f2d7b1a481a",
+    "title": "La Muerte Del Capitan",
+    "artist": "Toronto",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174a42982f2d7b1a481b",
+    "title": "Kiss Fm 1 - Punk Rock 0",
+    "artist": "Toronto",
+    "licenseType": "cc-by-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174b42982f2d7b1a481c",
+    "title": "Tal Vez No Fueron A La Luna",
+    "artist": "Toronto",
+    "licenseType": "cc-by-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174d42982f2d7b1a481d",
+    "title": "El Eterno Insatisfecho",
+    "artist": "Toronto",
+    "licenseType": "cc-by-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1174f42982f2d7b1a481e",
+    "title": "Hice ver",
+    "artist": "J.Verben",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1175742982f2d7b1a481f",
+    "title": "Cerdo capitalista",
+    "artist": "J.Verben",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1175742982f2d7b1a4820",
+    "title": "Don't drive while having sex",
+    "artist": "Woopekken on Babbochjas",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1175842982f2d7b1a4821",
+    "title": "Love 4 U",
+    "artist": "Natashas",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa1175d42982f2d7b1a4822",
+    "title": "Todo lo que reluce",
+    "artist": "J.Verben",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1176042982f2d7b1a4823",
+    "title": "Twinkling",
+    "artist": "Zero V",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124ed516686dc470ffcbe",
+    "title": "Fallin' in love",
+    "artist": "Kali",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa124ef516686dc470ffcbf",
+    "title": "Kleopatra",
+    "artist": "Longfield",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124ef516686dc470ffcc0",
+    "title": "Deja Vu - remix by GRILLO",
+    "artist": "Kali",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124f3516686dc470ffcc1",
+    "title": "Loading",
+    "artist": "Mono Syntax",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (8 -> 23 kbps)"
+    ]
+  },
+  {
+    "id": "6aa124f4516686dc470ffcc2",
+    "title": "Processor",
+    "artist": "Mono Syntax",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (8 -> 28 kbps)"
+    ]
+  },
+  {
+    "id": "6aa124f4516686dc470ffcc3",
+    "title": "Tones",
+    "artist": "Mono Syntax",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (8 -> 26 kbps)"
+    ]
+  },
+  {
+    "id": "6aa124f5516686dc470ffcc4",
+    "title": "Sunflower",
+    "artist": "Kali",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124f7516686dc470ffcc5",
+    "title": "The next dimension",
+    "artist": "John Ov3rblast",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124f8516686dc470ffcc6",
+    "title": "Cycle Dub",
+    "artist": "Dub Cmd",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124fb516686dc470ffcc7",
+    "title": "Irie Transmission",
+    "artist": "Dub Cmd",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124fb516686dc470ffcc8",
+    "title": "Steppers Cycle",
+    "artist": "Dub Cmd",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124fe516686dc470ffcc9",
+    "title": "...Until the rest of my Life",
+    "artist": "Maelstrom",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa124ff516686dc470ffcca",
+    "title": "I Dreamt for a Brighter Sky",
+    "artist": "Maelstrom",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa12500516686dc470ffccb",
+    "title": "Circle",
+    "artist": "Go Ask Alice",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (201 -> 1579 kbps)"
+    ]
+  },
+  {
+    "id": "6aa12505516686dc470ffccc",
+    "title": "In a Painted Black World",
+    "artist": "Maelstrom",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa128022e72871895576707",
+    "title": "Broadway",
+    "artist": "Rfl009-gosprom-01",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 108 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa128022e72871895576708",
+    "title": "Jeweller Shops",
+    "artist": "Rfl009-gosprom-04",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 106 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa128022e72871895576709",
+    "title": "Jacket Of Fop",
+    "artist": "Rfl009-gosprom-03",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 109 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa128072e7287189557670a",
+    "title": "Shchedryk Avant Remix",
+    "artist": "Edoheart & Gbera",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa128192e7287189557670d",
+    "title": "Pastiche-ho",
+    "artist": "Homunculo, Chile",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1281a2e7287189557670e",
+    "title": "LAX airport",
+    "artist": "Ploof",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1281c2e7287189557670f",
+    "title": "On A Plane",
+    "artist": "Ploof",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1281d2e72871895576710",
+    "title": "The Naked Truth",
+    "artist": "Kai Nobuko",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa128222e72871895576711",
+    "title": "Bakeneko",
+    "artist": "Zevxev",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa128232e72871895576712",
+    "title": "Mononoke",
+    "artist": "Zevxev",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa12e52b49dcd72ab1e965b",
+    "title": "Urodzona by byc gwacona",
+    "artist": "Escape From",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa12e53b49dcd72ab1e965c",
+    "title": "Drifting In The Fog",
+    "artist": "Mystification",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa12e55b49dcd72ab1e965d",
+    "title": "Stars Above Us",
+    "artist": "Odaibe",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa12e59b49dcd72ab1e965e",
+    "title": "Granular Cycle",
+    "artist": "Odaibe",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa12e59b49dcd72ab1e965f",
+    "title": "Good Night (Odaibedit)",
+    "artist": "Odaibe",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa12e59b49dcd72ab1e9660",
+    "title": "Sezon koszmar w",
+    "artist": "Escape From",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa12e5cb49dcd72ab1e9661",
+    "title": "Oni",
+    "artist": "Escape From",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa12e69b49dcd72ab1e9662",
+    "title": "RMSS Systems Inc. - Voices From Death Factory",
+    "artist": "Various Artists",
+    "licenseType": "public-domain",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (198 -> 571 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145ab124a49cd8440c99e",
+    "title": "Il semi-affetto degli argonauti",
+    "artist": "Chinese Cookie Poets + Nicolau Lafetá",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa145ae124a49cd8440c99f",
+    "title": "Chang'e III",
+    "artist": "Chinese Cookie Poets + Nicolau Lafetá",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa145b0124a49cd8440c9a0",
+    "title": "La Nuit des sales bêtes",
+    "artist": "Casio Judiciaire",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (174 -> 852 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa145b2124a49cd8440c9a1",
+    "title": "Oxford AstraZeneca AZD1222 ChAdOx1 Covishield",
+    "artist": "Filmy Ghost",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (272 -> 885 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145b3124a49cd8440c9a2",
+    "title": "Travaux Publiques",
+    "artist": "Casio Judiciaire",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (188 -> 936 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa145b4124a49cd8440c9a3",
+    "title": "Sputnik V",
+    "artist": "Filmy Ghost",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (257 -> 851 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145b5124a49cd8440c9a4",
+    "title": "The Trees Near Hill Hall",
+    "artist": "Chris Lynn",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa145b8124a49cd8440c9a5",
+    "title": "Abattoir/interlude",
+    "artist": "Casio Judiciaire",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (172 -> 819 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa145b9124a49cd8440c9a6",
+    "title": "Cyberwave Age",
+    "artist": "Insectoid Girl",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (224 -> 895 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145ba124a49cd8440c9a7",
+    "title": "EXO PLANET Aliens",
+    "artist": "Insectoid Girl",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (210 -> 890 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145ba124a49cd8440c9a8",
+    "title": "Inverse Technology",
+    "artist": "Various Artists",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (212 -> 696 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145bf124a49cd8440c9a9",
+    "title": "Oidance",
+    "artist": "Rutty Pussiot",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa145c0124a49cd8440c9aa",
+    "title": "Convidecia CanSino Biologics Inc Ad5 nCoV",
+    "artist": "Filmy Ghost",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (269 -> 904 kbps)"
+    ]
+  },
+  {
+    "id": "6aa145c0124a49cd8440c9ab",
+    "title": "Volno",
+    "artist": "Rutty Pussiot",
+    "licenseType": "cc-by",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa145c6124a49cd8440c9ac",
+    "title": "Little Obscure Voices",
+    "artist": "Yikii & Filmy Ghost",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa145c7124a49cd8440c9ad",
+    "title": "Ocean of Nightmares",
+    "artist": "Yikii & Filmy Ghost",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa145c8124a49cd8440c9ae",
+    "title": "No Love Remains",
+    "artist": "The She Loves Me Nots",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (64 -> 104 kbps)",
+      "chưa có thể loại"
+    ]
+  },
+  {
+    "id": "6aa145ca124a49cd8440c9b0",
+    "title": "Act 3- Li Jian Hong",
+    "artist": "Bivouacmusic",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (199 -> 1683 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa145cf124a49cd8440c9b1",
+    "title": "Spooky Forest",
+    "artist": "Yikii & Filmy Ghost",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa145cf124a49cd8440c9b2",
+    "title": "Li Jian Hong",
+    "artist": "Bivouacmusic",
+    "licenseType": "cc-by-nc-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "nguồn có bản tốt hơn (232 -> 1683 kbps)",
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa145d0124a49cd8440c9b3",
+    "title": "The Story of a Prostitute of Singing",
+    "artist": "Sun",
+    "licenseType": "cc-by-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa15351866620eff4d2dc2f",
+    "title": "Memories Of Thailand (original mix)",
+    "artist": "Risey",
+    "licenseType": "cc-by-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": false,
+    "qualityIssues": [
+      "ảnh bìa mặc định"
+    ]
+  },
+  {
+    "id": "6aa15352866620eff4d2dc30",
+    "title": "13/05/2010",
+    "artist": "Pisitakun",
+    "licenseType": "cc-by-nc",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa15354866620eff4d2dc31",
+    "title": "Velvet Underpants of Great Hedgehogs (bonus)",
+    "artist": "Avs Silvester",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa15356866620eff4d2dc32",
+    "title": "Numb",
+    "artist": "Covolux",
+    "licenseType": "cc-by-sa",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa15359866620eff4d2dc33",
+    "title": "Sexual Liberation For Dummies",
+    "artist": "Toxic Chienckn",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa1536d866620eff4d2dc34",
+    "title": "Gifkip Orchestra Part 4",
+    "artist": "Toxic Chicken",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa15373866620eff4d2dc35",
+    "title": "Gifkip Orchestra Part 6",
+    "artist": "Toxic Chicken",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  },
+  {
+    "id": "6aa15377866620eff4d2dc36",
+    "title": "Gifkip Orchestra Part 2",
+    "artist": "Toxic Chicken",
+    "licenseType": "cc-by-nc-nd",
+    "copyrightPass": true,
+    "copyrightIssues": [],
+    "qualityPass": true,
+    "qualityIssues": []
+  }
+]

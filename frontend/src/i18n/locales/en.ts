@@ -1,0 +1,126 @@
+import { TranslationDict, LanguageMeta } from '../types';
+
+export const metaEn: LanguageMeta = {
+  code: 'en',
+  name: 'English',
+  nativeName: 'English',
+  direction: 'ltr',
+};
+
+export const en: TranslationDict = {
+  // Navigation & Sidebar
+  home: 'Home',
+  browse: 'Browse',
+  radio: 'Radio',
+  library: 'Library',
+  recentlyAdded: 'Recently Added',
+  recentlyPlayed: 'Recently Played',
+  songs: 'Songs',
+  favorites: 'Favorites',
+  artists: 'Artists',
+  albums: 'Albums',
+  playlists: 'Playlists',
+  allPlaylists: 'All Playlists',
+  librarySection: 'Library',
+  account: 'My Account',
+  admin: 'Administrator',
+  genres: 'Genres',
+  countries: 'Countries',
+
+  // Common Buttons & Actions
+  login: 'Sign In',
+  logout: 'Sign Out',
+  search: 'Search',
+  cancel: 'Cancel',
+  create: 'Create',
+  listenLive: 'Listen Live',
+  partySync: 'Party Sync',
+  back: 'Back',
+  close: 'Close',
+  seeAll: 'See All',
+
+  // Home Screen
+  newReleases: 'New Releases',
+  favoriteArtists: 'Favorite Artists',
+  classicalMasterworks: 'Classical & Masterworks',
+  singAlongWithHugo: 'Sing Along with Hugo (Live Karaoke Lyrics)',
+
+  // Browse Screen
+  categoryAll: 'All',
+  categoryPodcast: 'Podcasts & Postcards',
+  categoryLiturgical: 'Sacred & Liturgical',
+  categoryInstrumental: 'Instrumental & Classical',
+  categoryPop: 'Pop & Contemporary',
+  categoryInternational: 'International',
+  categoryAnthems: 'National Anthems',
+  categoryAcoustic: 'Acoustic & Lofi',
+  tracksCount: 'tracks',
+
+  // Radio Screen
+  radioSubtitle: 'Stream live national broadcast stations and curated high-fidelity audio feeds 24/7',
+  featuredLiveBroadcast: 'FEATURED LIVE BROADCAST',
+  publicStations: 'Public Radio Channels',
+  worldRadio: 'World Radio',
+  worldRadioDesc: 'Explore hundreds of real-time global live radio broadcasts.',
+  tuningIn: 'Tuning in...',
+  liveNow: 'Live now',
+  tuneIn: 'Tune in',
+  connecting: 'Connecting...',
+
+  // Library Screen
+
+  // Player & Controls
+  play: 'Play',
+  pause: 'Pause',
+  previousTrack: 'Previous Track',
+  nextTrack: 'Next Track',
+  rewind10s: 'Rewind 10 seconds',
+  forward10s: 'Forward 10 seconds',
+  volume: 'Volume',
+  queue: 'Queue',
+  historyQueue: 'History & Queue',
+  emptyHistory: 'No songs in the history list',
+
+  // Live Lyrics & Karaoke
+  lyrics: 'Lyrics',
+  karaokeSync: 'Karaoke Sync',
+  instrumentalIntro: '♫ Intro',
+  expandFullScreen: 'Expand Full Screen',
+  closeLyrics: 'Close Lyrics',
+  loadingLyrics: 'Loading lyrics...',
+  noLyricsTitle: 'No lyrics available for this song',
+  noLyricsDesc: 'Lyrics for "{title}" are not yet synchronized in our database.',
+  lyricsBadge: 'Lyrics',
+
+  // Member / Account / Dashboard
+  profileTitle: 'Member Profile',
+  saveProfile: 'Save Profile',
+  changePassword: 'Change Password',
+  currentPassword: 'Current Password',
+  newPassword: 'New Password (min 6 chars)',
+  dangerZone: 'Danger Zone',
+  deleteAccount: 'Delete Account',
+  deleteAccountHint: 'Permanently delete your account and playlists. This cannot be undone.',
+  deleteAccountConfirm: 'Are you sure you want to delete your account? This cannot be undone.',
+  language: 'Language',
+  languageDesc: 'Change display language across the entire application',
+  additionalInfo: 'Additional Information',
+  dateOfBirth: 'Date of Birth',
+  location: 'Location',
+  artistRole: 'Artist',
+  offlineBannerDesc: 'Offline Mode active. Showing {count} cached songs saved on this device.',
+  publicStationsDesc: 'Free public streaming without sign-in. Select any station to start tuning in.',
+  googleLinkedHint: 'Signed in with Google — password changes are handled by Google.',
+  explore: 'Explore',
+  openLibrary: 'Open Library',
+  nickname: 'Display Nickname',
+  username: 'Username',
+  phoneNumber: 'Phone Number',
+  musicTaste: 'Favorite Music Genres',
+  phonePlaceholder: 'None yet — can be used to sign in instead of email',
+  devicesSyncing: '{count} devices currently syncing',
+  workspaceHint: 'All devices signed in with the same account automatically sync playback rhythm — no room code needed.',
+  switchLanguage: 'Switch Language',
+  moreLanguages: 'More languages...',
+  searchLanguagePlaceholder: 'Search language or country...',
+};
