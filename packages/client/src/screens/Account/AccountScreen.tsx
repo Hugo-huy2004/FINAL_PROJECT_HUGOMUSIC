@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
-import { ActionButton, DatePicker, Icon, Spinner, TextField, Toggle } from 'hugo-music';
+import { ActionButton, DatePicker, EmptyState, Icon, Spinner, TextField, Toggle } from 'hugo-music';
 import ChromeScrollView from '../../ui/ChromeScrollView';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -23,6 +23,7 @@ export default function AccountScreen({ onNavigateLibrary }: { onNavigateLibrary
   const GENRES = usePreferenceGenres(); // GET /api/meta
   const user = useStore((s) => s.user);
   const logout = useStore((s) => s.logout);
+  const setLoginModalVisible = useStore((s) => s.setLoginModalVisible);
   const likedSongs = useStore((s) => s.likedSongs);
   const playlists = useStore((s) => s.playlists);
   const fetchLikedSongs = useStore((s) => s.fetchLikedSongs);
@@ -72,8 +73,20 @@ export default function AccountScreen({ onNavigateLibrary }: { onNavigateLibrary
     fetchPlaylists();
   }, [fetchLikedSongs, fetchPlaylists]);
 
-  if (!user) return null;
   const styles = makeStyles(colors, isDark);
+
+  // Guests only reach this screen by URL (the account button opens sign-in for them): offer sign-in, not a blank page.
+  if (!user) {
+    return (
+      <View style={[styles.page, !isMobile && styles.pageDesktop]}>
+        <LargeTitle title={t('account')} />
+        <EmptyState icon="person-circle-outline" title={t('accountSignInHint')} />
+        <View style={{ alignItems: 'center' }}>
+          <ActionButton title={t('login')} size="lg" onPress={() => setLoginModalVisible(true)} />
+        </View>
+      </View>
+    );
+  }
 
   // Open/close an edit box; When closed, the value will be returned as saved (discarding unfinished changes).
   const toggle = (which: Editing) => {

@@ -48,6 +48,7 @@ export const en: TranslationDict = {
   deleteAccount: 'Delete Account',
   deleteAccountHint: 'Permanently delete your account and playlists. This cannot be undone.',
   deleteAccountConfirm: 'Are you sure you want to delete your account? This cannot be undone.',
+  accountSignInHint: 'Sign in to see your profile, playlists and playback settings.',
   language: 'Language',
   dateOfBirth: 'Date of Birth',
   location: 'Location',

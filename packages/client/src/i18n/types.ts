@@ -48,6 +48,7 @@ export interface TranslationDict {
   deleteAccount: string;
   deleteAccountHint: string;
   deleteAccountConfirm: string;
+  accountSignInHint: string;
   language: string;
   dateOfBirth: string;
   location: string;

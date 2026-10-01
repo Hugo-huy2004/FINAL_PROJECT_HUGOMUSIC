@@ -48,6 +48,7 @@ export const vi: TranslationDict = {
   deleteAccount: 'Xóa tài khoản',
   deleteAccountHint: 'Tài khoản và mọi danh sách phát của bạn sẽ bị xóa vĩnh viễn.',
   deleteAccountConfirm: 'Xóa tài khoản? Bạn không thể hoàn tác thao tác này.',
+  accountSignInHint: 'Đăng nhập để xem hồ sơ, danh sách phát và cài đặt phát nhạc.',
   language: 'Ngôn ngữ',
   dateOfBirth: 'Ngày sinh',
   location: 'Nơi sinh sống',
