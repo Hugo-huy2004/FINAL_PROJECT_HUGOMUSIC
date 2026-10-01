@@ -1,0 +1,23 @@
+{
+  "name": "hugo-stream",
+  "version": "0.1.0",
+  "description": "Streaming building blocks for music apps: signed playback tokens, multi-CDN steering with circuit breakers, LRC lyrics and multi-device playback sync. Zero dependencies; runs on servers, edge workers and in apps",
+  "keywords": ["streaming", "hls", "cdn", "multi-cdn", "circuit-breaker", "hmac", "signed-url", "lrc", "lyrics", "sync", "react-native"],
+  "homepage": "https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC/tree/main/packages/stream#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC.git", "directory": "packages/stream" },
+  "author": "Hugo-huy2004",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "types/index.d.ts",
+  "react-native": "src/index.js",
+  "files": ["src", "types", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": { "node": ">=20.19" },
+  "scripts": {
+    "types": "rm -rf types && tsc src/index.js --allowJs --checkJs --strict --declaration --emitDeclarationOnly --outDir types --target es2022 --module nodenext --lib es2022,dom",
+    "test": "for f in checks/*.check.mjs; do node --no-warnings \"$f\" || exit 1; done && npm run types",
+    "prepublishOnly": "npm test"
+  },
+  "devDependencies": { "typescript": "~6.0.3" }
+}

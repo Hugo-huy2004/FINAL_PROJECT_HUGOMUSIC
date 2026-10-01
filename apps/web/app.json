@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Hugo Music",
+    "slug": "hugo-music-web",
+    "version": "1.0.0",
+    "platforms": [
+      "web"
+    ],
+    "userInterfaceStyle": "automatic",
+    "web": {
+      "favicon": "../../packages/client/assets/logo.png",
+      "name": "Hugo Music",
+      "shortName": "Hugo Music",
+      "description": "Nghe nhạc trực tuyến, đồng bộ đa thiết bị và radio trực tiếp 24/7.",
+      "lang": "vi",
+      "backgroundColor": "#000000",
+      "display": "standalone",
+      "orientation": "portrait",
+      "startUrl": "/",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-audio",
+      "expo-font",
+      "expo-asset",
+      "expo-web-browser"
+    ]
+  }
+}

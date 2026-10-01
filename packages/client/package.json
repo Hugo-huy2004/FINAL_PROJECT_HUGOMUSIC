@@ -1,0 +1,20 @@
+{
+  "name": "@hugo/client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Screens, state, API client and UI kit shared by the web and mobile apps",
+  "main": "src/index.ts",
+  "scripts": {
+    "gen": "node scripts/gen-component-docs.mjs",
+    "test": "node scripts/run-checks.mjs"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "dependencies": {
+    "hugo-api": "*",
+    "hugo-music": "*",
+    "hugo-stream": "*"
+  }
+}

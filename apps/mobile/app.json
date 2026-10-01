@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Hugo Music",
+    "slug": "hugo-music",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "../../packages/client/assets/logo.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-audio",
+      "expo-font",
+      "expo-asset",
+      "expo-web-browser"
+    ],
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  }
+}

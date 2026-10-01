@@ -1,0 +1,48 @@
+{
+  "name": "@hugo/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "npm run gen -w @hugo/client && expo start",
+    "ios": "npm run gen -w @hugo/client && expo start --ios",
+    "android": "npm run gen -w @hugo/client && expo start --android"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~57.0.15",
+    "@expo/vector-icons": "^15.0.2",
+    "@hugo/client": "*",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-masked-view/masked-view": "0.3.2",
+    "@react-navigation/native": "^7.3.18",
+    "@react-navigation/native-stack": "^7.18.10",
+    "expo": "~57.0.20",
+    "expo-asset": "~57.0.18",
+    "expo-audio": "~57.0.5",
+    "expo-blur": "~57.0.2",
+    "expo-constants": "~57.0.19",
+    "expo-file-system": "^57.0.7",
+    "expo-font": "~57.0.4",
+    "expo-glass-effect": "~57.0.1",
+    "expo-image-picker": "~57.0.16",
+    "expo-linear-gradient": "~57.0.1",
+    "expo-linking": "~57.0.11",
+    "expo-status-bar": "~57.0.1",
+    "expo-web-browser": "~57.0.3",
+    "hls.js": "^1.7.2",
+    "hugo-api": "*",
+    "hugo-music": "*",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-web": "^0.21.2",
+    "socket.io-client": "^4.8.3",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  }
+}

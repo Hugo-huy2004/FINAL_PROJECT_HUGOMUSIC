@@ -1,0 +1,20 @@
+{
+  "name": "hugo-server",
+  "version": "0.1.0",
+  "description": "Express modules that document themselves: drop a folder to mount an API, one-line CRUD, generated docs and OpenAPI, endpoint types for hugo-api, and a test runner that finds its own tests",
+  "keywords": ["express", "api", "openapi", "crud", "documentation", "scaffold", "cli", "mongoose"],
+  "homepage": "https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC/tree/main/packages/server-kit#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC.git", "directory": "packages/server-kit" },
+  "author": "Hugo-huy2004",
+  "license": "MIT",
+  "main": "index.js",
+  "bin": { "hugo-server": "bin/hugo-server.js" },
+  "files": ["index.js", "src", "bin", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "for f in checks/*.check.js; do node \"$f\" || exit 1; done",
+    "prepublishOnly": "npm test"
+  },
+  "peerDependencies": { "express": ">=4" },
+  "devDependencies": { "express": "^5.2.1" }
+}

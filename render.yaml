@@ -1,0 +1,12 @@
+# Render: only the API server. The web app deploys on Vercel (apps/web), the CDN on Cloudflare (apps/edge).
+services:
+  - type: web
+    name: hugo-music-api
+    runtime: node
+    rootDir: apps/server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production

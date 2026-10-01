@@ -1,0 +1,24 @@
+{
+  "name": "hugo-api",
+  "version": "0.1.0",
+  "description": "Call any REST endpoint by its own line (\"GET /api/songs\") and read it into React with one cached hook — retries, ETag, request coalescing and auto-refresh after writes",
+  "keywords": ["react", "react-native", "fetch", "rest", "api-client", "hooks", "cache", "etag", "retry"],
+  "homepage": "https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC/tree/main/packages/api#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC.git", "directory": "packages/api" },
+  "author": "Hugo-huy2004",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "react-native": "src/index.ts",
+  "files": ["dist", "src", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "for f in checks/*.check.mjs; do node --no-warnings \"$f\" || exit 1; done",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "peerDependencies": { "react": ">=18" },
+  "devDependencies": { "@types/react": "~19.2.2", "typescript": "~6.0.3" }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "@hugo/server",
+  "version": "1.0.0",
+  "description": "Hugo Music API: REST + Socket.IO + audio pipeline",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "hugo-server test",
+    "new:module": "hugo-server new",
+    "types": "hugo-server types",
+    "types:check": "hugo-server types --check"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1127.0",
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "google-auth-library": "^11.0.2",
+    "helmet": "^8.3.0",
+    "hugo-server": "file:../../packages/server-kit",
+    "hugo-stream": "file:../../packages/stream",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.5",
+    "multer": "^2.3.0",
+    "music-metadata": "^11.15.0",
+    "nodemailer": "^10.0.1",
+    "redis": "^6.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "hugoServer": {
+    "modulesDir": "src/modules",
+    "auth": "src/core/middleware/auth.js",
+    "collection": "events",
+    "typesOut": "../../packages/client/src/api/endpoints.generated.d.ts"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

@@ -2,17 +2,23 @@
   "name": "hugo-music",
   "version": "1.0.0",
   "private": true,
-  "description": "Hugo Music - Fullstack Streaming Platform",
+  "description": "Hugo Music — licensed music streaming (server, web, mobile, edge CDN, load balancer)",
+  "workspaces": [
+    "apps/web",
+    "apps/mobile",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
-    "dev:web": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm run web --prefix frontend\"",
-    "dev:ios": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
-    "dev:android": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm run android --prefix frontend\"",
+    "dev": "npm run clean:ports && concurrently -n SERVER,WEB -c blue.bold,magenta.bold --kill-others \"npm run dev --prefix apps/server\" \"npm start -w @hugo/web\"",
+    "dev:mobile": "npm run clean:ports && concurrently -n SERVER,MOBILE -c blue.bold,green.bold --kill-others \"npm run dev --prefix apps/server\" \"npm start -w @hugo/mobile\"",
     "clean:ports": "kill -9 $(lsof -t -i:8081 -i:5001) 2>/dev/null || true",
     "start": "npm run dev",
-    "web": "npm run dev:web",
-    "test": "npm test --prefix backend && npm test --prefix frontend && npm test --prefix worker && node lb/lb.test.js",
-    "cluster": "node lb/cluster.js"
+    "web": "npm run dev",
+    "build:web": "npm run build -w @hugo/web",
+    "test": "npm test --prefix apps/server && npm run types:check --prefix apps/server && npm test -w hugo-server && npm test -w hugo-api && npm test -w hugo-stream && npm test -w @hugo/client && npm test --prefix apps/edge && npm test -w hugo-balancer",
+    "cluster": "LB_PORT=5001 LB_REALTIME_PATHS=/socket.io,/api/rooms hugo-balancer cluster apps/server/src/index.js",
+    "gen": "npm run types --prefix apps/server && npm run gen -w @hugo/client",
+    "new:module": "npm run new:module --prefix apps/server --"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

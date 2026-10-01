@@ -8,9 +8,9 @@ node_modules/
 
 # Media & audio files (Cloudflare R2 is used instead of repository storage)
 *.zip
-backend/seed_audio/
-backend/seed_audio/*
-backend/seed_audio_*/
+apps/server/seed_audio/
+apps/server/seed_audio/*
+apps/server/seed_audio_*/
 
 # Build and caches
 .expo/
@@ -25,3 +25,12 @@ web-build/
 
 # Tài liệu và bản nháp báo cáo: không đưa lên repo
 docs/
+
+# Generated at publish time (hugo-stream)
+packages/stream/types/
+
+# Local shortcuts to apps/* and packages/client (symlinks for the editor), not part of the repo
+/backend
+/mobile
+/shared
+/web

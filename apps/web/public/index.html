@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <title>%WEB_TITLE%</title>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      html {
+        color-scheme: light dark;
+      }
+      body {
+        background-color: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #000000;
+        }
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /* Native momentum scrolling on touch devices */
+      [data-rn-scrollview="true"],
+      div[style*="overflow-y: auto"],
+      div[style*="overflow-y: scroll"] {
+        -webkit-overflow-scrolling: touch !important;
+        overscroll-behavior-y: contain !important;
+      }
+    </style>
+
+    <style id="hugo-interactive-animations">
+      /* Tactile Micro-Interactions on Interactive Elements */
+      button, [role="button"], .hugo-interactive {
+        transition: transform 0.16s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.16s ease, filter 0.16s ease !important;
+        will-change: transform;
+      }
+      button:active, [role="button"]:active {
+        transform: scale(0.96) !important;
+      }
+
+      @keyframes pulseGlow {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+        70% { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      }
+
+      /* Water Droplet Burst Expansion ("Hiệu ứng giọt nước bung to ra full màn") */
+
+      /* Fluid Screen Transitions ("Thu xuống hiện lên, lướt vuốt qua lại") - 120fps Compositor */
+      @keyframes hugoScreenRevealFromRightA {
+        0% {
+          opacity: 0;
+          transform: scale(0.972) translate3d(24px, 0, 0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translate3d(0, 0, 0);
+        }
+      }
+      @keyframes hugoScreenRevealFromRightB {
+        0% {
+          opacity: 0;
+          transform: scale(0.972) translate3d(24px, 0, 0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translate3d(0, 0, 0);
+        }
+      }
+      @keyframes hugoScreenRevealFromLeftA {
+        0% {
+          opacity: 0;
+          transform: scale(0.972) translate3d(-24px, 0, 0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translate3d(0, 0, 0);
+        }
+      }
+      @keyframes hugoScreenRevealFromLeftB {
+        0% {
+          opacity: 0;
+          transform: scale(0.972) translate3d(-24px, 0, 0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translate3d(0, 0, 0);
+        }
+      }
+
+      /* Custom Modern Scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(128, 128, 128, 0.22);
+        border-radius: 999px;
+        transition: background 0.2s ease;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(128, 128, 128, 0.45);
+      }
+
+      /* Scrollers that should not show a bar (dataSet={{ scrollbar: 'none' }}) */
+      [data-scrollbar="none"] { scrollbar-width: none; }
+      [data-scrollbar="none"]::-webkit-scrollbar { display: none; }
+
+    </style>
+
+    <!-- PWA install + home-screen metadata. app.json's expo.web fields (theme-color,
+         description) get injected automatically alongside this; the manifest link and
+         iOS-specific tags below don't have an app.json equivalent, so they're added
+         directly here instead. -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Hugo Music" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
+  </head>
+
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  </body>
+</html>

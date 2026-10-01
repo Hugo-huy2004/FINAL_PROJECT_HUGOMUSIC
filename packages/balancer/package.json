@@ -1,0 +1,18 @@
+{
+  "name": "hugo-balancer",
+  "version": "0.1.0",
+  "description": "Layer-7 load balancer for HTTP and WebSocket in plain Node: p2c-EWMA, least-conn and round-robin, health checks, outlier ejection, safe retries, a self-healing local cluster with rolling restarts, and a load tester. Zero dependencies",
+  "keywords": ["load-balancer", "reverse-proxy", "proxy", "websocket", "p2c", "ewma", "least-connections", "health-check", "circuit-breaker", "cluster", "rolling-restart", "benchmark"],
+  "homepage": "https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC/tree/main/packages/balancer#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC.git", "directory": "packages/balancer" },
+  "author": "Hugo-huy2004",
+  "license": "MIT",
+  "main": "index.js",
+  "bin": { "hugo-balancer": "bin/hugo-balancer.js" },
+  "files": ["index.js", "src", "bin", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node checks/lb.check.js",
+    "prepublishOnly": "npm test"
+  }
+}

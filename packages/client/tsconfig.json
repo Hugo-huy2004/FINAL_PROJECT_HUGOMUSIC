@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "hugo-music": [
+        "../ui/src/index.ts"
+      ],
+      "hugo-api": [
+        "../api/src/index.ts"
+      ],
+      "hugo-stream": [
+        "../stream/src/index.js"
+      ]
+    }
+  }
+}

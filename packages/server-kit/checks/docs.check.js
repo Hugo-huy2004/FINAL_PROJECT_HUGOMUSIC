@@ -1,0 +1,31 @@
+// describeApi / errorsFor / checkDocs / toOpenApi / endpointTypes: node checks/docs.check.js
+const assert = require('assert');
+const express = require('express');
+const { doc, describeApi, checkDocs, toOpenApi, endpointTypes } = require('..');
+
+const user = Object.assign((q, s, n) => n(), { access: 'user' });
+const admin = Object.assign((q, s, n) => n(), { access: 'admin' });
+const limiter = Object.assign((q, s, n) => n(), { resetKey() {} });
+const r = express.Router();
+r.get('/open', doc('Open', { returns: 'x' }), (q, s) => s.end());
+r.post('/login', limiter, (q, s) => s.end());
+r.use(user);
+r.route('/').get(doc('List'), (q, s) => s.end()).post(admin, (q, s) => s.end());
+r.delete('/:id/items/:itemId', (q, s) => s.end());
+const [g] = describeApi([{ prefix: '/api/x', router: r, title: 'X', guide: 'g' }]);
+const by = (m, p) => g.routes.find((x) => x.method === m && x.path === p);
+assert.deepStrictEqual([by('GET', '/api/x/open').auth, by('GET', '/api/x/open').summary], ['public', 'Open']);
+assert.strictEqual(by('POST', '/api/x/login').rateLimited, true);
+assert.strictEqual(by('GET', '/api/x').auth, 'user', 'router.use(middleware) applies to later routes');
+assert.strictEqual(by('POST', '/api/x').auth, 'admin', 'admin outranks user');
+assert.deepStrictEqual(Object.keys(by('POST', '/api/x').errors), ['400', '401', '403']);
+assert.deepStrictEqual(by('DELETE', '/api/x/:id/items/:itemId').params, ['id', 'itemId']);
+assert.deepStrictEqual(checkDocs([g]), ['POST /api/x/login: missing doc()', 'POST /api/x: missing doc()', 'DELETE /api/x/:id/items/:itemId: missing doc()']);
+assert.deepStrictEqual(checkDocs([{ ...g, routes: [], guide: 'Uses Acme Cloud, see `acme-path`' }], { forbid: /\bacme\b/i }), ['docs use forbidden words: acme']);
+const api = toOpenApi([g]);
+assert.ok(api.paths['/api/x/{id}/items/{itemId}'].delete);
+assert.deepStrictEqual(api.paths['/api/x'].post.security, [{ bearerAuth: [] }]);
+const types = endpointTypes([g]);
+assert.match(types, /declare module 'hugo-api'/);
+assert.match(types, /\| 'GET \/api\/x\/open'/);
+console.log('hugo-server docs: ok');

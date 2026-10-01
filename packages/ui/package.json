@@ -1,0 +1,54 @@
+{
+  "name": "hugo-music",
+  "version": "0.2.0",
+  "description": "Frosted-glass UI kit with droplet motion for React Native and Expo — native and web",
+  "keywords": [
+    "react-native",
+    "expo",
+    "react-native-web",
+    "ui-kit",
+    "frosted-glass",
+    "glassmorphism",
+    "blur",
+    "components",
+    "design-system"
+  ],
+  "homepage": "https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC/tree/main/packages/ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hugo-huy2004/FINAL_PROJECT_HUGOMUSIC.git",
+    "directory": "packages/ui"
+  },
+  "author": "Hugo-huy2004",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "react-native": "src/index.ts",
+  "files": [
+    "dist",
+    "src",
+    "assets",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "peerDependencies": {
+    "@expo/vector-icons": ">=14",
+    "expo-blur": ">=14",
+    "expo-glass-effect": ">=0.1",
+    "expo-linear-gradient": ">=14",
+    "react": ">=18",
+    "react-native": ">=0.76",
+    "react-native-safe-area-context": ">=4"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  }
+}
