@@ -24,7 +24,7 @@ web-build/
 .report-build/
 
 # Tài liệu và bản nháp báo cáo: không đưa lên repo
-docs/
+/docs/
 
 # Generated at publish time (hugo-stream)
 packages/stream/types/
