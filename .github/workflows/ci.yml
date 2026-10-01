@@ -42,14 +42,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20.x
+      - name: Setup Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            apps/server/package-lock.json
+            apps/edge/package-lock.json
 
+      # The root installs the workspaces (web, mobile, packages/*); server and edge deploy on their own,
+      # so they keep their own lockfiles — exactly what Render and Cloudflare install.
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm ci --prefix apps/server
+          npm ci --prefix apps/edge
 
       - name: Run Test Suite across All Workspaces
         env:
