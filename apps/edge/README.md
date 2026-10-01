@@ -1,61 +1,59 @@
 # Hugo Music CDN Worker
 
-Phục vụ file nhạc/ảnh bìa thẳng từ R2 qua CDN toàn cầu của Cloudflare, thay cho
-việc đẩy mọi byte qua backend Node (`streamSong` trong `apps/server/src/modules/songs/controller.js`).
+Serves audio, HLS and cover art straight from R2 through Cloudflare's global network, instead of pushing every
+byte through the Node server (`streamSong` in `apps/server/src/modules/songs/song.controller.js`, now only a
+fallback).
 
-## Vì sao cần
+## Why
 
-| | Trước (proxy Node) | Sau (Worker CDN) |
+| | Node proxy | Worker |
 |---|---|---|
-| Đường đi | user → Node → R2 → Node → user | user → PoP gần nhất (Hà Nội/TP.HCM) |
-| Cache ở edge | Không | Có, `immutable` 1 năm |
-| Nút thắt | Toàn bộ nhạc qua 1 server Node | Không có |
-| Lỗi ORB trên Chrome | Phải proxy để né | Hết hẳn nhờ header CORS |
+| Path | user → Node → R2 → Node → user | user → nearest point of presence → R2 (binding, no egress) |
+| Edge cache | none | full objects cached `immutable` for a year; Range requests answered from the cache |
+| Bottleneck | every stream goes through one server | none |
+| Browser ORB blocking | needed the proxy to avoid it | gone, thanks to CORS headers |
 
-## Phân quyền theo prefix key
+## Access by key prefix
 
-Worker chạy ở edge nên không truy cập được MongoDB. Vì vậy trạng thái premium
-nằm ngay trong đường dẫn key:
+| Prefix | Access |
+|---|---|
+| `audio/*` | original files — playback token required |
+| `hls/*` | HLS renditions — playback token required; one token covers every segment of a song |
+| `covers/*` | cover art — public |
 
-- `audio/*` — bài miễn phí, công khai, cache chung ở edge
-- `premium/*` — bắt buộc JWT hợp lệ (cùng `JWT_SECRET` với backend), chỉ cache riêng ở trình duyệt
-- `covers/*` — ảnh bìa, công khai
+The API decides who may listen and mints the token (`GET /api/songs/:id/playback`). The Worker only verifies it
+with `verifyToken` from `hugo-stream` — the same code the server uses, with the same `JWT_SECRET` — so the two can
+never disagree. Players send it as `?token=`; for `.m3u8` playlists the Worker appends it to every child URI, so
+any player (hls.js, AVPlayer, ExoPlayer) carries it to each segment.
 
-## Triển khai
-
-```bash
-# 1. Cài wrangler
-npm install -g wrangler
-
-# 2. Đăng nhập Cloudflare (mở trình duyệt — bước này phải tự làm)
-wrangler login
-
-# 3. Nạp JWT_SECRET (lấy đúng giá trị trong apps/server/.env)
-cd worker
-wrangler secret put JWT_SECRET
-
-# 4. Triển khai
-wrangler deploy
-```
-
-Sau bước 4, wrangler in ra URL dạng `https://hugomusic-cdn.<tên-tài-khoản>.workers.dev`.
+## Deploy
 
 ```bash
-# 5. Chuyển 72 file premium sang prefix premium/
-cd ../server
-node scripts/migratePremiumKeys.js --dry-run   # xem trước
-node scripts/migratePremiumKeys.js             # chạy thật
-
-# 6. Trỏ app sang Worker: thêm vào apps/server/.env
-#    CDN_BASE_URL=https://hugomusic-cdn.<tên-tài-khoản>.workers.dev
+cd apps/edge
+npm install                          # hugo-stream (bundled into the Worker)
+npx wrangler login                   # opens the browser
+npx wrangler secret put JWT_SECRET   # exactly the value in apps/server/.env
+npx wrangler deploy                  # prints https://hugomusic-cdn.<account>.workers.dev
 ```
 
-## Hạn mức gói miễn phí
+Then point the apps at it:
 
-100.000 request/ngày. Với HLS (segment 10 giây), một lượt nghe bài 4 phút ≈ 24
-request → khoảng **4.100 lượt nghe/ngày**. Vượt hạn mức thì $0.30/triệu request.
+- `apps/server/.env`: `CDN_URLS=cloudflare=https://hugomusic-cdn.<account>.workers.dev` (signed playback URLs)
+- `apps/web/.env` and `apps/mobile/.env`: `EXPO_PUBLIC_CDN_URL=` the same URL (cover art)
 
-## Về sau muốn dùng domain riêng
+## Test
 
-Trỏ domain vào Worker trong dashboard (Workers → Routes). Không phải sửa code,
-chỉ đổi `CDN_BASE_URL`.
+```bash
+npm test    # mocked R2 + cache: tokens, Range from cache, playlist rewriting
+```
+
+## Custom domain
+
+The edge cache does **not** work on `*.workers.dev` (the Worker detects it and skips the cache). Attach a domain in
+the dashboard (Workers → your Worker → Domains & Routes), then change `CDN_URLS` and `EXPO_PUBLIC_CDN_URL`. No code
+change is needed.
+
+## Free plan quota
+
+100,000 requests a day. HLS segments are 4 seconds long, so a 4-minute song is about 60 segments plus 2–3 playlists
+≈ 63 requests — roughly **1,600 plays a day**.

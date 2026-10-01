@@ -1,70 +1,72 @@
 # Hugo Music
 
-Đồ án COMP1682 (University of Greenwich): dịch vụ nghe nhạc cấp phép mở, phát thích ứng
-(HLS + ABR) trên web, iOS và Android. Kỹ thuật nghiên cứu chính là **PSL** — thang bitrate
-theo điểm bão hoà cảm nhận ([docs/PSL_TECHNIQUE.md](docs/PSL_TECHNIQUE.md)).
+COMP1682 final-year project (University of Greenwich): a streaming service for openly licensed music with
+adaptive playback (HLS + ABR) on the web, iOS and Android. The main research technique is **PSL** — a bitrate
+ladder built from the point where perceived quality saturates.
 
-## Cấu trúc
+## Structure
 
-Monorepo: mỗi thư mục trong `apps/` là một thứ được deploy riêng, tên thư mục nói rõ chạy ở đâu.
+Monorepo: every folder in `apps/` is deployed on its own, and its name says where it runs.
 
 ```
 apps/
-  server/   API Node/Express + Socket.IO + pipeline xử lý nhạc     → Render (render.yaml)
-    src/modules/<tên>/   <tên>.routes.js · .controller.js · .model.js — mỗi module TỰ gắn vào /api/<tên>
-                         (hugo-server), tự có trên /api/docs và /api/docs/openapi.json
+  server/   Node/Express API + Socket.IO + audio pipeline              → Render (render.yaml)
+    src/modules/<name>/  <name>.routes.js · .controller.js · .model.js — each module mounts itself at /api/<name>
+                         (hugo-server) and appears in /api/docs and /api/docs/openapi.json
     src/core/            middleware, r2, email, kindScope…
     src/pipeline/        Job · jobs/ (Release, Psl, Transition, Hls) · cli.js · analyzers/*.py
-    scripts/ research/   công cụ quản trị chạy tay · thí nghiệm cho báo cáo
-  web/      App web (Expo web export)                              → Vercel (apps/web/vercel.json)
-  mobile/   App iOS/Android (Expo)                                 → EAS / Expo Go
-  edge/     Cloudflare Worker: kiểm token, phục vụ R2, viết lại playlist HLS → Cloudflare
+    scripts/ research/   admin tools run by hand · experiments for the report
+  web/      Web app (Expo web export)                                 → Vercel (apps/web/vercel.json)
+  mobile/   iOS/Android app (Expo)                                    → EAS / Expo Go
+  edge/     Cloudflare Worker: checks playback tokens, serves R2, rewrites HLS playlists → Cloudflare
 packages/
-  ui/       Thư viện giao diện Liquid Glass tự viết — gói npm `hugo-music` (không dùng thư viện UI bên ngoài)
-  api/      `hugo-api`: gọi endpoint bằng chính dòng "GET /api/songs", hook useApi có cache/retry/ETag
-  server-kit/ `hugo-server`: doc(), tự gắn module, crud(), OpenAPI, CLI new/types/test
-  stream/   `hugo-stream`: token phát (server + edge dùng chung), chọn CDN, lời LRC, đồng bộ nhiều máy
-  balancer/ `hugo-balancer`: cân bằng tải tự viết (p2c-EWMA, least-conn, round-robin), cụm tự hồi phục, bench
-  client/   Màn hình, store, API client dùng chung cho web + mobile (@hugo/client), dựng từ hugo-music
-    src/lib/meta.ts      dữ liệu tham chiếu (thể loại, giấy phép…) lấy từ GET /api/meta, không viết cứng
-    scripts/gen-component-docs.mjs  sinh thư viện component từ mã nguồn (JSDoc + kiểu props + *.demos.tsx)
+  ui/         `hugo-music`: self-made frosted-glass UI kit (no third-party UI library)
+  api/        `hugo-api`: call an endpoint by its own line ("GET /api/songs"); useApi hook with cache/retry/ETag
+  server-kit/ `hugo-server`: doc(), module discovery, crud(), OpenAPI, CLI new/types/test
+  stream/     `hugo-stream`: playback tokens (shared by server and edge), CDN steering, LRC lyrics, multi-device sync
+  balancer/   `hugo-balancer`: self-made load balancer (p2c-EWMA, least-conn, round-robin), self-healing cluster, bench
+  client/     Screens, store and API client shared by web and mobile (@hugo/client), built on hugo-music
+    src/lib/meta.ts      reference data (genres, licences…) from GET /api/meta, never hard-coded
+    scripts/gen-component-docs.mjs  generates the component library from source (JSDoc + prop types + *.demos.tsx)
 ```
 
-Trang nhà phát triển (tự sinh, tiếng Anh): `/developer/components` (thư viện component) và
-`/developer/api` (tài liệu API từ route đang chạy).
+Developer pages (generated, in English): `/developer/components` (component library) and `/developer/api`
+(API reference from the running routes).
 
-## Chạy
+## Run
 
 ```bash
-npm install            # một lần, ở gốc (npm workspaces cho web + mobile + client)
+npm install            # once, at the root (npm workspaces for web + mobile + packages)
 npm run dev            # server (:5001) + web (:8081)
-npm run dev:mobile     # server + Expo cho iOS/Android (mã QR)
-npm run clean:ports    # giải phóng cổng 5001 & 8081 nếu bị kẹt
-npm run build:web      # bản web tĩnh vào apps/web/dist (đúng lệnh Vercel chạy)
+npm run dev:mobile     # server + Expo for iOS/Android (QR code)
+npm run clean:ports    # free ports 5001 and 8081 if they are stuck
+npm run build:web      # static web build into apps/web/dist (the exact command Vercel runs)
 ```
 
-Server cần `apps/server/.env` (mẫu: `.env.example`); `cd apps/server && npm install` một lần.
-PSL cần ViSQOL: `cd apps/server && python3 -m venv .venv && .venv/bin/pip install visqol-python`.
+The server needs `apps/server/.env` (template: `.env.example`); run `cd apps/server && npm install` once.
+PSL needs ViSQOL: `cd apps/server && python3 -m venv .venv && .venv/bin/pip install visqol-python`.
 
-## Kiểm tra
+## Test
 
 ```bash
-npm test               # server + mọi gói hugo-* + client + edge
-npm run cluster        # 3 bản API + 1 realtime sau bộ cân bằng tải ở :5001 (kill -HUP = khởi động lại cuốn chiếu)
+npm test               # server + every hugo-* package + client + edge
+npm run cluster        # 3 API copies + 1 realtime copy behind the load balancer on :5001 (kill -HUP = rolling restart)
 ```
 
-Bộ test tự phát hiện, không có danh sách viết tay: server chạy mọi `src/**/*.test.js` và mọi module có
-self-check; client chạy typecheck, kiểm thư viện component còn khớp mã nguồn, và mọi `checks/*.check.mjs`.
-Route thiếu mô tả tiếng Anh hoặc component thiếu JSDoc thì test fail.
+Tests are discovered, never listed by hand: the server runs every `src/**/*.test.js` and every module with a
+self-check; the client runs the typecheck, checks that the component library still matches the source, and runs
+every `checks/*.check.mjs`. A route without an English description or a component without JSDoc fails the tests.
 
-## Luồng chính
+## Main flows
 
-- **Nhạc vào kho:** admin upload (bắt buộc giấy phép + URL nguồn) → `pending` → admin duyệt
-  → `published` + tiến trình con `src/pipeline/cli.js approve`: thông tin phát hành & ảnh bìa → PSL →
-  phân tích chuyển bài → HLS; từng bước ghi vào `PipelineRun` (DB). Chạy bù cả kho một tác vụ:
+- **Catalogue intake:** an admin uploads a song (licence and source URL required) → `pending` → an admin approves
+  → `published` + the child process `src/pipeline/cli.js approve`: release info and cover art → PSL → transition
+  analysis → HLS; every step is recorded in `PipelineRun` (DB). Backfill the whole catalogue for one job:
   `node apps/server/src/pipeline/cli.js <release|psl|transition|hls> [--limit=N] [--redo]`.
-- **Nghe:** app xin token ở `GET /api/songs/:id/playback` → phát qua Worker. Token hết hạn giữa
-  bài thì app tự xin lại và phát tiếp đúng vị trí. Khách nghe 3 bài/ngày rồi phải đăng nhập.
-- **Nghe cùng nhau** (`apps/server/src/modules/rooms/`, `packages/client/src/rooms/`): server giữ đồng hồ phòng, máy
-  đồng bộ giờ kiểu NTP. *Đài 24/7*: đề xuất + bầu bài, server tự chuyển bài. *Nghe mù*: nghe một
-  đoạn ở hai mức chất lượng rồi bỏ phiếu — phiếu lưu ở `ListeningVote` để đối chiếu với PSL.
+- **Listening:** the app asks for a token at `GET /api/songs/:id/playback` → plays through the Worker. When a token
+  expires mid-song the app fetches a new one and resumes at the same position. Guests get 3 songs a day, then must
+  sign in.
+- **Listening together** (`apps/server/src/modules/rooms/`, `packages/client/src/rooms/`): the server keeps the room
+  clock and devices sync their time NTP-style. *24/7 stations*: suggest and vote for songs, the server moves to the
+  next one. *Blind test*: hear one passage at two quality levels and vote — votes are stored in `ListeningVote` to
+  compare against PSL.
