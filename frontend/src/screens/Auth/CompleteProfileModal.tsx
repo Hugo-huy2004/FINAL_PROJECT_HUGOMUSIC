@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, ActivityIndicator, ScrollView, Modal } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Platform, ActivityIndicator, ScrollView, Modal, KeyboardAvoidingView } from 'react-native';
+import AppTextField from '../../ui/native/AppTextField';
+import AppDatePicker from '../../ui/native/AppDatePicker';
+import LiquidGlassButton from '../../components/LiquidGlass/LiquidGlassButton';
+import { useAppTheme, type ThemeColors } from '../../theme/theme';
 import { useStore } from '../../store/useStore';
 import { showAlert } from '../../utils/alert';
 import { GENRES } from '../../utils/genres';
@@ -9,12 +12,14 @@ import { GENRES } from '../../utils/genres';
 // for whichever fields are actually missing — for accounts that predate the
 // registration wizard, or came in via Google (which only ever supplies
 // email/name/picture, never DOB/genres/address). Render it once, unconditionally,
-// anywhere inside the logged-in app shell (see navigation/HugoLayout.tsx) and it
+// anywhere inside the logged-in app shell (see navigation/AppLayout.tsx) and it
 // no-ops for any account that's already complete.
 export default function CompleteProfileModal() {
   const user = useStore((state) => state.user);
   const completeProfile = useStore((state) => state.completeProfile);
   const logout = useStore((state) => state.logout);
+  const { colors } = useAppTheme();
+  const st = useMemo(() => makeStyles(colors), [colors]);
 
   const [nickname, setNickname] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -43,7 +48,7 @@ export default function CompleteProfileModal() {
     (!missingNickname || nickname.trim()) &&
     (!missingDob || dateOfBirth) &&
     (!missingGenres || genres.length > 0) &&
-    (!missingAddress || (country.trim() && province.trim() && ward.trim() && addressDetail.trim()));
+    (!missingAddress || (country.trim() && province.trim())); // phường/xã, địa chỉ chi tiết: không bắt buộc (giống RegisterWizard)
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
@@ -65,132 +70,94 @@ export default function CompleteProfileModal() {
     }
   };
 
+  const input = st.input;
+  const ph = colors.textTertiary;
   return (
     <Modal visible animationType="slide" transparent>
-      <View style={styles.modalContainer}>
-        <BlurView intensity={10} tint="dark" style={styles.modalBackdrop} />
-        <View style={styles.modalContent}>
-          <Text style={styles.title}>Hoàn tất hồ sơ</Text>
-          <Text style={styles.subtitle}>
-            Tài khoản của bạn còn thiếu vài thông tin bắt buộc — chỉ cần bổ sung phần còn thiếu dưới đây.
-          </Text>
+      <KeyboardAvoidingView style={st.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={st.center}>
+          <View style={st.card}>
+            <Text style={st.title}>Hoàn tất hồ sơ</Text>
+            <Text style={st.subtitle}>Còn vài thông tin để Hugo Music gợi ý nhạc hợp với bạn.</Text>
 
-          <ScrollView style={{ width: '100%', maxHeight: 380 }} contentContainerStyle={{ paddingBottom: 8 }}>
-            {missingNickname && (
-              <>
-                <Text style={styles.label}>Biệt danh hiển thị</Text>
-                <TextInput style={styles.input} value={nickname} onChangeText={setNickname} placeholder="Biệt danh" placeholderTextColor="#999" />
-              </>
-            )}
+            <ScrollView style={st.scroll} keyboardShouldPersistTaps="handled">
+              {missingNickname && (
+                <>
+                  <Text style={st.label}>Biệt danh hiển thị</Text>
+                  <AppTextField style={input} value={nickname} onChangeText={setNickname} placeholder="Biệt danh" placeholderTextColor={ph} textContentType="name" autoCapitalize="words" maxLength={40} />
+                </>
+              )}
 
-            {missingDob && (
-              <>
-                <Text style={styles.label}>Ngày sinh</Text>
-                {Platform.OS === 'web' ? (
-                  <input
-                    type="date"
-                    value={dateOfBirth}
-                    onChange={(e: any) => setDateOfBirth(e.target.value)}
-                    max={new Date().toISOString().slice(0, 10)}
-                    style={{ height: 50, borderRadius: 12, border: '1px solid #ccc', paddingLeft: 16, fontSize: 16, marginBottom: 16, width: '100%', boxSizing: 'border-box' }}
-                  />
-                ) : (
-                  <TextInput style={styles.input} placeholder="YYYY-MM-DD" placeholderTextColor="#999" value={dateOfBirth} onChangeText={setDateOfBirth} />
-                )}
-              </>
-            )}
+              {missingDob && (
+                <>
+                  <Text style={st.label}>Ngày sinh</Text>
+                  <AppDatePicker value={dateOfBirth} onChange={setDateOfBirth} style={input} placeholderTextColor={ph} />
+                </>
+              )}
 
-            {missingGenres && (
-              <>
-                <Text style={styles.label}>Sở thích nhạc</Text>
-                <View style={styles.chipRow}>
-                  {GENRES.map((g) => (
-                    <TouchableOpacity key={g} style={[styles.chip, genres.includes(g) && styles.chipActive]} onPress={() => toggleGenre(g)}>
-                      <Text style={[styles.chipText, genres.includes(g) && styles.chipTextActive]}>{g}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </>
-            )}
+              {missingGenres && (
+                <>
+                  <Text style={st.label}>Gu nhạc</Text>
+                  <View style={st.chips}>
+                    {GENRES.map((g) => {
+                      const on = genres.includes(g);
+                      return (
+                        <Pressable key={g} style={[st.chip, on && st.chipOn]} onPress={() => toggleGenre(g)} accessibilityRole="button" accessibilityState={{ selected: on }}>
+                          <Text style={[st.chipText, on && st.chipTextOn]}>{g}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </>
+              )}
 
-            {missingAddress && (
-              <>
-                <Text style={styles.label}>Nơi sinh sống</Text>
-                <TextInput style={styles.input} placeholder="Quốc gia" placeholderTextColor="#999" value={country} onChangeText={setCountry} />
-                <TextInput style={styles.input} placeholder="Tỉnh/Thành phố" placeholderTextColor="#999" value={province} onChangeText={setProvince} />
-                <TextInput style={styles.input} placeholder="Phường/Xã" placeholderTextColor="#999" value={ward} onChangeText={setWard} />
-                <TextInput style={styles.input} placeholder="Địa chỉ chi tiết" placeholderTextColor="#999" value={addressDetail} onChangeText={setAddressDetail} />
-              </>
-            )}
-          </ScrollView>
+              {missingAddress && (
+                <>
+                  <Text style={st.label}>Nơi bạn sống</Text>
+                  <AppTextField style={input} placeholder="Quốc gia" placeholderTextColor={ph} value={country} onChangeText={setCountry} autoCapitalize="words" />
+                  <AppTextField style={input} placeholder="Tỉnh / Thành phố" placeholderTextColor={ph} value={province} onChangeText={setProvince} autoCapitalize="words" />
+                  <AppTextField style={input} placeholder="Phường / Xã (không bắt buộc)" placeholderTextColor={ph} value={ward} onChangeText={setWard} autoCapitalize="words" />
+                  <AppTextField style={input} placeholder="Địa chỉ chi tiết (không bắt buộc)" placeholderTextColor={ph} value={addressDetail} onChangeText={setAddressDetail} />
+                </>
+              )}
+            </ScrollView>
 
-          <TouchableOpacity
-            style={[styles.submitButton, (!canSubmit || submitting) && styles.disabledButton]}
-            onPress={handleSubmit}
-            disabled={!canSubmit || submitting}
-          >
-            {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitButtonText}>Hoàn tất</Text>}
-          </TouchableOpacity>
-          <TouchableOpacity onPress={logout} style={{ marginTop: 14 }}>
-            <Text style={styles.logoutText}>Đăng xuất</Text>
-          </TouchableOpacity>
+            <LiquidGlassButton
+              variant="primary"
+              size="lg"
+              title={submitting ? undefined : 'Hoàn tất'}
+              icon={submitting ? <ActivityIndicator color={colors.accent} /> : undefined}
+              onPress={handleSubmit}
+              disabled={!canSubmit || submitting}
+              style={{ width: '100%' }}
+            />
+            <Pressable onPress={logout} style={st.logout} accessibilityRole="button">
+              <Text style={st.logoutText}>Đăng xuất</Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
-  modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  modalBackdrop: {
-    position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    ...(Platform.OS === 'web' ? ({ backdropFilter: 'blur(10px)' } as any) : {}),
-  },
-  modalContent: {
-    width: '90%',
-    maxWidth: 440,
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    padding: 32,
-    alignItems: 'stretch',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.2,
-    shadowRadius: 30,
-    elevation: 20,
-  },
-  title: { fontSize: 22, fontWeight: '800', color: '#000', marginBottom: 8, textAlign: 'center' },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 20, lineHeight: 20, textAlign: 'center' },
-  label: { fontSize: 12, fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: 8, marginTop: 4 },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  fill: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  card: { width: '100%', maxWidth: 440, maxHeight: '100%', backgroundColor: c.modalBg, borderRadius: 28, padding: 24 },
+  title: { fontSize: 24, fontWeight: '700', color: c.text, marginBottom: 6 },
+  subtitle: { fontSize: 15, color: c.textSecondary, lineHeight: 21, marginBottom: 16 },
+  scroll: { flexGrow: 0, marginBottom: 16 },
+  label: { fontSize: 13, fontWeight: '600', color: c.textSecondary, marginBottom: 8, marginTop: 4 },
   input: {
-    width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 16,
-    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+    height: 50, borderRadius: 12, paddingHorizontal: 16, fontSize: 17, marginBottom: 12, backgroundColor: c.inputBg, color: c.text,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : {}),
   },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 },
-  chip: {
-    borderWidth: 1, borderColor: '#ddd', borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 8, marginRight: 8, marginBottom: 8,
-  },
-  chipActive: { backgroundColor: '#1CD8A9', borderColor: '#1CD8A9' },
-  chipText: { fontSize: 13, color: '#333', fontWeight: '500' },
-  chipTextActive: { color: '#fff' },
-  submitButton: {
-    backgroundColor: '#1CD8A9',
-    height: 50,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  disabledButton: { opacity: 0.5 },
-  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  logoutText: { color: '#999', fontSize: 13, textAlign: 'center', fontWeight: '600' },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  chip: { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: c.fill },
+  chipOn: { backgroundColor: c.accent },
+  chipText: { fontSize: 14, color: c.text, fontWeight: '500' },
+  chipTextOn: { color: '#fff' },
+  logout: { alignSelf: 'center', marginTop: 14, paddingVertical: 4 },
+  logoutText: { color: c.textSecondary, fontSize: 15, fontWeight: '600' },
 });

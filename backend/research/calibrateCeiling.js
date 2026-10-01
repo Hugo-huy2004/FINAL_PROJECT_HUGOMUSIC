@@ -14,12 +14,15 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { measureCutoffHz, bandEnergyDb } = require('./spectralCeiling');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const mongoose = require('mongoose');
+const connectDB = require('../config/db');
+const { saveResult } = require('../utils/researchStore');
+const { measureCutoffHz } = require('./spectralCeiling');
 
 const BITRATES = [64, 96, 128, 160, 192, 256, 320];
 // Thư mục nhạc mẫu (tham số 1). Không có thì hiệu chuẩn chỉ dùng nhiễu hồng.
 const SEED_DIR = process.argv[2] || path.join(__dirname, 'seed_audio');
-const OUT_PATH = path.join(__dirname, 'results', 'ceiling_calibration.json');
 
 function run(args) {
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...args], { timeout: 300000 });
@@ -53,7 +56,7 @@ function calibrateOne(label, wavPath, work) {
   return row;
 }
 
-function main() {
+async function main() {
   const work = fs.mkdtempSync(path.join(os.tmpdir(), 'calib-'));
   const rows = [];
 
@@ -75,8 +78,7 @@ function main() {
       rows.push(calibrateOne(`real${i}`, wav, work));
     }
 
-    fs.writeFileSync(OUT_PATH, JSON.stringify(rows, null, 2));
-    console.log(`\nĐã ghi ${OUT_PATH}`);
+    await saveResult('ceiling_calibration', rows);
 
     // Bảng tổng hợp: điểm cắt theo bitrate, lấy từ nguồn tổng hợp (sạch nhất).
     const pinkRow = rows[0];
@@ -90,4 +92,8 @@ function main() {
   }
 }
 
-main();
+// Kết quả lưu vào DB (ResearchResult) — kết nối trước khi chạy, ngắt khi xong.
+connectDB()
+  .then(main)
+  .then(() => mongoose.disconnect())
+  .catch((err) => { console.error(err); process.exit(1); });

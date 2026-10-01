@@ -1,19 +1,32 @@
+import { signInWithGoogle, takeGoogleRedirect } from '../utils/googleAuth';
+import { serverNow, syncClock } from '../rooms/serverClock';
+import { startAligned, alignTo, releaseRate, SYNC } from '../utils/audio/timelineSync';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { audioEngine } from '../utils/audioEngine';
-import { api, setAuthToken, streamUrl, resolvePlayback } from '../utils/api';
+import { api, setAuthToken, setOnSessionExpired, streamUrl, resolvePlayback } from '../utils/api';
 import { prefetchNext } from '../utils/prefetch';
+import { steering } from '../utils/cdnSteering';
 import { getSocket, reauthSocket } from '../utils/socket';
 import { offlineManager } from '../utils/offlineManager';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { getStationCover } from '../utils/radioArtwork';
+import { shuffled } from '../utils/shuffle';
+import { planTransition, gainFor, startOf, TransitionInfo, TransitionMode, TrackInfo } from '../utils/audio/transitionPlan';
+import type { PlaybackStatus, PlaybackTelemetry } from '../utils/audioEngine';
 
 // Gom số liệu của bài vừa nghe rồi gửi về server. Chỉ gửi khi thực sự có phát,
 // để những lần nạp hụt (đổi bài liên tục, lỗi mạng) không làm nhiễu mốc đo.
-function flushPlaybackTelemetry(song: Song | null) {
+// CDN đang phát bài hiện tại (utils/cdnSteering.ts): lỗi giữa chừng quy cho CDN này, và mỗi lần đo
+// hiệu năng (telemetry) ghi kèm CDN để so sánh các CDN bằng số liệu thật.
+let playingCdn = 'origin';
+let preparedCdn = 'origin';
+let playingSince = 0; // lúc nạp bài hiện tại — phân biệt lỗi CDN với token hết hạn
+
+function flushPlaybackTelemetry(song: Song | null, taken?: PlaybackTelemetry | null, cdn = playingCdn) {
   if (!song) return;
-  const t = audioEngine.takeTelemetry();
+  const t = taken === undefined ? audioEngine.takeTelemetry() : taken;
   if (!t || (!t.startupMs && !t.playedMs)) return;
   api.recordPlayback({
     songId: song._id,
@@ -23,45 +36,15 @@ function flushPlaybackTelemetry(song: Song | null) {
     playedMs: t.playedMs,
     completed: t.completed,
     platform: Platform.OS,
+    cdn,
   });
 }
 
-export interface PartyParticipant {
-  _id?: string;
-  userId?: string;
-  socketId?: string;
-  name: string;
-  avatar?: string;
-  role: 'host' | 'guest';
-  isOnline: boolean;
-  joinedAt?: string;
-}
-
-export interface PartyRoomData {
-  _id?: string;
-  code: string;
-  name: string;
-  description?: string;
-  isPublic?: boolean;
-  genre?: string;
-  maxParticipants?: number;
-  host: string;
-  hostName: string;
-  hostAvatar?: string;
-  currentSong?: Song | null;
-  queue: Song[];
-  queueIndex: number;
-  isPlaying: boolean;
-  position: number;
-  participants: PartyParticipant[];
-  isActive: boolean;
-  lastSyncTime?: string;
-  onlineCount?: number;
-  queueLength?: number;
-  participantCount?: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// Phòng nghe chung đang ở (đài 24/7 hoặc phòng nghe mù, xem src/rooms/). Trong phòng,
+// server giữ nhịp phát nên các nút tua/chuyển bài ở trình phát bị khoá.
+export type LiveRoom = { kind: 'station' | 'blind'; id: string; name: string };
+// src/rooms/ gắn hàm vào đây (store không import ngược src/rooms/ để tránh vòng phụ thuộc).
+export const liveRoomHooks: { resume?: () => void } = {};
 
 export interface UserAddress {
   country?: string;
@@ -103,12 +86,19 @@ export interface Song {
   category?: string;
   genre?: string;
   country?: string;
+  likesCount?: number;
   // Giấy phép cụ thể — bắt buộc khi admin tải lên (backend/utils/songReview.js).
   // Hiển thị nhỏ dưới tên bài — CC và Public Domain đều yêu cầu nêu rõ giấy phép.
   licenseType?: string;
   licenseUrl?: string;
   hlsPath?: string;
   hlsTiers?: string[];
+  // Dữ liệu chuyển bài liền mạch (backend/pipeline/analyzers/transition_analyze.py).
+  transition?: TransitionInfo;
+  // Bản phát hành THẬT chứa bài + màu chủ đạo ảnh bìa (backend/pipeline/jobs/ReleaseJob.js).
+  album?: { sourceId: string; title: string; artist?: string; year?: number; trackCount?: number; trackNo?: number; description?: string };
+  coverColor?: string;
+  lyricsSource?: string; // 'id3' | 'lrclib' khi bài thật sự có lời
   uploadedBy?: string;
   // Quản lý kho (chỉ API admin trả về đủ các trường này).
   status?: 'pending' | 'published' | 'rejected';
@@ -121,6 +111,7 @@ export interface Song {
 export interface Playlist {
   _id: string;
   name: string;
+  description?: string;
   songs: Song[];
 }
 
@@ -150,6 +141,9 @@ export interface RadioStation {
   votes?: number;
 }
 
+// Bài đại diện cho một đài radio thật đang phát (playLiveRadio): không có token phát.
+const isLiveRadio = (s: Song) => s._id.startsWith('radio-');
+
 interface StoreState {
   // --- auth ---
   user: User | null;
@@ -162,11 +156,13 @@ interface StoreState {
   setLoginModalVisible: (visible: boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   verifyOtp: (code: string) => Promise<void>;
-  loginWithGoogle: (idToken: string) => Promise<void>;
+  // true = đã đăng nhập, false = người dùng đóng cửa sổ Google (web: trang đang chuyển sang Google).
+  loginWithGoogle: () => Promise<boolean>;
   logout: () => void;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: (confirm: { password?: string; confirm?: string }) => Promise<void>;
+  removeAvatar: () => Promise<void>;
   refreshUser: () => Promise<void>;
-  updateProfile: (fields: { nickname?: string; phone?: string; musicGenres?: string[] }) => Promise<void>;
+  updateProfile: (fields: { nickname?: string; phone?: string; musicGenres?: string[]; dateOfBirth?: string; address?: { country?: string; province?: string; ward?: string; detail?: string } }) => Promise<void>;
   completeProfile: (fields: {
     nickname?: string;
     dateOfBirth?: string;
@@ -178,6 +174,7 @@ interface StoreState {
   }) => Promise<void>;
   updateAvatar: (file: File | Blob) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  resetPassword: (tempToken: string, code: string, newPassword: string) => Promise<void>;
 
   // --- registration wizard (step -> step) ---
   registrationEmail: string | null;
@@ -192,11 +189,6 @@ interface StoreState {
   songs: Song[];
   isLoadingSongs: boolean;
   fetchSongs: () => Promise<void>;
-  selectedCategory: string;
-  setSelectedCategory: (cat: string) => void;
-  searchResults: Song[];
-  isSearching: boolean;
-  search: (query: string) => Promise<void>;
   likedSongIds: string[];
   likedSongs: Song[];
   fetchLikedSongs: () => Promise<void>;
@@ -205,8 +197,10 @@ interface StoreState {
   // --- playlists ---
   playlists: Playlist[];
   fetchPlaylists: () => Promise<void>;
-  createPlaylist: (name: string) => Promise<void>;
-  renamePlaylist: (id: string, name: string) => Promise<void>;
+  createPlaylist: (name: string, description?: string) => Promise<void>;
+  updatePlaylist: (id: string, fields: { name?: string; description?: string }) => Promise<void>;
+  addSongsToPlaylist: (playlistId: string, songIds: string[]) => Promise<void>;
+  reorderPlaylistSongs: (playlistId: string, songIds: string[]) => Promise<void>;
   deletePlaylist: (id: string) => Promise<void>;
   addSongToPlaylist: (playlistId: string, songId: string) => Promise<void>;
   removeSongFromPlaylist: (playlistId: string, songId: string) => Promise<void>;
@@ -219,6 +213,10 @@ interface StoreState {
   isBuffering: boolean;
   position: number;
   duration: number;
+  playbackBitrate: number | null;
+  playbackCodec: string | null;
+  playbackSegment: number | null;
+  isHlsStream: boolean;
   // 'auto' = ABR tự đổi theo mạng | 'low'/'mid'/'high' = khoá một mức
   // | 'original' = file gốc, không qua HLS
   audioQuality: string;
@@ -229,13 +227,23 @@ interface StoreState {
   seekBy: (deltaSeconds: number) => void;
   next: () => void;
   prev: () => void;
-
-  // --- live radio (see backend/controllers/radioController.js) ---
-  // Set while `currentSong` is a station tune-in rather than a normal on-demand play,
-  // so the track-finish handler knows to re-tune into the live station instead of
-  // advancing the (single-song) queue. Cleared by any direct playSong call.
-  activeRadioStationId: string | null;
-  tuneInRadio: (stationId: string) => Promise<void>;
+  // Trộn bài / lặp lại như Apple Music. originalQueue giữ thứ tự gốc để tắt trộn thì trả về.
+  shuffle: boolean;
+  repeat: 'off' | 'all' | 'one';
+  originalQueue: Song[];
+  toggleShuffle: () => void;
+  cycleRepeat: () => void;
+  shufflePlay: (list: Song[]) => Promise<void>;
+  onTrackFinished: () => void;
+  // Chuyển bài liền mạch (utils/audio/transitionPlan.ts): kiểu chuyển, độ dài crossfade, cân âm lượng.
+  transitionMode: TransitionMode;
+  crossfadeSeconds: number;
+  soundCheck: boolean;
+  setTransitionMode: (mode: TransitionMode) => void;
+  setCrossfadeSeconds: (s: number) => void;
+  setSoundCheck: (on: boolean) => void;
+  // Ghi nhận bài kế đã được máy phát chuyển sang (sau crossfade) — không nạp lại.
+  commitAdvance: (song: Song) => void;
 
   // --- real live radio (see backend/models/RadioStation.js) ---
   radioStations: RadioStation[];
@@ -247,34 +255,7 @@ interface StoreState {
   artists: Artist[];
   fetchArtists: () => Promise<void>;
 
-  // --- persistent party room (host-controlled sync) ---
-  partyRoomId: string | null;
-  partyRoom: PartyRoomData | null;
-  publicPartyRooms: PartyRoomData[];
-  myPartyRooms: PartyRoomData[];
-  isLoadingPartyRooms: boolean;
-  isPartyHost: boolean;
-  isPartyRoomVisible: boolean;
-  setPartyRoomVisible: (visible: boolean) => void;
-  fetchPublicPartyRooms: () => Promise<void>;
-  fetchMyPartyRooms: () => Promise<void>;
-  createPartyRoom: (options?: { name?: string; description?: string; isPublic?: boolean; genre?: string; forceNew?: boolean } | string) => Promise<string | null>;
-  updatePartyRoom: (code: string, data: { name?: string; description?: string; isPublic?: boolean; genre?: string }) => Promise<boolean>;
-  joinPartyRoom: (code: string) => Promise<boolean>;
-  leavePartyRoom: () => Promise<void>;
-  deletePartyRoom: (code?: string, permanent?: boolean) => Promise<void>;
-  checkActivePartyRoom: () => Promise<void>;
-  hostPlayPause: () => void;
-  hostSeek: (position: number) => void;
-  hostNextSong: () => void;
-  hostPrevSong: () => void;
-  hostSelectSong: (song: Song, forcedQueue?: Song[], targetIndex?: number) => Promise<void>;
-  addSongToPartyQueue: (song: Song) => void;
-  removeSongFromPartyQueue: (index: number) => void;
-
-  createParty: () => void;
-  joinParty: (roomId: string) => void;
-  leaveParty: () => void;
+  liveRoom: LiveRoom | null;
 
   // --- workspace (personal multi-device sync, see workspaceRoomId above) ---
   workspaceEnabled: boolean;
@@ -288,20 +269,33 @@ interface StoreState {
   // --- offline & cache ---
   offlineSongIds: string[];
   offlineSongs: Song[];
-  isOfflineMode: boolean;
-  toggleOfflineMode: () => void;
   loadOfflineSongs: () => Promise<void>;
   downloadSongOffline: (song: Song) => Promise<void>;
   removeSongOffline: (songId: string) => Promise<void>;
 
   // --- play history ---
   historySongs: Song[];
-  clearHistory: () => void;
 }
 
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
+      // Có token phiên (từ Google) → hỏi server hồ sơ đầy đủ rồi vào phiên như đăng nhập thường.
+      const sessionFromToken = async (token: string) => {
+        setAuthToken(token);
+        const me = await api.me();
+        completeSession({ ...me, token });
+      };
+      // Web: vừa quay về từ Google → hoàn tất đăng nhập (hoặc báo lỗi trong hộp đăng nhập).
+      setTimeout(() => {
+        try {
+          const token = takeGoogleRedirect();
+          if (token) sessionFromToken(token).catch((e) => set({ authError: e.message, isLoginModalVisible: true }));
+        } catch (e: any) {
+          set({ authError: e.message, isLoginModalVisible: true });
+        }
+      });
+
       // Shared by every path that ends in a real session (password login, OTP
       // verification, Google, register) so token/user/playlists/likes stay in sync.
       const completeSession = (user: User) => {
@@ -310,10 +304,9 @@ export const useStore = create<StoreState>()(
         set({ user, isAuthLoading: false, isLoginModalVisible: false, pendingOtpToken: null });
         get().fetchPlaylists();
         get().fetchLikedSongs();
-        get().checkActivePartyRoom();
         // Khách vừa bị chặn vì hết lượt nghe: đăng nhập xong thì phát luôn bài đó.
         const { currentSong, queue } = get();
-        if (currentSong && !get().activeRadioStationId && !audioEngine.hasSound()) get().playSong(currentSong, queue);
+        if (currentSong && !isLiveRadio(currentSong) && !audioEngine.hasSound()) get().playSong(currentSong, queue);
       };
 
       return {
@@ -350,11 +343,16 @@ export const useStore = create<StoreState>()(
           throw e;
         }
       },
-      loginWithGoogle: async (idToken) => {
+      loginWithGoogle: async () => {
         set({ isAuthLoading: true, authError: null });
         try {
-          const user = await api.googleAuth(idToken);
-          completeSession(user);
+          const token = await signInWithGoogle();
+          if (!token) {
+            set({ isAuthLoading: false });
+            return false;
+          }
+          await sessionFromToken(token);
+          return true;
         } catch (e: any) {
           set({ isAuthLoading: false, authError: e.message });
           throw e;
@@ -419,9 +417,15 @@ export const useStore = create<StoreState>()(
           workspaceMemberCount: 0,
         });
       },
-      deleteAccount: async () => {
-        await api.deleteAccount();
+      deleteAccount: async (confirm) => {
+        await api.deleteAccount(confirm);
         get().logout();
+      },
+      removeAvatar: async () => {
+        const current = get().user;
+        if (!current) return;
+        const updated = await api.removeAvatar();
+        set({ user: { ...current, ...updated } });
       },
       // Re-pulls the user record from the server (username/email/role) —
       // the persisted `user` only reflects what was true at login time, so anything
@@ -458,14 +462,28 @@ export const useStore = create<StoreState>()(
         set({ user: { ...current, ...updated } });
       },
       changePassword: async (currentPassword, newPassword) => {
-        await api.changePassword(currentPassword, newPassword);
+        // Server thu hồi mọi phiên cũ (kể cả phiên này) và trả token mới cho thiết bị đang đổi.
+        const { token } = await api.changePassword(currentPassword, newPassword);
+        const current = get().user;
+        if (token && current) {
+          setAuthToken(token);
+          reauthSocket();
+          set({ user: { ...current, token } });
+        }
+      },
+      resetPassword: async (tempToken, code, newPassword) => {
+        set({ isAuthLoading: true, authError: null });
+        try {
+          completeSession(await api.resetPassword(tempToken, code, newPassword));
+        } catch (e: any) {
+          set({ isAuthLoading: false, authError: e.message });
+          throw e;
+        }
       },
 
       // --- song library ---
       songs: [],
       isLoadingSongs: false,
-      selectedCategory: 'Tất cả',
-      setSelectedCategory: (cat: string) => set({ selectedCategory: cat }),
       fetchSongs: async () => {
         set({ isLoadingSongs: true });
         try {
@@ -483,43 +501,6 @@ export const useStore = create<StoreState>()(
         } catch (e) {
           console.warn('fetchSongs failed', e);
           set({ isLoadingSongs: false });
-        }
-      },
-      searchResults: [],
-      isSearching: false,
-      search: async (query) => {
-        const trimmed = query.trim();
-        if (!trimmed) {
-          set({ searchResults: [] });
-          return;
-        }
-        set({ isSearching: true });
-        try {
-          const apiResults = await api.getSongs(trimmed);
-          if (Array.isArray(apiResults) && apiResults.length > 0) {
-            set({ searchResults: apiResults, isSearching: false });
-            return;
-          }
-
-          // Fallback: local filter on loaded songs in store
-          const lower = trimmed.toLowerCase();
-          const localFiltered = (get().songs || []).filter(
-            (s) =>
-              s.title?.toLowerCase().includes(lower) ||
-              s.artist?.toLowerCase().includes(lower) ||
-              s.category?.toLowerCase().includes(lower)
-          );
-          set({ searchResults: localFiltered, isSearching: false });
-        } catch (e) {
-          console.warn('search API failed, falling back to local filter', e);
-          const lower = trimmed.toLowerCase();
-          const localFiltered = (get().songs || []).filter(
-            (s) =>
-              s.title?.toLowerCase().includes(lower) ||
-              s.artist?.toLowerCase().includes(lower) ||
-              s.category?.toLowerCase().includes(lower)
-          );
-          set({ searchResults: localFiltered, isSearching: false });
         }
       },
       likedSongIds: [],
@@ -565,22 +546,37 @@ export const useStore = create<StoreState>()(
           console.warn('fetchPlaylists failed', e);
         }
       },
-      createPlaylist: async (name) => {
-        const playlist = await api.createPlaylist(name);
+      createPlaylist: async (name, description = '') => {
+        const playlist = await api.createPlaylist(name, description);
         set((state) => ({ playlists: [playlist, ...state.playlists] }));
       },
-      renamePlaylist: async (id, name) => {
-        const updated = await api.renamePlaylist(id, name);
+      updatePlaylist: async (id, fields) => {
+        const updated = await api.updatePlaylist(id, fields);
         set((state) => ({ playlists: state.playlists.map((p) => (p._id === id ? updated : p)) }));
+      },
+      addSongsToPlaylist: async (playlistId, songIds) => {
+        const updated = await api.addSongsToPlaylist(playlistId, songIds);
+        set((state) => ({ playlists: state.playlists.map((p) => (p._id === playlistId ? updated : p)) }));
+      },
+      // Sắp xếp: đổi trên máy NGAY (lạc quan) rồi mới gửi; server từ chối thì trả về thứ tự cũ.
+      reorderPlaylistSongs: async (playlistId, songIds) => {
+        const before = get().playlists;
+        const pl = before.find((p) => p._id === playlistId);
+        if (!pl) return;
+        const byId = new Map(pl.songs.map((x) => [x._id, x]));
+        set({ playlists: before.map((p) => (p._id === playlistId ? { ...p, songs: songIds.map((id) => byId.get(id)!).filter(Boolean) } : p)) });
+        try {
+          await api.reorderPlaylist(playlistId, songIds);
+        } catch (e) {
+          set({ playlists: before });
+          throw e;
+        }
       },
       deletePlaylist: async (id) => {
         await api.deletePlaylist(id);
         set((state) => ({ playlists: state.playlists.filter((p) => p._id !== id) }));
       },
-      addSongToPlaylist: async (playlistId, songId) => {
-        const updated = await api.addSongToPlaylist(playlistId, songId);
-        set((state) => ({ playlists: state.playlists.map((p) => (p._id === playlistId ? updated : p)) }));
-      },
+      addSongToPlaylist: async (playlistId, songId) => get().addSongsToPlaylist(playlistId, [songId]),
       removeSongFromPlaylist: async (playlistId, songId) => {
         const updated = await api.removeSongFromPlaylist(playlistId, songId);
         set((state) => ({ playlists: state.playlists.map((p) => (p._id === playlistId ? updated : p)) }));
@@ -594,8 +590,20 @@ export const useStore = create<StoreState>()(
       isBuffering: false,
       position: 0,
       duration: 0,
+      playbackBitrate: null,
+      playbackCodec: null,
+      playbackSegment: null,
+      isHlsStream: false,
       audioQuality: 'auto',
       playSong: async (song, queue = [song], startAtSeconds) => {
+        // Đang bật trộn mà phát từ một danh sách MỚI (khác hàng chờ hiện tại) → trộn luôn
+        // danh sách đó, bài được bấm lên đầu. next()/prev() truyền lại đúng hàng chờ cũ nên
+        // không bị trộn lại.
+        if (get().shuffle && queue !== get().queue && queue.length > 1) {
+          const original = queue;
+          queue = [song, ...shuffled(queue.filter((s) => s._id !== song._id))];
+          set({ originalQueue: original });
+        }
         // Chốt số liệu bài đang nghe TRƯỚC khi nạp bài mới — sang bài mới là
         // bộ đếm bị reset, không lấy lại được. Lượt bỏ bài giữa chừng cũng đi
         // qua đây, nên số liệu skip vẫn được ghi nhận đầy đủ.
@@ -610,19 +618,22 @@ export const useStore = create<StoreState>()(
           position: 0,
           duration: 0,
           isBuffering: true,
-          activeRadioStationId: null, // any direct play exits "live radio" mode
           historySongs: updatedHistory,
         });
         try {
           // Worker CDN first (served from the PoP nearest the listener), Node proxy
           // as fallback. Offline copies are keyed by song, not by the tokened URL.
           const cachedUrl = await offlineManager.getPlayableUrl(streamUrl(song._id));
-          const { url } = cachedUrl ? { url: cachedUrl } : await resolvePlayback(song, get().audioQuality);
-          await audioEngine.load(url, true);
-          if (startAtSeconds && startAtSeconds > 0) {
-            await audioEngine.seek(startAtSeconds);
-            set({ position: startAtSeconds });
-          }
+          const { url, cdn } = cachedUrl ? { url: cachedUrl, cdn: 'offline' } : await resolvePlayback(song, get().audioQuality);
+          playingCdn = cdn;
+          playingSince = Date.now();
+          // Phát từ đầu thì bỏ đoạn im lặng đầu bài; cân âm lượng theo độ to đã đo (Sound Check).
+          const startAt = startAtSeconds && startAtSeconds > 0 ? startAtSeconds : startOf(song.transition);
+          const loadStarted = Date.now();
+          await audioEngine.load(url, true, { startAt, gain: get().soundCheck ? gainFor(song.transition) : 1 });
+          // Đo thụ động cho bộ điều hướng CDN: nạp → phát được (play() chỉ xong khi đã có đủ dữ liệu).
+          if (cdn !== 'offline' && audioEngine.hasSound()) steering.success(cdn, Date.now() - loadStarted);
+          if (startAt > 0) set({ position: startAt });
 
           // Làm nóng bài kế tiếp SAU khi bài hiện tại đã nạp xong, để không
           // giành băng thông với thứ người nghe đang thực sự chờ.
@@ -637,8 +648,9 @@ export const useStore = create<StoreState>()(
           }
           console.warn('playback failed', e);
           set({ isBuffering: false });
+          return;
         }
-        emitPartySync();
+        emitWorkspaceSync(true);
       },
       playOrToggleSong: async (song, queue = [song]) => {
         const { currentSong } = get();
@@ -649,16 +661,12 @@ export const useStore = create<StoreState>()(
         }
       },
       togglePlay: async () => {
-        const { currentSong, isPlaying, queue, position, partyRoom, isPartyHost, hostPlayPause } = get();
+        const { currentSong, isPlaying, queue, position, liveRoom } = get();
         if (!currentSong) return;
-        if (partyRoom) {
-          if (isPartyHost) {
-            hostPlayPause();
-            return;
-          } else {
-            // Guest cannot pause or toggle party room playback
-            return;
-          }
+        if (liveRoom?.kind === 'station' && !isPlaying) {
+          // Nghe tiếp đài là bắt kịp giờ đài đang phát, không phát tiếp chỗ đã dừng.
+          liveRoomHooks.resume?.();
+          return;
         }
         if (isPlaying) {
           set({ isPlaying: false });
@@ -671,38 +679,22 @@ export const useStore = create<StoreState>()(
             await audioEngine.play();
           }
         }
-        emitPartySync();
+        emitWorkspaceSync();
       },
       seek: (seconds) => {
-        const { partyRoom, isPartyHost, hostSeek } = get();
-        if (partyRoom) {
-          if (isPartyHost) {
-            hostSeek(seconds);
-            return;
-          } else {
-            // Guest cannot seek party room playback
-            return;
-          }
-        }
+        if (get().liveRoom) return; // trong phòng, server giữ nhịp
         audioEngine.seek(seconds);
         set({ position: seconds });
-        emitPartySync();
+        emitWorkspaceSync();
       },
       seekBy: (deltaSeconds) => {
-        const { position, duration, currentSong, queue, partyRoom, isPartyHost, hostSeek } = get();
+        const { position, duration, currentSong, queue, liveRoom } = get();
         if (!currentSong) return;
         if (duration === Infinity) return; // Live stream seeking disabled
         const currentPos = typeof position === 'number' && !isNaN(position) ? position : 0;
         const maxDuration = duration > 0 ? duration : 3600;
         const target = Math.max(0, Math.min(maxDuration, currentPos + deltaSeconds));
-        if (partyRoom) {
-          if (isPartyHost) {
-            hostSeek(target);
-            return;
-          } else {
-            return;
-          }
-        }
+        if (liveRoom) return;
         if (!audioEngine.hasSound()) {
           get().playSong(currentSong, queue, target);
         } else {
@@ -710,32 +702,88 @@ export const useStore = create<StoreState>()(
         }
       },
       next: () => {
-        const { partyRoom, isPartyHost, hostNextSong, queue, queueIndex } = get();
-        if (partyRoom) {
-          if (isPartyHost) {
-            hostNextSong();
-            return;
-          } else {
-            return;
-          }
+        const { liveRoom, queue, queueIndex } = get();
+        if (liveRoom) return;
+        const upcoming = queue[queueIndex + 1] ?? queue[0];
+        // Bài kế đã nạp sẵn (sắp tới điểm chuyển) → chuyển tức thì, chồng rất ngắn thay vì nạp lại.
+        if (upcoming && audioEngine.preloadedKey() === upcoming._id) {
+          transitioner.jump(upcoming);
+          return;
         }
         if (queueIndex + 1 < queue.length) {
           get().playSong(queue[queueIndex + 1], queue);
         } else if (queue.length > 0) {
-          // Seamless cyclical rotation back to beginning
+          // Bấm "tiếp" ở bài cuối thì quay về đầu (hết bài tự nhiên thì xem onTrackFinished).
           get().playSong(queue[0], queue);
         }
       },
-      prev: () => {
-        const { partyRoom, isPartyHost, hostPrevSong, queue, queueIndex, position } = get();
-        if (partyRoom) {
-          if (isPartyHost) {
-            hostPrevSong();
-            return;
-          } else {
-            return;
-          }
+      shuffle: false,
+      repeat: 'off',
+      originalQueue: [],
+      toggleShuffle: () => {
+        const { shuffle, queue, currentSong, originalQueue } = get();
+        if (!shuffle) {
+          // Bài đang phát giữ nguyên ở đầu, phần còn lại trộn.
+          const rest = shuffled(queue.filter((s) => s._id !== currentSong?._id));
+          const next = currentSong ? [currentSong, ...rest] : rest;
+          set({ shuffle: true, originalQueue: queue, queue: next, queueIndex: 0 });
+        } else {
+          const base = originalQueue.length ? originalQueue : queue;
+          const idx = base.findIndex((s) => s._id === currentSong?._id);
+          set({ shuffle: false, queue: base, queueIndex: Math.max(0, idx), originalQueue: [] });
         }
+      },
+      cycleRepeat: () => set((s) => ({ repeat: s.repeat === 'off' ? 'all' : s.repeat === 'all' ? 'one' : 'off' })),
+      shufflePlay: async (list) => {
+        if (!list.length) return;
+        const q = shuffled(list);
+        set({ shuffle: true, originalQueue: list, queue: q });
+        await get().playSong(q[0], q);
+      },
+      onTrackFinished: () => {
+        const { liveRoom, repeat, queue, queueIndex, currentSong } = get();
+        if (liveRoom || !currentSong) return; // trong phòng, server tự chuyển bài
+        const upcoming = repeat === 'one' ? currentSong : queue[queueIndex + 1] ?? (repeat === 'all' ? queue[0] : undefined);
+        autoAdvanceOf = upcoming?._id ?? null;
+        if (repeat === 'one') {
+          get().playSong(currentSong, queue);
+        } else if (queueIndex + 1 < queue.length) {
+          get().playSong(queue[queueIndex + 1], queue);
+        } else if (repeat === 'all' && queue.length) {
+          get().playSong(queue[0], queue);
+        } else {
+          audioEngine.pause().catch(() => {});
+          set({ isPlaying: false }); // hết hàng chờ: dừng, như Apple Music
+        }
+      },
+      transitionMode: 'automix',
+      crossfadeSeconds: 6,
+      soundCheck: true,
+      setTransitionMode: (mode) => set({ transitionMode: mode }),
+      setCrossfadeSeconds: (sec) => set({ crossfadeSeconds: sec }),
+      setSoundCheck: (on) => {
+        set({ soundCheck: on });
+        const song = get().currentSong;
+        audioEngine.setGain(on && song && !isLiveRadio(song) ? gainFor(song.transition) : 1);
+      },
+      commitAdvance: (song) => {
+        const { queue, historySongs } = get();
+        const index = queue.findIndex((s) => s._id === song._id);
+        set({
+          currentSong: song,
+          queueIndex: index === -1 ? 0 : index,
+          position: startOf(song.transition),
+          duration: 0,
+          historySongs: [song, ...(historySongs || []).filter((s) => s._id !== song._id)].slice(0, 30),
+        });
+        const after = queue[index + 1];
+        if (after) prefetchNext(after, get().audioQuality);
+        autoAdvanceOf = song._id; // chuyển bài liền mạch là tự động
+        emitWorkspaceSync(true);
+      },
+      prev: () => {
+        const { liveRoom, queue, queueIndex, position } = get();
+        if (liveRoom) return;
         if (position > 3) {
           get().seek(0);
           return;
@@ -746,24 +794,6 @@ export const useStore = create<StoreState>()(
           get().playSong(queue[queue.length - 1], queue);
         } else {
           get().seek(0);
-        }
-      },
-
-      // Tunes into a station's live position instead of picking one song to play on
-      // demand — every listener who calls this at the same moment gets back the same
-      // track at the same position, because the backend derives it from elapsed wall-clock
-      // time (see radioController.js), not from a per-user shuffle. Re-called automatically
-      // on track-finish while a station is active (see the audioEngine.onStatus handler
-      // below), which is what makes the station keep playing 24/7 instead of stopping
-      // after one song.
-      activeRadioStationId: null,
-      tuneInRadio: async (stationId) => {
-        try {
-          const { song, positionMs } = await api.getRadioNowPlaying(stationId);
-          await get().playSong(song, [song], positionMs / 1000);
-          set({ activeRadioStationId: stationId });
-        } catch (e) {
-          console.warn('radio tune-in failed', e);
         }
       },
 
@@ -803,7 +833,10 @@ export const useStore = create<StoreState>()(
           position: 0,
           duration: 0,
           isBuffering: true,
-          activeRadioStationId: null, // this is a real external stream, not a simulated catalog station
+          playbackBitrate: station.bitrate || 128,
+          playbackCodec: station.codec || 'MP3',
+          playbackSegment: null,
+          isHlsStream: false,
         });
         try {
           await audioEngine.load(station.streamUrl, true);
@@ -813,380 +846,7 @@ export const useStore = create<StoreState>()(
         }
       },
 
-      // --- party room (persistent host-controlled) ---
-      partyRoomId: null,
-      partyRoom: null,
-      publicPartyRooms: [],
-      myPartyRooms: [],
-      isLoadingPartyRooms: false,
-      isPartyHost: false,
-      isPartyRoomVisible: false,
-      setPartyRoomVisible: (visible) => set({ isPartyRoomVisible: visible }),
-
-      fetchPublicPartyRooms: async () => {
-        set({ isLoadingPartyRooms: true });
-        try {
-          const res = await api.getPublicPartyRooms();
-          if (res?.success && Array.isArray(res.rooms)) {
-            set({ publicPartyRooms: res.rooms });
-          }
-        } catch (err) {
-          console.warn('Failed to fetch public party rooms:', err);
-        } finally {
-          set({ isLoadingPartyRooms: false });
-        }
-      },
-
-      fetchMyPartyRooms: async () => {
-        if (!get().user) return;
-        try {
-          const res = await api.getMyPartyRooms();
-          if (res?.success && Array.isArray(res.rooms)) {
-            set({ myPartyRooms: res.rooms });
-          }
-        } catch (err) {
-          console.warn('Failed to fetch my party rooms:', err);
-        }
-      },
-
-      createPartyRoom: async (options?: { name?: string; description?: string; isPublic?: boolean; genre?: string; forceNew?: boolean } | string) => {
-        // Anti-collision: if user was in another party room as guest, leave it first
-        const prevRoom = get().partyRoom;
-        if (prevRoom && !get().isPartyHost) {
-          await get().leavePartyRoom();
-        }
-
-        try {
-          const { currentSong, queue } = get();
-          const res = await api.createPartyRoom(options, currentSong, queue);
-          if (res?.success && res.room) {
-            const room: PartyRoomData = res.room;
-            const socket = getSocket();
-            socket.emit('join_room', room.code, {
-              userId: get().user?._id,
-              name: get().user?.nickname || get().user?.username || 'Host',
-              avatar: get().user?.avatarUrl,
-              isHost: true,
-            });
-            set({
-              partyRoom: room,
-              partyRoomId: room.code,
-              isPartyHost: true,
-              isPartyRoomVisible: true,
-            });
-            get().fetchMyPartyRooms();
-            get().fetchPublicPartyRooms();
-            return room.code;
-          }
-        } catch (err: any) {
-          console.error('Failed to create party room:', err);
-          throw err;
-        }
-        return null;
-      },
-
-      updatePartyRoom: async (code: string, data: { name?: string; description?: string; isPublic?: boolean; genre?: string }) => {
-        try {
-          const res = await api.updatePartyRoom(code, data);
-          if (res?.success && res.room) {
-            set((state) => ({
-              partyRoom: state.partyRoom?.code === code ? { ...state.partyRoom, ...res.room } : state.partyRoom,
-            }));
-            get().fetchMyPartyRooms();
-            get().fetchPublicPartyRooms();
-            return true;
-          }
-        } catch (err) {
-          console.error('Failed to update party room:', err);
-          throw err;
-        }
-        return false;
-      },
-
-      joinPartyRoom: async (code: string) => {
-        const cleanCode = code.trim().toUpperCase();
-
-        // Anti-collision: if user is currently in a different party room, clean up first!
-        const prevRoom = get().partyRoom;
-        if (prevRoom && prevRoom.code !== cleanCode) {
-          if (get().isPartyHost) {
-            await get().deletePartyRoom();
-          } else {
-            await get().leavePartyRoom();
-          }
-        }
-
-        try {
-          const socket = getSocket();
-          const user = get().user;
-          const res = await api.joinPartyRoom(
-            cleanCode,
-            socket.id,
-            user?.nickname || user?.username || 'Khách',
-            user?.avatarUrl,
-            user?._id
-          );
-          if (res?.success && res.room) {
-            const room: PartyRoomData = res.room;
-            const isHost = res.isHost || (user && room.host === user._id);
-            socket.emit('join_room', room.code, {
-              userId: user?._id,
-              name: user?.nickname || user?.username || 'Khách',
-              avatar: user?.avatarUrl,
-              isHost,
-            });
-            set({
-              partyRoom: room,
-              partyRoomId: room.code,
-              isPartyHost: !!isHost,
-              isPartyRoomVisible: true,
-            });
-
-            // If guest and room has playing track, sync immediately!
-            if (!isHost && room.currentSong) {
-              applyPartyRemotePlayback({
-                song: room.currentSong,
-                position: room.position,
-                isPlaying: room.isPlaying,
-                queue: room.queue,
-                queueIndex: room.queueIndex,
-              });
-            }
-            return true;
-          }
-        } catch (err: any) {
-          console.error('Failed to join party room:', err);
-          throw err;
-        }
-        return false;
-      },
-
-      leavePartyRoom: async () => {
-        const { partyRoom, partyRoomId } = get();
-        const code = partyRoom?.code || partyRoomId;
-        if (code) {
-          const socket = getSocket();
-          socket.emit('leave_room', code);
-          try {
-            await api.leavePartyRoom(code, socket.id);
-          } catch (e) {
-            console.warn('leavePartyRoom API error:', e);
-          }
-        }
-        set({
-          partyRoom: null,
-          partyRoomId: null,
-          isPartyHost: false,
-          isPartyRoomVisible: false,
-        });
-      },
-
-      deletePartyRoom: async (codeToDelete?: string, permanent?: boolean) => {
-        const currentRoom = get().partyRoom;
-        const targetCode = codeToDelete || currentRoom?.code || get().partyRoomId;
-        if (!targetCode) return;
-
-        try {
-          await api.deletePartyRoom(targetCode, permanent);
-        } catch (e) {
-          console.warn('deletePartyRoom API error:', e);
-        }
-
-        if (!codeToDelete || (currentRoom && currentRoom.code === codeToDelete)) {
-          set({
-            partyRoom: null,
-            partyRoomId: null,
-            isPartyHost: false,
-            isPartyRoomVisible: false,
-          });
-        }
-        get().fetchMyPartyRooms();
-        get().fetchPublicPartyRooms();
-      },
-
-      checkActivePartyRoom: async () => {
-        const { user } = get();
-        if (!user) return;
-        try {
-          const res = await api.getMyActivePartyRoom();
-          if (res?.success && res.room) {
-            const room: PartyRoomData = res.room;
-            const socket = getSocket();
-            socket.emit('join_room', room.code, {
-              userId: user._id,
-              name: user.nickname || user.username || 'Host',
-              avatar: user.avatarUrl,
-              isHost: true,
-            });
-            set({
-              partyRoom: room,
-              partyRoomId: room.code,
-              isPartyHost: true,
-            });
-          }
-        } catch (e) {
-          // quiet
-        }
-      },
-
-      hostPlayPause: () => {
-        const { isPlaying, partyRoom, isPartyHost, currentSong, position } = get();
-        if (!isPartyHost || !partyRoom) return;
-        const newPlayState = !isPlaying;
-        if (newPlayState) audioEngine.play();
-        else audioEngine.pause();
-        set({ isPlaying: newPlayState });
-
-        const payload = {
-          roomId: partyRoom.code,
-          action: newPlayState ? 'play' : 'pause',
-          currentSong,
-          position,
-          isPlaying: newPlayState,
-          queue: partyRoom.queue,
-          queueIndex: partyRoom.queueIndex,
-        };
-        getSocket().emit('party:host_action', payload);
-        api.syncPartyPlayback(partyRoom.code, payload).catch(() => {});
-      },
-
-      hostSeek: (newPos: number) => {
-        const { partyRoom, isPartyHost, currentSong, isPlaying } = get();
-        if (!isPartyHost || !partyRoom) return;
-        audioEngine.seek(newPos);
-        set({ position: newPos });
-
-        const payload = {
-          roomId: partyRoom.code,
-          action: 'seek',
-          currentSong,
-          position: newPos,
-          isPlaying,
-          queue: partyRoom.queue,
-          queueIndex: partyRoom.queueIndex,
-        };
-        getSocket().emit('party:host_action', payload);
-        api.syncPartyPlayback(partyRoom.code, payload).catch(() => {});
-      },
-
-      hostNextSong: () => {
-        const { partyRoom, isPartyHost, currentSong, songs } = get();
-        if (!isPartyHost || !partyRoom) return;
-
-        let roomQueue = partyRoom.queue || [];
-        if (roomQueue.length === 0 && (currentSong || partyRoom.currentSong)) {
-          roomQueue = [currentSong || partyRoom.currentSong!];
-        } else if (roomQueue.length === 0 && songs && songs.length > 0) {
-          roomQueue = [songs[0]];
-        }
-
-        if (roomQueue.length === 0) return;
-
-        // Cyclical endless rotation: when reaching the end, wrap back to track 0
-        const nextIdx = (partyRoom.queueIndex + 1) % roomQueue.length;
-        const nextSong = roomQueue[nextIdx];
-        if (nextSong) {
-          get().hostSelectSong(nextSong, roomQueue, nextIdx);
-        }
-      },
-
-      hostPrevSong: () => {
-        const { partyRoom, isPartyHost, currentSong, songs } = get();
-        if (!isPartyHost || !partyRoom) return;
-
-        let roomQueue = partyRoom.queue || [];
-        if (roomQueue.length === 0 && (currentSong || partyRoom.currentSong)) {
-          roomQueue = [currentSong || partyRoom.currentSong!];
-        } else if (roomQueue.length === 0 && songs && songs.length > 0) {
-          roomQueue = [songs[0]];
-        }
-
-        if (roomQueue.length === 0) return;
-
-        const prevIdx = (partyRoom.queueIndex - 1 + roomQueue.length) % roomQueue.length;
-        const prevSong = roomQueue[prevIdx];
-        if (prevSong) {
-          get().hostSelectSong(prevSong, roomQueue, prevIdx);
-        }
-      },
-
-      hostSelectSong: async (song: Song, forcedQueue?: Song[], targetIndex?: number) => {
-        const { partyRoom, isPartyHost } = get();
-        if (!isPartyHost || !partyRoom) return;
-
-        let newQueue = forcedQueue || partyRoom.queue || [];
-        const exists = newQueue.some((s) => s._id === song._id);
-        if (!exists) {
-          newQueue = [...newQueue, song];
-        }
-        const newIdx = typeof targetIndex === 'number' ? targetIndex : newQueue.findIndex((s) => s._id === song._id);
-
-        const updatedRoom = {
-          ...partyRoom,
-          currentSong: song,
-          queue: newQueue,
-          queueIndex: newIdx >= 0 ? newIdx : 0,
-          isPlaying: true,
-          position: 0,
-        };
-        set({ partyRoom: updatedRoom });
-
-        // Always restart at 0 seconds for continuous smooth flow
-        await get().playSong(song, newQueue, 0);
-
-        const payload = {
-          roomId: partyRoom.code,
-          action: 'change_song',
-          currentSong: song,
-          position: 0,
-          isPlaying: true,
-          queue: newQueue,
-          queueIndex: updatedRoom.queueIndex,
-        };
-        getSocket().emit('party:host_action', payload);
-        api.syncPartyPlayback(partyRoom.code, payload).catch(() => {});
-      },
-
-      addSongToPartyQueue: (song: Song) => {
-        const { partyRoom, isPartyHost } = get();
-        if (!isPartyHost || !partyRoom) return;
-        const updatedQueue = [...partyRoom.queue, song];
-        const updatedRoom = { ...partyRoom, queue: updatedQueue };
-        set({ partyRoom: updatedRoom });
-
-        getSocket().emit('party:host_action', {
-          roomId: partyRoom.code,
-          action: 'queue',
-          queue: updatedQueue,
-        });
-        api.updatePartyQueue(partyRoom.code, updatedQueue).catch(() => {});
-      },
-
-      removeSongFromPartyQueue: (index: number) => {
-        const { partyRoom, isPartyHost } = get();
-        if (!isPartyHost || !partyRoom) return;
-        const updatedQueue = partyRoom.queue.filter((_, i) => i !== index);
-        const updatedRoom = { ...partyRoom, queue: updatedQueue };
-        set({ partyRoom: updatedRoom });
-
-        getSocket().emit('party:host_action', {
-          roomId: partyRoom.code,
-          action: 'queue',
-          queue: updatedQueue,
-        });
-        api.updatePartyQueue(partyRoom.code, updatedQueue).catch(() => {});
-      },
-
-      // legacy helpers
-      createParty: () => {
-        get().createPartyRoom();
-      },
-      joinParty: (roomId) => {
-        get().joinPartyRoom(roomId);
-      },
-      leaveParty: () => {
-        get().leavePartyRoom();
-      },
+      liveRoom: null,
 
       // --- workspace ---
       workspaceEnabled: false,
@@ -1199,16 +859,14 @@ export const useStore = create<StoreState>()(
           getSocket().emit('leave_room', roomId);
           set({ workspaceEnabled: false, workspaceMemberCount: 0 });
         } else {
-          getSocket().emit('join_room', roomId);
           set({ workspaceEnabled: true });
+          joinWorkspace();
         }
       },
 
       // --- offline & cache ---
       offlineSongIds: [],
       offlineSongs: [],
-      isOfflineMode: false,
-      toggleOfflineMode: () => set((s) => ({ isOfflineMode: !s.isOfflineMode })),
       loadOfflineSongs: async () => {
         const list = await offlineManager.getOfflineSongs();
         set({ offlineSongs: list, offlineSongIds: list.map((s) => s._id) });
@@ -1232,7 +890,6 @@ export const useStore = create<StoreState>()(
 
       // --- play history ---
       historySongs: [],
-      clearHistory: () => set({ historySongs: [] }),
 
       // --- theme ---
       themeMode: 'auto',
@@ -1248,7 +905,11 @@ export const useStore = create<StoreState>()(
         workspaceEnabled: state.workspaceEnabled,
         themeMode: state.themeMode,
         historySongs: state.historySongs,
-        partyRoomId: state.partyRoomId,
+        shuffle: state.shuffle,
+        repeat: state.repeat,
+        transitionMode: state.transitionMode,
+        crossfadeSeconds: state.crossfadeSeconds,
+        soundCheck: state.soundCheck,
       }),
       onRehydrateStorage: () => (state) => {
         state?.loadOfflineSongs();
@@ -1258,17 +919,7 @@ export const useStore = create<StoreState>()(
           state.refreshUser();
           state.fetchPlaylists();
           state.fetchLikedSongs();
-          if (state.workspaceEnabled) {
-            getSocket().emit('join_room', workspaceRoomId(state.user._id));
-          }
-          state.checkActivePartyRoom().then(() => {
-            const current = useStore.getState();
-            if (!current.partyRoom && state.partyRoomId) {
-              state.joinPartyRoom(state.partyRoomId).catch(() => {});
-            }
-          });
-        } else if (state?.partyRoomId) {
-          state.joinPartyRoom(state.partyRoomId).catch(() => {});
+          if (state.workspaceEnabled) joinWorkspace();
         }
       },
     }
@@ -1277,15 +928,24 @@ export const useStore = create<StoreState>()(
 
 // HM-13: token phát chỉ sống vài phút và nằm trong URL, nên khi nó hết hạn (bài dài,
 // tạm dừng lâu rồi phát tiếp, tua xa) lần tải kế tiếp nhận 401 và trình phát báo lỗi.
-// Xin token mới bằng cách nạp lại bài tại đúng vị trí. Tối đa 1 lần / 15 giây để
-// lỗi thật (bài bị xoá, mất mạng hẳn) không thành vòng lặp.
-let lastRecoveryAt = 0;
+// Xin token mới bằng cách nạp lại bài tại đúng vị trí.
+//
+// Multi-CDN: lỗi giữa chừng quy cho CDN đang phát → bộ điều hướng "ngắt" CDN đó, nên lần nạp lại tự đi
+// sang CDN kế tiếp rồi tới origin (utils/cdnSteering.ts). Trừ khi bài đã nạp quá thời hạn token (5 phút):
+// khi đó lỗi nhiều khả năng là token hết hạn, không phải lỗi CDN. Tối đa 3 lần / 15 giây — đủ đi hết
+// chuỗi CDN → CDN → origin, mà lỗi thật (bài bị xoá, mất mạng hẳn) không thành vòng lặp.
+const recoveries: number[] = [];
 audioEngine.onError(() => {
-  const { currentSong, queue, position, activeRadioStationId, playSong } = useStore.getState();
+  const { currentSong, queue, position, playSong } = useStore.getState();
   // Radio: luồng của bên thứ ba, không có token.
-  if (!currentSong || activeRadioStationId) return;
-  if (Date.now() - lastRecoveryAt < 15000) return;
-  lastRecoveryAt = Date.now();
+  if (!currentSong || isLiveRadio(currentSong) || useStore.getState().liveRoom?.kind === 'blind') return;
+  const { isPlaying, isBuffering } = useStore.getState();
+  if (!isPlaying && !isBuffering) return; // người dùng đã dừng: không tự phát lại
+  const now = Date.now();
+  while (recoveries.length && now - recoveries[0] > 15000) recoveries.shift();
+  if (recoveries.length >= 3) return;
+  recoveries.push(now);
+  if (now - playingSince < 300_000 && playingCdn !== 'offline') steering.failure(playingCdn);
   playSong(currentSong, queue, position);
 });
 
@@ -1296,282 +956,256 @@ audioEngine.onStatus((status) => {
     isBuffering: status.isBuffering,
     position: status.position,
     duration: status.duration,
+    playbackBitrate: status.bitrate ?? useStore.getState().playbackBitrate,
+    playbackCodec: status.codec ?? useStore.getState().playbackCodec,
+    playbackSegment: status.segmentIndex ?? useStore.getState().playbackSegment,
+    isHlsStream: status.isHls ?? useStore.getState().isHlsStream,
   });
-  if (status.didFinish) {
-    const { activeRadioStationId, tuneInRadio, next, isPartyHost, partyRoom, hostNextSong } = useStore.getState();
-    if (activeRadioStationId) {
-      tuneInRadio(activeRadioStationId);
-    } else if (partyRoom && isPartyHost) {
-      hostNextSong();
-    } else if (partyRoom && !isPartyHost) {
-      // Guest in party room: do NOT trigger local next().
-      // Wait for Host to advance or loop track via party sync.
-    } else {
-      next();
-    }
-  }
+  transitioner.onStatus(status);
+  if (status.didFinish && !transitioner.handledEnd()) useStore.getState().onTrackFinished();
 });
 
-// Push the current playback state to the party room (if in one) AND the personal
-// workspace room (if enabled) — a device can be doing both at once.
-function emitPartySync() {
-  const { partyRoomId, partyRoom, isPartyHost, workspaceEnabled, user, currentSong, isPlaying, position } = useStore.getState();
-  if (!currentSong) return;
+// Điều phối chuyển bài liền mạch. Theo dõi từng nhịp trạng thái của bài đang phát:
+//   ~25 s trước điểm chuyển → xin token + nạp sẵn bài kế vào deck chờ;
+//   tới điểm chuyển (utils/audio/transitionPlan.ts) → crossfade/nối liền, ghi nhận bài mới.
+// Không nạp sẵn được (khách: nạp sẵn sẽ tính thêm một lượt nghe miễn phí) thì vẫn sang bài ngay
+// khi hết nhạc thật, không chờ đoạn im lặng cuối. Trong phòng nghe chung / radio thật: không can thiệp.
+const PRELOAD_LEAD_S = 25;
+const JUMP_FADE_MS = 250;
 
-  // If in a party room, only the HOST broadcasts to avoid guest audio loops
-  if (partyRoom && !isPartyHost) return;
+const albumKeyOf = (s: Song) => `${s.artist}_${s.category || 'singles'}`;
+const trackOf = (s: Song, duration?: number): TrackInfo => ({
+  duration: duration && duration > 0 ? duration : s.duration,
+  transition: s.transition,
+  albumKey: albumKeyOf(s),
+});
 
-  const rooms = [partyRoomId, workspaceEnabled && user ? workspaceRoomId(user._id) : null].filter(
-    (r): r is string => !!r
-  );
-  if (rooms.length === 0) return;
+class Transitioner {
+  private songId: string | null = null;
+  private nextId: string | null = null;
+  private preparing = false;
+  private fired = false;
 
-  const payload = {
-    songId: currentSong._id,
-    positionMs: Math.round(position * 1000),
-    isPlaying,
-  };
-  rooms.forEach((roomId) => getSocket().emit('play_sync', { roomId, ...payload }));
+  private reset(songId: string | null) {
+    this.songId = songId;
+    this.nextId = null;
+    this.preparing = false;
+    this.fired = false;
+  }
 
-  if (partyRoom && isPartyHost) {
-    const hostPayload = {
-      roomId: partyRoom.code,
-      action: isPlaying ? 'play' : 'pause',
-      currentSong,
-      position,
-      isPlaying,
-      queue: partyRoom.queue,
-      queueIndex: partyRoom.queueIndex,
-    };
-    getSocket().emit('party:host_action', hostPayload);
-    api.syncPartyPlayback(partyRoom.code, hostPayload).catch(() => {});
+  // Bài sẽ phát sau bài hiện tại (theo hàng chờ + chế độ lặp); null = không có/không tự chuyển.
+  private upcoming(): Song | null {
+    const { queue, queueIndex, repeat } = useStore.getState();
+    if (repeat === 'one') return null;
+    if (queueIndex + 1 < queue.length) return queue[queueIndex + 1];
+    return repeat === 'all' && queue.length > 1 ? queue[0] : null;
+  }
+
+  handledEnd() { return this.fired; }
+
+  onStatus(st: PlaybackStatus) {
+    const s = useStore.getState();
+    const cur = s.currentSong;
+    if (!cur || s.liveRoom || isLiveRadio(cur)) return;
+    if (cur._id !== this.songId) this.reset(cur._id);
+    if (this.fired || !st.isPlaying) return;
+
+    const next = this.upcoming();
+    const end = cur.transition?.trimEnd;
+    if (!next) {
+      // Hết hàng chờ / lặp một bài: vẫn bỏ đoạn im lặng cuối.
+      if (end && st.position >= end) {
+        this.fired = true;
+        s.onTrackFinished();
+      }
+      return;
+    }
+    if (this.nextId && this.nextId !== next._id) {
+      audioEngine.dropStandby(); // hàng chờ vừa đổi — bài đã nạp sẵn không còn là bài kế
+      this.reset(cur._id);
+    }
+
+    const plan = planTransition(trackOf(cur, st.duration), trackOf(next), s.transitionMode, s.crossfadeSeconds);
+    if (s.user && !this.preparing && st.position >= plan.at - PRELOAD_LEAD_S) this.prepare(next, plan.nextStart);
+    if (st.position < plan.at) return;
+
+    if (audioEngine.preloadedKey() === next._id) {
+      this.fired = true;
+      this.advance(next, plan.fadeMs);
+    } else if (end && st.position >= end) {
+      this.fired = true; // chưa nạp sẵn kịp: ít nhất không chờ đoạn im lặng cuối
+      s.onTrackFinished();
+    }
+  }
+
+  private async prepare(next: Song, startAt: number) {
+    this.preparing = true;
+    this.nextId = next._id;
+    const s = useStore.getState();
+    try {
+      const cached = await offlineManager.getPlayableUrl(streamUrl(next._id));
+      const { url, cdn } = cached ? { url: cached, cdn: 'offline' } : await resolvePlayback(next, s.audioQuality);
+      preparedCdn = cdn;
+      await audioEngine.preload(url, next._id, { startAt, gain: s.soundCheck ? gainFor(next.transition) : 1 });
+    } catch {
+      this.nextId = null; // hỏng thì thôi — hết bài sẽ nạp thường
+    }
+  }
+
+  private async advance(next: Song, fadeMs: number) {
+    const leaving = useStore.getState().currentSong;
+    const telemetry = await audioEngine.crossfade(fadeMs);
+    flushPlaybackTelemetry(leaving, telemetry);
+    playingCdn = preparedCdn;
+    playingSince = Date.now();
+    this.reset(next._id);
+    useStore.getState().commitAdvance(next);
+  }
+
+  // Bấm "tiếp" khi bài kế đã nạp sẵn.
+  jump(next: Song) {
+    this.fired = true;
+    this.advance(next, JUMP_FADE_MS);
   }
 }
+const transitioner = new Transitioner();
 
-// Apply a state broadcast from another party member without re-emitting (would loop).
-async function applyRemoteState(remote: { songId?: string; positionMs?: number; isPlaying?: boolean }) {
-  if (!remote?.songId) return;
+// ---------------- Đồng bộ nhiều máy của cùng một tài khoản (workspace) ----------------
+// Các máy bật "Đồng bộ các thiết bị" cùng bám MỘT dòng thời gian: { bài, vị trí `pos` tại giờ server `at`,
+// đang phát? }. Bấm ở máy nào thì máy đó phát dòng thời gian mới; mọi máy tự tính vị trí đáng lẽ ở
+// (pos + giờ server hiện tại − at), vào VƯỢT lên đúng thời gian mình cần để nạp (utils/audio/timelineSync.ts)
+// rồi cứ vài giây đo lệch và chỉnh tốc độ nhẹ — nên ở đâu, mạng nào, cũng chạy chung một nhịp.
+// Hàng chờ đi kèm nên mọi máy tự chuyển bài tại cùng một điểm; máy chạy theo không phát lại mốc khi
+// tự chuyển bài (chỉ máy người dùng vừa bấm), tránh các máy tranh nhau.
+type Timeline = { songId: string; pos: number; at: number; playing: boolean; device: string };
+const DEVICE = Math.random().toString(36).slice(2, 10); // mỗi lần mở app là một "máy"
+let timeline: Timeline | null = null;
+let autoAdvanceOf: string | null = null; // bài vừa được TỰ chuyển tới (không do người dùng bấm)
+
+const expectedOf = (t: Timeline) => () => t.pos + (t.playing ? (serverNow() - t.at) / 1000 : 0);
+const workspaceActive = () => {
+  const { workspaceEnabled, user, liveRoom } = useStore.getState();
+  return !!user && workspaceEnabled && !liveRoom;
+};
+
+// `playing`: ý định (vừa bấm phát / vừa chuyển bài) — trạng thái máy phát lúc này có thể vẫn đang đệm.
+async function emitWorkspaceSync(playing?: boolean) {
+  const { user, currentSong, isPlaying, position, queue, queueIndex } = useStore.getState();
+  if (!currentSong || !user || !workspaceActive() || isLiveRadio(currentSong)) return;
+  const auto = autoAdvanceOf === currentSong._id;
+  autoAdvanceOf = null;
+  // Tự chuyển bài ở máy chạy theo: máy dẫn cũng vừa chuyển y hệt và sẽ phát mốc — không tranh.
+  if (auto && timeline && timeline.device !== DEVICE) return;
+  const pos = (await audioEngine.getPosition()) ?? position;
+  timeline = { songId: currentSong._id, pos, at: serverNow(), playing: playing ?? isPlaying, device: DEVICE };
+  getSocket().emit('play_sync', {
+    roomId: workspaceRoomId(user._id),
+    ...timeline,
+    queue: queue.map((s) => s._id).slice(0, 200),
+    queueIndex,
+  });
+}
+
+// Máy khác vừa bấm: bám theo dòng thời gian của nó (không phát lại mốc — sẽ thành vòng lặp).
+async function applyRemoteState(r: Timeline & { queue?: string[]; queueIndex?: number }) {
+  if (!r?.songId || r.device === DEVICE || typeof r.at !== 'number' || !workspaceActive()) return;
+  if (timeline && r.at < timeline.at) return; // mốc cũ tới muộn
+  timeline = { songId: r.songId, pos: r.pos, at: r.at, playing: r.playing, device: r.device };
+  const t = timeline;
+  const expected = expectedOf(t);
   const state = useStore.getState();
-  // Don't apply legacy sync if we're Host in a persistent party room
-  if (state.partyRoom && state.isPartyHost) return;
+  const byId = new Map(state.songs.map((s) => [s._id, s]));
+  const song = byId.get(r.songId) ?? (state.currentSong?._id === r.songId ? state.currentSong : undefined);
+  if (!song) return; // kho chưa tải xong — mốc kế tiếp sẽ bắt kịp
+  if (t.playing && song.duration && expected() > song.duration) return; // mốc cũ: bài đó đã hết từ lâu
+  const queue = (r.queue || []).map((id) => byId.get(id)).filter((x): x is Song => !!x);
+  const index = queue.findIndex((x) => x._id === song._id);
 
-  const sameSong = state.currentSong?._id === remote.songId;
-
-  if (!sameSong) {
-    const song =
-      state.songs.find((s) => s._id === remote.songId) ||
-      ({ _id: remote.songId, title: 'Party track', artist: 'Synced from party' } as Song);
-    useStore.setState({ currentSong: song, queue: [song], queueIndex: 0, isBuffering: true });
+  if (state.currentSong?._id !== song._id) {
+    useStore.setState({
+      currentSong: song, queue: index >= 0 ? queue : [song], queueIndex: Math.max(0, index),
+      position: r.pos, duration: 0, isBuffering: true,
+    });
     try {
       const { url } = await resolvePlayback(song, state.audioQuality);
-      await audioEngine.load(url, !!remote.isPlaying);
+      const gain = state.soundCheck ? gainFor(song.transition) : 1;
+      if (timeline !== t) return; // trong lúc nạp đã có mốc mới hơn
+      if (!t.playing) await audioEngine.load(url, false, { startAt: t.pos, gain });
+      else await startAligned(expected, (pos) => audioEngine.load(url, true, { startAt: pos, gain }));
     } catch (e) {
-      console.warn('party sync playback failed', e);
+      console.warn('workspace sync playback failed', e);
     }
+    return;
   }
-  if (typeof remote.positionMs === 'number') {
-    audioEngine.seek(remote.positionMs / 1000);
+  if (index >= 0) useStore.setState({ queue, queueIndex: index });
+  if (!t.playing) {
+    await audioEngine.pause();
+    await audioEngine.seek(t.pos);
+    return;
   }
-  if (remote.isPlaying) audioEngine.play();
-  else audioEngine.pause();
+  const actual = await audioEngine.getPosition();
+  // Đang phát gần đúng chỗ rồi thì để vòng chỉnh tốc độ khép nốt — không tua (tua là có khoảng lặng).
+  if (actual !== null && state.isPlaying && Math.abs(actual - expected()) < 1.5) return;
+  await startAligned(expected, async (pos) => {
+    await audioEngine.seek(pos);
+    await audioEngine.play();
+  });
 }
 
-async function applyPartyRemotePlayback(remote: {
-  action?: string;
-  song?: Song | null;
-  position?: number;
-  isPlaying?: boolean;
-  queue?: Song[];
-  queueIndex?: number;
-}) {
-  const state = useStore.getState();
-  if (state.isPartyHost) return; // Do not override Host device!
-
-  if (remote.song && remote.song._id) {
-    const isSameSong = state.currentSong?._id === remote.song._id;
-    if (!isSameSong || !audioEngine.hasSound()) {
-      const songToPlay = remote.song;
-      useStore.setState({
-        currentSong: songToPlay,
-        queue: remote.queue && remote.queue.length > 0 ? remote.queue : [songToPlay],
-        queueIndex: remote.queueIndex ?? 0,
-        position: remote.position ?? 0,
-        isBuffering: true,
-      });
-      try {
-        const { url } = await resolvePlayback(songToPlay, state.audioQuality);
-        await audioEngine.load(url, !!remote.isPlaying);
-        if (typeof remote.position === 'number' && remote.position > 0) {
-          audioEngine.seek(remote.position);
-        }
-      } catch (err) {
-        console.warn('party sync playback load failed:', err);
-      }
-    } else {
-      // Loop replay of same track, explicit song change, or seek
-      if (remote.action === 'change_song' || (typeof remote.position === 'number' && remote.position < 2 && state.position > 2)) {
-        await audioEngine.seek(0);
-        if (remote.isPlaying) {
-          await audioEngine.play();
-        }
-        useStore.setState({ position: 0, isPlaying: !!remote.isPlaying });
-      } else if (typeof remote.position === 'number') {
-        const currentPos = state.position;
-        if (Math.abs(currentPos - remote.position) > 1.5) {
-          audioEngine.seek(remote.position);
-          useStore.setState({ position: remote.position });
-        }
-      }
-    }
+// Mỗi PERIOD_MS: máy chạy theo đo lệch so với dòng thời gian chung và chỉnh; máy vừa bấm chỉ đóng dấu lại khi lệch hẳn.
+let checks = 0;
+setInterval(() => {
+  // Đồng hồ máy trôi dần (vài chục ppm): đo lại giờ server mỗi ~1 phút.
+  if (++checks % Math.round(60000 / SYNC.PERIOD_MS) === 0 && workspaceActive()) syncClock().catch(() => {});
+  const t = timeline;
+  const s = useStore.getState();
+  if (s.liveRoom) return; // phòng nghe chung tự giữ nhịp (src/rooms/)
+  if (!t || !t.playing || !workspaceActive() || !s.isPlaying || s.isBuffering || s.currentSong?._id !== t.songId) {
+    releaseRate().catch(() => {});
+    return;
   }
-
-  if (remote.isPlaying !== undefined) {
-    if (remote.isPlaying && !state.isPlaying) {
-      audioEngine.play();
-      useStore.setState({ isPlaying: true });
-    } else if (!remote.isPlaying && state.isPlaying) {
-      audioEngine.pause();
-      useStore.setState({ isPlaying: false });
-    }
-  }
-
-  if (state.partyRoom) {
-    useStore.setState({
-      partyRoom: {
-        ...state.partyRoom,
-        currentSong: remote.song !== undefined ? remote.song : state.partyRoom.currentSong,
-        position: remote.position !== undefined ? remote.position : state.partyRoom.position,
-        isPlaying: remote.isPlaying !== undefined ? remote.isPlaying : state.partyRoom.isPlaying,
-        queue: remote.queue !== undefined ? remote.queue : state.partyRoom.queue,
-        queueIndex: remote.queueIndex !== undefined ? remote.queueIndex : state.partyRoom.queueIndex,
-      },
+  // Máy vừa bấm: tiếng của chính nó là chuẩn — tự tua/đổi tốc độ để đuổi theo mốc của mình chỉ gây
+  // giật (đo trên Chrome: 1.05× suốt ~2.5 s sau mỗi lần phát/tua; mạng chậm thì tua vượt rồi tua lùi).
+  // Bị đệm làm lệch hẳn thì đóng dấu lại mốc cho các máy khác bám theo.
+  if (t.device === DEVICE) {
+    releaseRate().catch(() => {});
+    audioEngine.getPosition().then((p) => {
+      if (p !== null && timeline === t && Math.abs(p - expectedOf(t)()) > SYNC.SEEK_ABOVE_S) emitWorkspaceSync();
     });
+    return;
   }
+  alignTo(expectedOf(t)).catch(() => {});
+}, SYNC.PERIOD_MS);
+
+// Vào phòng workspace: đồng bộ giờ với server trước, rồi server gửi mốc cuối để bắt kịp.
+async function joinWorkspace() {
+  const { user } = useStore.getState();
+  if (!user) return;
+  await syncClock().catch(() => {});
+  getSocket().emit('join_room', workspaceRoomId(user._id));
 }
 
-// Socket event listeners
-// Socket.IO rooms don't survive a reconnect (network drop, server restart, or the
-// re-auth reconnect on login/logout) — rejoin whatever this client was in.
+// Phòng Socket.IO mất khi kết nối lại (rớt mạng, server khởi động lại, đăng nhập/xuất) —
+// vào lại phòng workspace. Phòng nghe chung tự vào lại ở src/rooms/.
 getSocket().on('connect', () => {
-  const { user, workspaceEnabled, partyRoom } = useStore.getState();
-  if (user && workspaceEnabled) getSocket().emit('join_room', workspaceRoomId(user._id));
-  if (partyRoom) {
-    getSocket().emit('join_room', partyRoom.code, {
-      name: user?.nickname || user?.username || 'Khách',
-      avatar: user?.avatarUrl,
-    });
-  }
+  if (useStore.getState().workspaceEnabled) joinWorkspace();
 });
 getSocket().on('room_state', applyRemoteState);
 getSocket().on('sync_playback', applyRemoteState);
 
-getSocket().on('party:room_state', (data: { room: PartyRoomData }) => {
-  if (!data?.room) return;
-  const state = useStore.getState();
-  const isHost = (state.user && data.room.host === state.user._id) || state.isPartyHost;
-  useStore.setState({
-    partyRoom: data.room,
-    partyRoomId: data.room.code,
-    isPartyHost: isHost,
-  });
-  if (!isHost && data.room.currentSong) {
-    applyPartyRemotePlayback({
-      song: data.room.currentSong,
-      position: data.room.position,
-      isPlaying: data.room.isPlaying,
-      queue: data.room.queue,
-      queueIndex: data.room.queueIndex,
-    });
-  }
+setOnSessionExpired(() => {
+  if (useStore.getState().user) useStore.getState().logout();
 });
 
-getSocket().on('party:room_updated', (data: { room: PartyRoomData }) => {
-  if (!data?.room) return;
-  const state = useStore.getState();
-  if (state.partyRoom && state.partyRoom.code === data.room.code) {
-    useStore.setState({
-      partyRoom: {
-        ...state.partyRoom,
-        ...data.room,
-      },
-    });
-    // If we are Host and currently playing, immediately broadcast current live playback
-    // so any new or rejoining member synchronizes immediately
-    if (state.isPartyHost && state.isPlaying && state.currentSong) {
-      const payload = {
-        roomId: state.partyRoom.code,
-        action: 'sync',
-        currentSong: state.currentSong,
-        position: state.position,
-        isPlaying: state.isPlaying,
-        queue: state.partyRoom.queue,
-        queueIndex: state.partyRoom.queueIndex,
-      };
-      getSocket().emit('party:host_action', payload);
-    }
-  }
-});
-
-getSocket().on('party:sync_playback', (data: any) => {
-  applyPartyRemotePlayback({
-    action: data.action,
-    song: data.currentSong,
-    position: data.position,
-    isPlaying: data.isPlaying,
-    queue: data.queue,
-    queueIndex: data.queueIndex,
-  });
-});
-
-getSocket().on('party:queue_updated', (data: { code: string; queue: Song[] }) => {
-  const state = useStore.getState();
-  if (state.partyRoom && state.partyRoom.code === data.code) {
-    useStore.setState({
-      partyRoom: {
-        ...state.partyRoom,
-        queue: data.queue,
-      },
-    });
-  }
-});
-
-getSocket().on('party:room_closed', (data: { code: string; message?: string }) => {
-  const state = useStore.getState();
-  if (state.partyRoom && state.partyRoom.code === data.code) {
-    Alert.alert('Phòng Party', data.message || 'Host đã xóa phòng');
-    useStore.setState({
-      partyRoom: null,
-      partyRoomId: null,
-      isPartyHost: false,
-      isPartyRoomVisible: false,
-    });
-  }
-});
-
-// Periodic heartbeat to guarantee sub-second alignment across all connected devices in party room
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const { partyRoom, isPartyHost, isPlaying, position, currentSong } = useStore.getState();
-    if (partyRoom && isPartyHost && isPlaying && currentSong) {
-      const payload = {
-        roomId: partyRoom.code,
-        action: 'heartbeat',
-        currentSong,
-        position,
-        isPlaying: true,
-        queue: partyRoom.queue,
-        queueIndex: partyRoom.queueIndex,
-      };
-      getSocket().emit('party:host_action', payload);
-    }
-  }, 4000);
-}
-
-// Only care about member-count updates for our own workspace room, not every room
-// this socket happens to be in (e.g. a Sync Party).
 getSocket().on('room_members', (data: { roomId: string; count: number }) => {
   const { user } = useStore.getState();
   if (user && data.roomId === workspaceRoomId(user._id)) {
     useStore.setState({ workspaceMemberCount: data.count });
   }
 });
+
+// Chỉ bản phát triển trên web: cho công cụ kiểm thử trình duyệt đọc store/máy phát (tua tới điểm
+// chuyển bài, đo âm lượng hai deck). Bản build production bỏ hẳn khối này.
+if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined') {
+  (window as any).__hugo = { store: useStore, audioEngine };
+}

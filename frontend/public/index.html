@@ -56,92 +56,10 @@
         transform: scale(0.96) !important;
       }
 
-      /* Living Dancing Equalizer Bars */
-      @keyframes eqBounce1 {
-        0%, 100% { height: 3px; }
-        50% { height: 14px; }
-      }
-      @keyframes eqBounce2 {
-        0%, 100% { height: 14px; }
-        50% { height: 5px; }
-      }
-      @keyframes eqBounce3 {
-        0%, 100% { height: 8px; }
-        50% { height: 15px; }
-      }
-
-      .hugo-eq-bar-1 {
-        animation: eqBounce1 0.75s ease-in-out infinite;
-      }
-      .hugo-eq-bar-2 {
-        animation: eqBounce2 0.88s ease-in-out infinite 0.15s;
-      }
-      .hugo-eq-bar-3 {
-        animation: eqBounce3 0.68s ease-in-out infinite 0.3s;
-      }
-
-      /* Halo Breathing Pulse */
-      @keyframes hugoBreathe {
-        0%, 100% { transform: scale(1); opacity: 0.95; }
-        50% { transform: scale(1.035); opacity: 1; }
-      }
-
       @keyframes pulseGlow {
         0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
         70% { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0); }
         100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-      }
-
-      @keyframes heartPop {
-        0% { transform: scale(1); }
-        35% { transform: scale(1.4) rotate(-8deg); }
-        70% { transform: scale(0.9) rotate(4deg); }
-        100% { transform: scale(1) rotate(0deg); }
-      }
-
-      /* Card Hover Elevation */
-      .hugo-hover-card {
-        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease !important;
-      }
-      .hugo-hover-card:hover {
-        transform: translateY(-3px) scale(1.012) !important;
-      }
-
-      .liquid-glass-content-reveal {
-        will-change: opacity, transform, max-width;
-      }
-      .liquid-glass-item-label {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        will-change: opacity, transform, max-width;
-      }
-      .liquid-grabber-pill {
-        transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .liquid-grabber-pill:hover {
-        background-color: #10B981 !important;
-        transform: scaleX(1.4);
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.8) !important;
-      }
-      .specular-rim-shine {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1.5px;
-        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 35%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.7) 65%, rgba(255,255,255,0) 100%);
-        pointer-events: none;
-        border-radius: 999px;
-      }
-      .frosted-player-drawer {
-        backdrop-filter: blur(40px) saturate(200%) !important;
-        -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
-      }
-      .circular-thumb-glow {
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.95)) !important;
-      }
-      .circular-arc-glow {
-        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55)) !important;
       }
 
       /* Water Droplet Burst Expansion ("Hiệu ứng giọt nước bung to ra full màn") */
@@ -162,93 +80,8 @@
         }
       }
 
-      .water-droplet-burst-container {
-        will-change: transform, clip-path, border-radius, opacity;
-        transform-origin: 50% 92%;
-      }
-
-      .water-droplet-shockwave {
-        position: fixed;
-        bottom: 50px;
-        left: 50%;
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: 3px solid rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 35px rgba(255, 255, 255, 0.85), inset 0 0 20px rgba(16, 185, 129, 0.6);
-        pointer-events: none;
-        animation: waterDropletRipple 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        z-index: 10000;
-      }
-
-      /* Water Droplet Badge Ping Animation */
-      @keyframes badgeDropletPing {
-        0% {
-          transform: scale(1);
-          opacity: 0.75;
-        }
-        70%, 100% {
-          transform: scale(2.2);
-          opacity: 0;
-        }
-      }
-
       .water-droplet-ripple-anim {
         animation: waterDropletRipple 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-      }
-      .water-badge-ping-1 {
-        animation: badgeDropletPing 2s cubic-bezier(0, 0.2, 0.8, 1) infinite !important;
-      }
-      .water-badge-ping-2 {
-        animation: badgeDropletPing 2s cubic-bezier(0, 0.2, 0.8, 1) 0.6s infinite !important;
-      }
-
-      /* Moving Water Droplet Tab Glide Indicator ("Hiệu ứng giọt nước di chuyển giữa các tab") */
-      @keyframes dropletMeniscusPulse {
-        0%, 100% { opacity: 0.85; transform: scaleX(1); }
-        50% { opacity: 1; transform: scaleX(1.05); }
-      }
-      .liquid-droplet-caustic {
-        will-change: transform, left, width, opacity;
-      }
-
-      /* Liquid Glass Orb Glowing Pulse */
-      @keyframes hugoPlayOrbGlow {
-        0% {
-          box-shadow: 0 0 16px rgba(16, 185, 129, 0.45), inset 0 1.5px 2px rgba(255, 255, 255, 0.75);
-          transform: scale(1);
-        }
-        50% {
-          box-shadow: 0 0 28px rgba(16, 185, 129, 0.8), 0 0 44px rgba(52, 211, 153, 0.4), inset 0 1.5px 3px rgba(255, 255, 255, 0.95);
-          transform: scale(1.025);
-        }
-        100% {
-          box-shadow: 0 0 16px rgba(16, 185, 129, 0.45), inset 0 1.5px 2px rgba(255, 255, 255, 0.75);
-          transform: scale(1);
-        }
-      }
-
-      /* Vinyl Record 360 Spin Animation */
-      @keyframes vinylSpin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Dynamic Audio Soundwave Pulse */
-      @keyframes hugoWaveOscillate {
-        0% {
-          transform: scaleY(0.7);
-        }
-        50% {
-          transform: scaleY(1.45);
-        }
-        100% {
-          transform: scaleY(0.7);
-        }
       }
 
       /* Fluid Screen Transitions ("Thu xuống hiện lên, lướt vuốt qua lại") - 120fps Compositor */
@@ -292,14 +125,6 @@
           transform: scale(1) translate3d(0, 0, 0);
         }
       }
-      @keyframes hugoScreenRevealFromRight {
-        0% { opacity: 0; transform: scale(0.972) translate3d(24px, 0, 0); }
-        100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
-      }
-      @keyframes hugoScreenRevealFromLeft {
-        0% { opacity: 0; transform: scale(0.972) translate3d(-24px, 0, 0); }
-        100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
-      }
 
       /* Custom Modern Scrollbars */
       ::-webkit-scrollbar {
@@ -326,8 +151,8 @@
          backdrop-filter blurs and saturates whatever scrolls underneath, so the bars
          take on the colour of the artwork beneath them. */
       [data-glass] {
-        -webkit-backdrop-filter: blur(24px) saturate(190%);
-        backdrop-filter: blur(24px) saturate(190%);
+        -webkit-backdrop-filter: blur(28px) saturate(180%);
+        backdrop-filter: blur(28px) saturate(180%);
         box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.06);
       }
       [data-glass="dark"] {

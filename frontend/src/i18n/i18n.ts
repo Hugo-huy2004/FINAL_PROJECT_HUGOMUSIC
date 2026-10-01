@@ -1,121 +1,50 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TranslationDict, TranslationKey, TranslationParams, LanguageMeta } from './types';
-import { BUILTIN_LOCALES, INITIAL_SUPPORTED_LANGUAGES, vi, en } from './locales';
+import { TranslationDict, TranslationKey, TranslationParams } from './types';
+import { vi } from './locales/vi';
+import { en } from './locales/en';
 
+// Hai ngôn ngữ của app (Tài khoản › Ngôn ngữ). Lựa chọn lưu trong máy.
+export type Language = 'vi' | 'en';
+const DICTS: Record<Language, TranslationDict> = { vi, en };
 const LANGUAGE_STORAGE_KEY = 'hugo_app_language';
 
-// Global in-memory registry of locales and their translation dictionaries
-const localeRegistry: Record<string, TranslationDict> = {};
-for (const [code, entry] of Object.entries(BUILTIN_LOCALES)) {
-  localeRegistry[code] = entry.translations;
-}
-
-const supportedLanguagesRegistry: LanguageMeta[] = [...INITIAL_SUPPORTED_LANGUAGES];
-
-interface I18nState {
-  language: string;
-  supportedLanguages: LanguageMeta[];
-  setLanguage: (lang: string) => Promise<void>;
-  registerLanguage: (meta: LanguageMeta, dict: Partial<TranslationDict>) => void;
-  t: (key: TranslationKey, params?: TranslationParams) => string;
-}
-
-// Parameter replacement helper for "{name}" and "{{name}}"
+// Thay "{name}" và "{{name}}" bằng tham số.
 function interpolate(template: string, params?: TranslationParams): string {
   if (!params) return template;
   let result = template;
   for (const [key, value] of Object.entries(params)) {
-    const stringValue = String(value);
-    result = result
-      .replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), stringValue)
-      .replace(new RegExp(`\\{${key}\\}`, 'g'), stringValue);
+    const v = String(value);
+    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), v).replace(new RegExp(`\\{${key}\\}`, 'g'), v);
   }
   return result;
 }
 
-export const useI18nStore = create<I18nState>((set, get) => ({
-  language: 'vi', // Default is Vietnamese
-  supportedLanguages: supportedLanguagesRegistry,
-
-  setLanguage: async (lang: string) => {
-    // Only switch if the language is registered, or fallback to 'vi'
-    const targetLang = localeRegistry[lang] ? lang : 'vi';
-    set({ language: targetLang });
-    try {
-      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, targetLang);
-    } catch {
-      // Storage error ignored
-    }
+const useI18nStore = create<{
+  language: Language;
+  setLanguage: (lang: Language) => Promise<void>;
+  t: (key: TranslationKey, params?: TranslationParams) => string;
+}>((set, get) => ({
+  language: 'vi',
+  setLanguage: async (lang) => {
+    set({ language: lang });
+    await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lang).catch(() => {});
   },
-
-  registerLanguage: (meta: LanguageMeta, dict: Partial<TranslationDict>) => {
-    // Merge provided dictionary with English fallback so missing keys still work seamlessly
-    const mergedDict: TranslationDict = {
-      ...en,
-      ...dict,
-    };
-    localeRegistry[meta.code] = mergedDict;
-
-    const existingIdx = supportedLanguagesRegistry.findIndex((l) => l.code === meta.code);
-    if (existingIdx >= 0) {
-      supportedLanguagesRegistry[existingIdx] = meta;
-    } else {
-      supportedLanguagesRegistry.push(meta);
-    }
-
-    set({ supportedLanguages: [...supportedLanguagesRegistry] });
-  },
-
-  t: (key: TranslationKey, params?: TranslationParams): string => {
-    const currentLang = get().language;
-    const currentDict = localeRegistry[currentLang];
-    
-    // Priority: current language -> English -> Vietnamese -> key itself
-    const rawTemplate =
-      currentDict?.[key] ||
-      localeRegistry.en?.[key] ||
-      localeRegistry.vi?.[key] ||
-      key;
-
-    return interpolate(rawTemplate, params);
-  },
+  // Thiếu bản dịch thì dùng tiếng Việt, cuối cùng là chính khoá.
+  t: (key, params) => interpolate(DICTS[get().language][key] || vi[key] || key, params),
 }));
 
-// Initialize language from persisted storage
-(async () => {
-  try {
-    const saved = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (saved && localeRegistry[saved]) {
-      useI18nStore.getState().setLanguage(saved);
-    }
-  } catch {
-    // Ignore init storage error
-  }
-})();
+AsyncStorage.getItem(LANGUAGE_STORAGE_KEY)
+  .then((saved) => {
+    if (saved === 'vi' || saved === 'en') useI18nStore.setState({ language: saved });
+  })
+  .catch(() => {});
 
 export function useTranslation() {
-  const language = useI18nStore((state) => state.language);
-  const setLanguage = useI18nStore((state) => state.setLanguage);
-  const registerLanguage = useI18nStore((state) => state.registerLanguage);
-  const supportedLanguages = useI18nStore((state) => state.supportedLanguages);
-  const t = useI18nStore((state) => state.t);
-
-  const currentLanguageMeta =
-    supportedLanguages.find((l) => l.code === language) ||
-    supportedLanguages[0];
-
-  return {
-    language,
-    setLanguage,
-    registerLanguage,
-    supportedLanguages,
-    currentLanguageMeta,
-    t,
-    isVietnamese: language === 'vi',
-    isEnglish: language === 'en',
-  };
+  const language = useI18nStore((s) => s.language);
+  const setLanguage = useI18nStore((s) => s.setLanguage);
+  const t = useI18nStore((s) => s.t);
+  return { language, setLanguage, t };
 }
 
-export { TranslationKey, TranslationParams, LanguageMeta, TranslationDict } from './types';
-export { BUILTIN_LOCALES, INITIAL_SUPPORTED_LANGUAGES } from './locales';
+export type { TranslationKey, TranslationParams, TranslationDict } from './types';

@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAdminAuth } from './hooks/useAdminAuth';
 import AdminLogin from './components/AdminLogin';
-import AdminDashboard from './AdminDashboard';
+import AdminDashboard, { AdminSection } from './AdminDashboard';
 
-// Reachable only by navigating directly to /admin (see linking config in
-// src/navigation/AppNavigator.tsx) — there is no link to it anywhere in the app's UI.
-export default function AdminScreen() {
+// /admin (linking ở src/navigation/AppNavigator.tsx). Admin vào từ Tài khoản › Quản lý kho nhạc
+// hoặc Thư viện › Phòng nghe chung › Quản lý phòng (mở thẳng mục Phòng nghe).
+export default function AdminScreen({ route }: { route?: { params?: { section?: AdminSection } } }) {
   const { user, refreshUser, logout } = useAdminAuth();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function AdminScreen() {
     );
   }
 
-  return <AdminDashboard />;
+  return <AdminDashboard initialSection={route?.params?.section} />;
 }
 
 const styles = StyleSheet.create({

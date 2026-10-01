@@ -12,7 +12,7 @@
 // trượt chất lượng chỉ là cần bổ sung. Gộp chung sẽ chặn nhầm nhạc hợp lệ.
 
 const LICENSE_TYPES = ['public-domain', 'cc-by', 'cc-by-sa', 'cc-by-nc', 'cc-by-nd', 'cc-by-nc-sa', 'cc-by-nc-nd', 'cc-other'];
-// Giấy phép cấm tạo bản phái sinh -> không chuyển mã sang HLS (xem scripts/streaming/buildHls.js).
+// Giấy phép cấm tạo bản phái sinh -> không chuyển mã sang HLS (xem pipeline/jobs/HlsJob.js).
 const NO_DERIVATIVE = ['cc-by-nc-nd', 'cc-by-nd'];
 
 // Ảnh mặc định dùng chung khi không tìm được ảnh bìa thật ở nguồn.

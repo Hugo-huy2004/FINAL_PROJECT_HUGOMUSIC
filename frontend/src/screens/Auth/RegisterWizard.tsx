@@ -1,142 +1,109 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, ActivityIndicator, ScrollView, Image } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Platform, ActivityIndicator, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useStore } from '../../store/useStore';
-import { showAlert } from '../../utils/alert';
+import { useAppTheme, type ThemeColors } from '../../theme/theme';
 import { GENRES } from '../../utils/genres';
 import LiquidGlassButton from '../../components/LiquidGlass/LiquidGlassButton';
+import AppTextField from '../../ui/native/AppTextField';
+import AppDatePicker from '../../ui/native/AppDatePicker';
+import { GlassButton } from '../../ui/kit';
 
-const TOTAL_STEPS = 6;
-
-type StepProps = {
-  onNext: () => void;
-  onBack?: () => void;
-  nextLabel?: string;
-  nextDisabled?: boolean;
-  nextLoading?: boolean;
-};
-
-function StepFooter({ onNext, onBack, nextLabel = 'Tiếp tục', nextDisabled, nextLoading }: StepProps) {
-  return (
-    <View style={styles.footerRow}>
-      {onBack ? (
-        <LiquidGlassButton
-          variant="glass"
-          size="md"
-          title="Quay lại"
-          onPress={onBack}
-        />
-      ) : (
-        <View />
-      )}
-      <LiquidGlassButton
-        variant="primary"
-        size="md"
-        title={nextLoading ? undefined : nextLabel}
-        icon={nextLoading ? <ActivityIndicator color="#fff" /> : undefined}
-        onPress={onNext}
-        disabled={nextDisabled || nextLoading}
-      />
-    </View>
-  );
-}
+// Tạo tài khoản từng bước: (1) email + mật khẩu → (2) mã 6 số gửi qua email → (3) ảnh + biệt danh →
+// (4) ngày sinh + gu nhạc → (5) nơi sống → (6) xem lại. Mỗi bước kiểm tra tại chỗ (lỗi hiện ngay dưới ô,
+// không bật hộp thoại), phím Return đi tiếp, hệ thống tự điền email / mật khẩu mạnh / mã OTP từ Mail.
+const TOTAL = 6;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RESEND_AFTER = 30; // giây
 
 export default function RegisterWizard({ onClose }: { onClose: () => void }) {
-  const isAuthLoading = useStore((state) => state.isAuthLoading);
-  const authError = useStore((state) => state.authError);
-  const sendRegistrationOtp = useStore((state) => state.sendRegistrationOtp);
-  const verifyRegistrationOtp = useStore((state) => state.verifyRegistrationOtp);
-  const completeRegistration = useStore((state) => state.completeRegistration);
-  const resetRegistration = useStore((state) => state.resetRegistration);
+  const { colors, isDark } = useAppTheme();
+  const s = useMemo(() => makeStyles(colors), [colors]);
+  const isAuthLoading = useStore((st) => st.isAuthLoading);
+  const authError = useStore((st) => st.authError);
+  const sendRegistrationOtp = useStore((st) => st.sendRegistrationOtp);
+  const verifyRegistrationOtp = useStore((st) => st.verifyRegistrationOtp);
+  const completeRegistration = useStore((st) => st.completeRegistration);
+  const resetRegistration = useStore((st) => st.resetRegistration);
 
   const [step, setStep] = useState(1);
-
-  // Step 1
+  const [problem, setProblem] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  // Step 2
+  const [confirm, setConfirm] = useState('');
   const [otp, setOtp] = useState('');
-  // Step 3
+  const [resendIn, setResendIn] = useState(0);
   const [avatarFile, setAvatarFile] = useState<any>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [nickname, setNickname] = useState('');
-  // Step 4
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [genres, setGenres] = useState<string[]>([]);
-  // Step 5
   const [country, setCountry] = useState('Việt Nam');
   const [province, setProvince] = useState('');
   const [ward, setWard] = useState('');
   const [addressDetail, setAddressDetail] = useState('');
 
-  const handleClose = () => {
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
+
+  const go = (n: number) => {
+    setProblem(null);
+    setStep(n);
+  };
+  const close = () => {
     resetRegistration();
     onClose();
   };
 
-  const goStep1Next = async () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAlert('Email không hợp lệ.');
-    if (password.length < 6) return showAlert('Mật khẩu tối thiểu 6 ký tự.');
-    if (password !== confirmPassword) return showAlert('Mật khẩu xác nhận không khớp.');
+  // --- từng bước ---
+  const sendCode = async () => {
     try {
       await sendRegistrationOtp(email.trim());
-      setStep(2);
-    } catch (e: any) {
-      showAlert(e.message);
+      setResendIn(RESEND_AFTER);
+      return true;
+    } catch {
+      return false; // authError hiện bên dưới
     }
   };
-
-  const goStep2Next = async () => {
-    if (otp.trim().length !== 6) return;
+  const step1 = async () => {
+    if (!EMAIL.test(email.trim())) return setProblem('Email chưa đúng định dạng.');
+    if (password.length < 6) return setProblem('Mật khẩu cần ít nhất 6 ký tự.');
+    if (password !== confirm) return setProblem('Hai mật khẩu chưa khớp.');
+    setProblem(null);
+    if (await sendCode()) setStep(2);
+  };
+  const step2 = async (code = otp) => {
+    if (code.trim().length !== 6 || isAuthLoading) return;
     try {
-      await verifyRegistrationOtp(otp.trim());
-      setStep(3);
-    } catch (e: any) {
-      showAlert(e.message);
+      await verifyRegistrationOtp(code.trim());
+      go(3);
+    } catch {
+      // authError hiện bên dưới
     }
   };
-
-  const handlePickAvatar = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.85,
-      });
-
-      if (!result.canceled && result.assets && result.assets[0]) {
-        const asset = result.assets[0];
-        setAvatarPreview(asset.uri);
-        if (Platform.OS === 'web') {
-          const res = await fetch(asset.uri);
-          const blob = await res.blob();
-          const file = new File([blob], asset.fileName || 'avatar.jpg', {
-            type: asset.mimeType || 'image/jpeg',
-          });
-          setAvatarFile(file);
-        } else {
-          const fileObj = {
-            uri: asset.uri,
-            name: asset.fileName || 'avatar.jpg',
-            type: asset.mimeType || 'image/jpeg',
-          };
-          setAvatarFile(fileObj as any);
-        }
-      }
-    } catch (err: any) {
-      showAlert(err.message || 'Không thể chọn ảnh');
+  const typeOtp = (t: string) => {
+    const digits = t.replace(/\D/g, '').slice(0, 6);
+    setOtp(digits);
+    if (digits.length === 6) step2(digits); // đủ 6 số (gõ hoặc tự điền từ Mail) là xác nhận luôn
+  };
+  const pickAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.85 });
+    const asset = result.canceled ? null : result.assets?.[0];
+    if (!asset) return;
+    setAvatarPreview(asset.uri);
+    if (Platform.OS === 'web') {
+      const blob = await (await fetch(asset.uri)).blob();
+      setAvatarFile(new File([blob], asset.fileName || 'avatar.jpg', { type: asset.mimeType || 'image/jpeg' }));
+    } else {
+      setAvatarFile({ uri: asset.uri, name: asset.fileName || 'avatar.jpg', type: asset.mimeType || 'image/jpeg' });
     }
   };
-
-  const toggleGenre = (g: string) => {
-    setGenres((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
-  };
-
-  const handleFinish = async () => {
+  const toggleGenre = (g: string) => setGenres((p) => (p.includes(g) ? p.filter((x) => x !== g) : [...p, g]));
+  const finish = async () => {
     const form = new FormData();
     form.append('password', password);
     form.append('nickname', nickname.trim());
@@ -147,224 +114,180 @@ export default function RegisterWizard({ onClose }: { onClose: () => void }) {
     form.append('ward', ward.trim());
     form.append('addressDetail', addressDetail.trim());
     if (avatarFile) form.append('avatar', avatarFile);
-
     try {
       await completeRegistration(form);
       onClose();
-    } catch (e: any) {
-      showAlert(e.message);
+    } catch {
+      // authError hiện bên dưới
     }
   };
 
+  const field = (extra?: object) => [s.input, extra];
+  const error = problem || authError;
+  const footer = (onNext: () => void, opts: { label?: string; disabled?: boolean; loading?: boolean; back?: number } = {}) => (
+    <View style={s.footer}>
+      {opts.back ? <LiquidGlassButton variant="glass" size="md" title="Quay lại" onPress={() => go(opts.back!)} /> : <View />}
+      <LiquidGlassButton
+        variant="primary"
+        size="md"
+        title={opts.loading ? undefined : opts.label ?? 'Tiếp tục'}
+        icon={opts.loading ? <ActivityIndicator color={colors.accent} /> : undefined}
+        onPress={onNext}
+        disabled={opts.disabled || opts.loading}
+      />
+    </View>
+  );
+
   return (
-    <View style={styles.modalContainer}>
-      <BlurView intensity={10} tint="dark" style={styles.modalBackdrop} />
-      <View style={styles.modalContent}>
-        <View style={styles.header}>
-          <Text style={styles.stepIndicator}>Bước {step}/{TOTAL_STEPS}</Text>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <Ionicons name="close" size={22} color="#999" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${(step / TOTAL_STEPS) * 100}%` }]} />
-        </View>
+    <KeyboardAvoidingView style={s.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.3)' }]} onPress={close} accessibilityLabel="Đóng" />
+      <View style={[s.center, { pointerEvents: 'box-none' }]}>
+        <View style={s.card}>
+          <View style={s.header}>
+            <Text style={s.stepText}>Bước {step}/{TOTAL}</Text>
+            <GlassButton icon="close" iconSize={20} size={36} label="Đóng" onPress={close} />
+          </View>
+          <View style={s.track}>
+            <View style={[s.trackFill, { width: `${(step / TOTAL) * 100}%` }]} />
+          </View>
 
-        <ScrollView contentContainerStyle={styles.body} style={{ width: '100%' }}>
-          {step === 1 && (
-            <>
-              <Text style={styles.title}>Tạo tài khoản</Text>
-              <Text style={styles.subtitle}>Nhập email và mật khẩu để bắt đầu.</Text>
-              <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#999" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-              <TextInput style={styles.input} placeholder="Mật khẩu (tối thiểu 6 ký tự)" placeholderTextColor="#999" value={password} onChangeText={setPassword} secureTextEntry />
-              <TextInput style={styles.input} placeholder="Xác nhận mật khẩu" placeholderTextColor="#999" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
-              {authError && <Text style={styles.errorText}>{authError}</Text>}
-              <StepFooter onNext={goStep1Next} nextLoading={isAuthLoading} nextLabel="Gửi mã xác minh" />
-            </>
-          )}
+          <ScrollView contentContainerStyle={s.body} keyboardShouldPersistTaps="handled" bounces={false}>
+            {step === 1 && (
+              <>
+                <Text style={s.title}>Tạo tài khoản</Text>
+                <Text style={s.subtitle}>Nhập email và đặt mật khẩu để bắt đầu.</Text>
+                <AppTextField style={field()} placeholder="Email" placeholderTextColor={colors.textTertiary} value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" textContentType="emailAddress" returnKeyType="next" autoFocus />
+                <AppTextField style={field()} placeholder="Mật khẩu (ít nhất 6 ký tự)" placeholderTextColor={colors.textTertiary} value={password} onChangeText={setPassword} secureTextEntry textContentType="newPassword" returnKeyType="next" />
+                <AppTextField style={field()} placeholder="Nhập lại mật khẩu" placeholderTextColor={colors.textTertiary} value={confirm} onChangeText={setConfirm} secureTextEntry textContentType="newPassword" returnKeyType="go" onSubmitEditing={step1} />
+                {!!error && <Text style={s.error}>{error}</Text>}
+                {footer(step1, { label: 'Gửi mã xác minh', loading: isAuthLoading, disabled: !email || !password || !confirm })}
+              </>
+            )}
 
-          {step === 2 && (
-            <>
-              <Text style={styles.title}>Xác minh email</Text>
-              <Text style={styles.subtitle}>Mã gồm 6 số đã được gửi tới {email}.</Text>
-              <TextInput
-                style={[styles.input, styles.otpInput]}
-                placeholder="000000"
-                placeholderTextColor="#999"
-                value={otp}
-                onChangeText={setOtp}
-                keyboardType="number-pad"
-                maxLength={6}
-              />
-              {authError && <Text style={styles.errorText}>{authError}</Text>}
-              <StepFooter onNext={goStep2Next} onBack={() => setStep(1)} nextDisabled={otp.trim().length !== 6} nextLoading={isAuthLoading} nextLabel="Xác nhận" />
-            </>
-          )}
+            {step === 2 && (
+              <>
+                <Text style={s.title}>Xác minh email</Text>
+                <Text style={s.subtitle}>Nhập mã 6 số vừa gửi tới {email.trim()}.</Text>
+                <AppTextField style={field(s.otp)} placeholder="••••••" placeholderTextColor={colors.textTertiary} value={otp} onChangeText={typeOtp} keyboardType="number-pad" textContentType="oneTimeCode" maxLength={6} autoFocus />
+                {!!error && <Text style={s.error}>{error}</Text>}
+                <Pressable disabled={resendIn > 0 || isAuthLoading} onPress={sendCode} style={s.resend} accessibilityRole="button">
+                  <Text style={[s.resendText, { color: resendIn > 0 ? colors.textTertiary : colors.accent }]}>
+                    {resendIn > 0 ? `Gửi lại mã sau ${resendIn} giây` : 'Gửi lại mã'}
+                  </Text>
+                </Pressable>
+                {footer(() => step2(), { label: 'Xác nhận', back: 1, loading: isAuthLoading, disabled: otp.length !== 6 })}
+              </>
+            )}
 
-          {step === 3 && (
-            <>
-              <Text style={styles.title}>Hồ sơ của bạn</Text>
-              <Text style={styles.subtitle}>Ảnh đại diện và biệt danh hiển thị với mọi người.</Text>
-              <View style={styles.avatarPicker}>
-                <TouchableOpacity onPress={handlePickAvatar} activeOpacity={0.8} style={{ alignItems: 'center' }}>
+            {step === 3 && (
+              <>
+                <Text style={s.title}>Hồ sơ của bạn</Text>
+                <Text style={s.subtitle}>Ảnh đại diện và biệt danh hiển thị với mọi người.</Text>
+                <Pressable onPress={pickAvatar} style={s.avatarBox} accessibilityRole="button" accessibilityLabel={avatarPreview ? 'Đổi ảnh đại diện' : 'Chọn ảnh đại diện'}>
                   {avatarPreview ? (
-                    <Image source={{ uri: avatarPreview }} style={styles.avatarPreviewImage} />
+                    <Image source={{ uri: avatarPreview }} style={s.avatar} />
                   ) : (
-                    <View style={styles.avatarPlaceholder}>
-                      <Ionicons name="camera-outline" size={28} color="#999" />
-                    </View>
+                    <View style={[s.avatar, s.avatarEmpty]}><Ionicons name="camera-outline" size={28} color={colors.textSecondary} /></View>
                   )}
-                  <Text style={styles.avatarPickText}>{avatarPreview ? 'Đổi ảnh' : 'Chọn ảnh đại diện (tùy chọn)'}</Text>
-                </TouchableOpacity>
-              </View>
-              <TextInput style={styles.input} placeholder="Biệt danh hiển thị (ví dụ: Nam Nguyễn)" placeholderTextColor="#999" value={nickname} onChangeText={setNickname} />
-              <StepFooter onNext={() => setStep(4)} onBack={() => setStep(2)} nextDisabled={!nickname.trim()} />
-            </>
-          )}
+                  <Text style={s.link}>{avatarPreview ? 'Đổi ảnh' : 'Chọn ảnh (không bắt buộc)'}</Text>
+                </Pressable>
+                <AppTextField style={field()} placeholder="Biệt danh (vd. Nam Nguyễn)" placeholderTextColor={colors.textTertiary} value={nickname} onChangeText={setNickname} textContentType="name" autoCapitalize="words" maxLength={40} returnKeyType="next" onSubmitEditing={() => nickname.trim() && go(4)} />
+                {footer(() => go(4), { back: 2, disabled: !nickname.trim() })}
+              </>
+            )}
 
-          {step === 4 && (
-            <>
-              <Text style={styles.title}>Về bạn</Text>
-              <Text style={styles.subtitle}>Ngày sinh và sở thích nhạc giúp gợi ý nội dung phù hợp.</Text>
-              {Platform.OS === 'web' ? (
-                <input
-                  type="date"
-                  value={dateOfBirth}
-                  onChange={(e: any) => setDateOfBirth(e.target.value)}
-                  max={new Date().toISOString().slice(0, 10)}
-                  style={{ height: 50, borderRadius: 12, border: '1px solid #ccc', paddingLeft: 16, fontSize: 16, marginBottom: 20, width: '100%', boxSizing: 'border-box' }}
-                />
-              ) : (
-                <TextInput style={styles.input} placeholder="Ngày sinh (YYYY-MM-DD)" placeholderTextColor="#999" value={dateOfBirth} onChangeText={setDateOfBirth} />
-              )}
-              <Text style={styles.label}>Sở thích nhạc</Text>
-              <View style={styles.chipRow}>
-                {GENRES.map((g) => (
-                  <TouchableOpacity key={g} style={[styles.chip, genres.includes(g) && styles.chipActive]} onPress={() => toggleGenre(g)}>
-                    <Text style={[styles.chipText, genres.includes(g) && styles.chipTextActive]}>{g}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <StepFooter onNext={() => setStep(5)} onBack={() => setStep(3)} nextDisabled={!dateOfBirth || genres.length === 0} />
-            </>
-          )}
+            {step === 4 && (
+              <>
+                <Text style={s.title}>Về bạn</Text>
+                <Text style={s.subtitle}>Ngày sinh và gu nhạc giúp gợi ý đúng bài bạn thích.</Text>
+                <AppDatePicker value={dateOfBirth} onChange={setDateOfBirth} style={field()} placeholderTextColor={colors.textTertiary} />
+                <Text style={s.label}>Gu nhạc (chọn ít nhất một)</Text>
+                <View style={s.chips}>
+                  {GENRES.map((g) => {
+                    const on = genres.includes(g);
+                    return (
+                      <Pressable key={g} onPress={() => toggleGenre(g)} style={[s.chip, on && s.chipOn]} accessibilityRole="button" accessibilityState={{ selected: on }}>
+                        <Text style={[s.chipText, on && s.chipTextOn]}>{g}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {footer(() => go(5), { back: 3, disabled: !dateOfBirth || genres.length === 0 })}
+              </>
+            )}
 
-          {step === 5 && (
-            <>
-              <Text style={styles.title}>Nơi bạn sinh sống</Text>
-              <TextInput style={styles.input} placeholder="Quốc gia" placeholderTextColor="#999" value={country} onChangeText={setCountry} />
-              <TextInput style={styles.input} placeholder="Tỉnh/Thành phố" placeholderTextColor="#999" value={province} onChangeText={setProvince} />
-              <TextInput style={styles.input} placeholder="Phường/Xã" placeholderTextColor="#999" value={ward} onChangeText={setWard} />
-              <TextInput style={styles.input} placeholder="Địa chỉ chi tiết" placeholderTextColor="#999" value={addressDetail} onChangeText={setAddressDetail} />
-              <StepFooter
-                onNext={() => setStep(6)}
-                onBack={() => setStep(4)}
-                nextDisabled={!country.trim() || !province.trim() || !ward.trim() || !addressDetail.trim()}
-              />
-            </>
-          )}
+            {step === 5 && (
+              <>
+                <Text style={s.title}>Nơi bạn sống</Text>
+                <Text style={s.subtitle}>Phường/xã và địa chỉ chi tiết có thể để trống.</Text>
+                <AppTextField style={field()} placeholder="Quốc gia" placeholderTextColor={colors.textTertiary} value={country} onChangeText={setCountry} autoCapitalize="words" />
+                <AppTextField style={field()} placeholder="Tỉnh / Thành phố" placeholderTextColor={colors.textTertiary} value={province} onChangeText={setProvince} autoCapitalize="words" />
+                <AppTextField style={field()} placeholder="Phường / Xã" placeholderTextColor={colors.textTertiary} value={ward} onChangeText={setWard} autoCapitalize="words" />
+                <AppTextField style={field()} placeholder="Địa chỉ chi tiết" placeholderTextColor={colors.textTertiary} value={addressDetail} onChangeText={setAddressDetail} returnKeyType="next" onSubmitEditing={() => country.trim() && province.trim() && go(6)} />
+                {footer(() => go(6), { back: 4, disabled: !country.trim() || !province.trim() })}
+              </>
+            )}
 
-          {step === 6 && (
-            <>
-              <Text style={styles.title}>Xác nhận</Text>
-              <View style={styles.reviewCard}>
-                <ReviewRow label="Email" value={email} />
-                <ReviewRow label="Biệt danh" value={nickname} />
-                <ReviewRow label="Ngày sinh" value={dateOfBirth} />
-                <ReviewRow label="Sở thích nhạc" value={genres.join(', ')} />
-                <ReviewRow label="Địa chỉ" value={[addressDetail, ward, province, country].filter(Boolean).join(', ')} />
-                <ReviewRow label="Gói hiện tại" value="Miễn phí" />
-              </View>
-              {authError && <Text style={styles.errorText}>{authError}</Text>}
-              <StepFooter onNext={handleFinish} onBack={() => setStep(5)} nextLoading={isAuthLoading} nextLabel="Hoàn tất" />
-            </>
-          )}
-        </ScrollView>
+            {step === 6 && (
+              <>
+                <Text style={s.title}>Xem lại</Text>
+                <View style={s.review}>
+                  {([
+                    ['Email', email.trim()],
+                    ['Biệt danh', nickname.trim()],
+                    ['Ngày sinh', dateOfBirth.split('-').reverse().join('/')],
+                    ['Gu nhạc', genres.join(', ')],
+                    ['Nơi sống', [addressDetail, ward, province, country].map((x) => x.trim()).filter(Boolean).join(', ')],
+                  ] as const).map(([label, value]) => (
+                    <View key={label} style={s.reviewRow}>
+                      <Text style={s.reviewLabel}>{label}</Text>
+                      <Text style={s.reviewValue} numberOfLines={2}>{value || '—'}</Text>
+                    </View>
+                  ))}
+                </View>
+                {!!error && <Text style={s.error}>{error}</Text>}
+                {footer(finish, { label: 'Hoàn tất', back: 5, loading: isAuthLoading })}
+              </>
+            )}
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
-function ReviewRow({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.reviewRow}>
-      <Text style={styles.reviewLabel}>{label}</Text>
-      <Text style={styles.reviewValue} numberOfLines={2}>{value || '—'}</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  modalBackdrop: {
-    position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    ...(Platform.OS === 'web' ? ({ backdropFilter: 'blur(10px)' } as any) : {}),
-  },
-  modalContent: {
-    width: '90%',
-    maxWidth: 440,
-    maxHeight: '85%',
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    paddingTop: 24,
-    paddingHorizontal: 32,
-    paddingBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.2,
-    shadowRadius: 30,
-    elevation: 20,
-  },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  fill: { flex: 1 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  card: { width: '100%', maxWidth: 440, maxHeight: '100%', backgroundColor: c.modalBg, borderRadius: 28, paddingTop: 18, paddingHorizontal: 24, overflow: 'hidden' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  stepIndicator: { fontSize: 12, fontWeight: '700', color: '#999', textTransform: 'uppercase' },
-  closeButton: { padding: 4 },
-  progressTrack: { height: 4, backgroundColor: '#eee', borderRadius: 2, marginTop: 12, marginBottom: 8 },
-  progressFill: { height: '100%', backgroundColor: '#1CD8A9', borderRadius: 2 },
-  body: { paddingVertical: 16, alignItems: 'stretch' },
-  title: { fontSize: 22, fontWeight: '800', color: '#000', marginBottom: 8 },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 20, lineHeight: 20 },
-  label: { fontSize: 12, fontWeight: '600', color: '#999', textTransform: 'uppercase', marginBottom: 8 },
-  hint: { fontSize: 13, color: '#999', marginBottom: 16 },
+  stepText: { fontSize: 13, fontWeight: '700', color: c.textSecondary, textTransform: 'uppercase' },
+  track: { height: 4, backgroundColor: c.fill, borderRadius: 2, marginTop: 12 },
+  trackFill: { height: '100%', backgroundColor: c.accent, borderRadius: 2 },
+  body: { paddingTop: 20, paddingBottom: 24 },
+  title: { fontSize: 24, fontWeight: '700', color: c.text, marginBottom: 6 },
+  subtitle: { fontSize: 15, color: c.textSecondary, marginBottom: 20, lineHeight: 21 },
+  label: { fontSize: 13, fontWeight: '600', color: c.textSecondary, marginBottom: 10 },
   input: {
-    width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 16,
-    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+    height: 50, borderRadius: 12, paddingHorizontal: 16, fontSize: 17, marginBottom: 12, backgroundColor: c.inputBg, color: c.text,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : {}),
   },
-  otpInput: { textAlign: 'center', fontSize: 22, letterSpacing: 8, fontWeight: '700' },
-  errorText: { color: '#1CD8A9', fontSize: 13, marginBottom: 12, textAlign: 'center' },
-  avatarPicker: { alignItems: 'center', marginBottom: 20 },
-  avatarPreviewImage: { width: 88, height: 88, borderRadius: 44, marginBottom: 10, backgroundColor: '#eee' },
-  avatarPlaceholder: {
-    width: 88, height: 88, borderRadius: 44, backgroundColor: '#f0f0f0',
-    justifyContent: 'center', alignItems: 'center', marginBottom: 10,
-  },
-  avatarPickText: { color: '#1CD8A9', fontWeight: '600', fontSize: 14 },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 },
-  chip: {
-    borderWidth: 1, borderColor: '#ddd', borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 8, marginRight: 8, marginBottom: 8,
-  },
-  chipActive: { backgroundColor: '#1CD8A9', borderColor: '#1CD8A9' },
-  chipText: { fontSize: 13, color: '#333', fontWeight: '500' },
-  chipTextActive: { color: '#fff' },
-  reviewCard: { backgroundColor: '#f9f9f9', borderRadius: 14, padding: 16, marginBottom: 16 },
+  otp: { textAlign: 'center', fontSize: 26, letterSpacing: 10, fontWeight: '700' },
+  error: { color: '#FF453A', fontSize: 14, marginBottom: 8, marginTop: 4, textAlign: 'center' },
+  resend: { alignSelf: 'center', paddingVertical: 8 },
+  resendText: { fontSize: 15, fontWeight: '600' },
+  avatarBox: { alignItems: 'center', marginBottom: 20 },
+  avatar: { width: 88, height: 88, borderRadius: 44, marginBottom: 10 },
+  avatarEmpty: { backgroundColor: c.fill, justifyContent: 'center', alignItems: 'center' },
+  link: { color: c.accent, fontWeight: '600', fontSize: 15 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  chip: { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: c.fill },
+  chipOn: { backgroundColor: c.accent },
+  chipText: { fontSize: 14, color: c.text, fontWeight: '500' },
+  chipTextOn: { color: '#fff' },
+  review: { backgroundColor: c.fill, borderRadius: 14, padding: 16, marginBottom: 12 },
   reviewRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
-  reviewLabel: { fontSize: 13, color: '#888' },
-  reviewValue: { fontSize: 13, color: '#000', fontWeight: '600', flexShrink: 1, textAlign: 'right', marginLeft: 12 },
-  footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
-  backButton: { paddingVertical: 14, paddingHorizontal: 4 },
-  backButtonText: { color: '#666', fontWeight: '600', fontSize: 15 },
-  nextButton: {
-    backgroundColor: '#1CD8A9', height: 50, borderRadius: 12,
-    justifyContent: 'center', alignItems: 'center', paddingHorizontal: 28, marginLeft: 'auto',
-  },
-  disabledButton: { opacity: 0.5 },
-  nextButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  reviewLabel: { fontSize: 14, color: c.textSecondary },
+  reviewValue: { fontSize: 14, color: c.text, fontWeight: '600', flexShrink: 1, textAlign: 'right', marginLeft: 12 },
+  footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
 });

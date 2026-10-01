@@ -1,29 +1,10 @@
 // Mọi thao tác với Cloudflare R2 (API tương thích S3) đi qua tệp này — controller
 // và script không tự tạo S3 client riêng.
 const {
-  S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand, DeleteObjectCommand,
+  PutObjectCommand, GetObjectCommand, HeadObjectCommand, DeleteObjectCommand,
   ListObjectsV2Command, DeleteObjectsCommand,
 } = require('@aws-sdk/client-s3');
-
-const isConfigured = () =>
-  !!(process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.R2_BUCKET_NAME);
-
-const Bucket = () => process.env.R2_BUCKET_NAME;
-
-let client = null;
-const getClient = () => {
-  if (!client) {
-    client = new S3Client({
-      region: 'auto',
-      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID,
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-      },
-    });
-  }
-  return client;
-};
+const { getClient, isConfigured, Bucket } = require('../config/storage');
 
 // Đẩy một buffer lên R2 (không ghi đĩa) và trả URL đã lưu trong DB.
 const uploadToR2 = async (buffer, key, contentType) => {

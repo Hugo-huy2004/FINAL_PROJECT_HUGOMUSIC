@@ -1,15 +1,7 @@
-import { Audio, AVPlaybackStatus } from 'expo-av';
-import {
-  isWeb, isHlsUrl, loadHlsWeb, destroyHlsWeb, getWebAudioEl,
-} from './hlsWebPlayer';
+import { Platform } from 'react-native';
+import { createDeck, Deck, DeckStatus } from './audio/deck';
 
-export type PlaybackStatus = {
-  isPlaying: boolean;
-  isBuffering: boolean;
-  position: number; // seconds
-  duration: number; // seconds
-  didFinish: boolean;
-};
+export type PlaybackStatus = DeckStatus;
 
 type StatusListener = (status: PlaybackStatus) => void;
 type ErrorListener = (reason: string) => void;
@@ -25,46 +17,37 @@ export type PlaybackTelemetry = {
   completed: boolean;
 };
 
-// Thin singleton wrapper around expo-av's Audio.Sound. Keeping it outside React/zustand
-// means there's exactly one native player instance no matter how many components render.
-class AudioEngine {
-  private sound: Audio.Sound | null = null;
-  private listener: StatusListener | null = null;
-  private errorListener: ErrorListener | null = null;
+class Telemetry {
+  loadStartedAt = 0;
+  firstSoundAt = 0;
+  rebufferCount = 0;
+  rebufferMs = 0;
+  bufferingSince = 0;
+  lastPositionMs = 0;
+  completed = false;
 
-  // --- đo đạc cho bài hiện tại ---
-  private loadStartedAt = 0;
-  private firstSoundAt = 0;
-  private rebufferCount = 0;
-  private rebufferMs = 0;
-  private bufferingSince = 0;
-  private lastPositionMs = 0;
-  private completed = false;
-
-  onStatus(listener: StatusListener) {
-    this.listener = listener;
+  reset() {
+    Object.assign(this, { loadStartedAt: Date.now(), firstSoundAt: 0, rebufferCount: 0, rebufferMs: 0, bufferingSince: 0, lastPositionMs: 0, completed: false });
   }
 
-  // Lỗi giữa chừng khi phát (mất mạng, hoặc 401 vì token phát hết hạn). Store bắt
-  // lỗi này để xin token mới và nạp lại đúng vị trí — xem HM-13.
-  onError(listener: ErrorListener) {
-    this.errorListener = listener;
+  observe(st: DeckStatus) {
+    // Lần đầu thực sự ra tiếng — cái người dùng cảm nhận là "bấm bao lâu thì nghe được".
+    if (!this.firstSoundAt && st.isPlaying && st.position > 0) this.firstSoundAt = Date.now();
+    // Đứt tiếng giữa chừng: chỉ tính khi đã phát được rồi (lần nạp đầu nằm trong startupMs).
+    if (st.isBuffering && this.firstSoundAt && !this.bufferingSince) {
+      this.bufferingSince = Date.now();
+      this.rebufferCount += 1;
+    } else if (!st.isBuffering && this.bufferingSince) {
+      this.rebufferMs += Date.now() - this.bufferingSince;
+      this.bufferingSince = 0;
+    }
+    this.lastPositionMs = st.position * 1000;
+    if (st.didFinish) this.completed = true;
   }
 
-  private resetTelemetry() {
-    this.loadStartedAt = Date.now();
-    this.firstSoundAt = 0;
-    this.rebufferCount = 0;
-    this.rebufferMs = 0;
-    this.bufferingSince = 0;
-    this.lastPositionMs = 0;
-    this.completed = false;
-  }
-
-  // Chốt số liệu của bài vừa nghe. Gọi trước khi chuyển bài hoặc khi dừng hẳn.
-  takeTelemetry(): PlaybackTelemetry | null {
+  take(): PlaybackTelemetry | null {
     if (!this.loadStartedAt) return null;
-    const t: PlaybackTelemetry = {
+    const t = {
       // Chưa kịp ra tiếng thì startup = 0, nghĩa là user bỏ trước khi nghe được.
       startupMs: this.firstSoundAt ? this.firstSoundAt - this.loadStartedAt : 0,
       rebufferCount: this.rebufferCount,
@@ -75,144 +58,178 @@ class AudioEngine {
     this.loadStartedAt = 0;
     return t;
   }
+}
 
-  private handleStatus = (status: AVPlaybackStatus) => {
-    if (!status.isLoaded) {
-      if ('error' in status && status.error) {
-        console.warn('Playback error:', status.error);
-        this.errorListener?.(status.error);
-      }
-      return;
-    }
+// Máy phát một-thể-hiện dùng chung cả app, gồm HAI deck: `active` đang phát, `standby` nạp sẵn
+// bài kế (preload) để chuyển bài không khoảng lặng — nối liền (gapless) hoặc chồng tiếng
+// (crossfade, đường cong đẳng công suất cos/sin để tổng độ to không bị hụt ở giữa).
+// Âm lượng thật của một deck = âm lượng người dùng × hệ số cân âm lượng của bài × hệ số fade.
+// Kế hoạch "khi nào chuyển, chồng bao lâu" nằm ở utils/audio/transitionPlan.ts; store quyết định
+// gọi lúc nào (store/useStore.ts — Transitioner).
+class AudioEngine {
+  private decks: [Deck & { unlock?: () => void }, Deck & { unlock?: () => void }] = [createDeck(), createDeck()];
+  private activeIdx = 0;
+  private gains = [1, 1];
+  private volume = 1;
+  private telemetry = new Telemetry();
+  private listener: StatusListener | null = null;
+  private errorListener: ErrorListener | null = null;
+  private standbyKey: string | null = null;
+  private fade: { timer: ReturnType<typeof setTimeout> | null; finish: () => void } | null = null;
 
-    // Lần đầu thực sự phát ra tiếng — đây mới là cái người dùng cảm nhận là
-    // "bấm play bao lâu thì nghe được", không phải lúc tải xong metadata.
-    if (!this.firstSoundAt && status.isPlaying && (status.positionMillis ?? 0) > 0) {
-      this.firstSoundAt = Date.now();
-    }
-
-    // Đứt tiếng giữa chừng: chỉ tính khi đã phát được rồi, để không nhầm với
-    // lần nạp đầu tiên (lần đó đã nằm trong startupMs).
-    if (status.isBuffering && this.firstSoundAt && !this.bufferingSince) {
-      this.bufferingSince = Date.now();
-      this.rebufferCount += 1;
-    } else if (!status.isBuffering && this.bufferingSince) {
-      this.rebufferMs += Date.now() - this.bufferingSince;
-      this.bufferingSince = 0;
-    }
-
-    this.lastPositionMs = status.positionMillis ?? 0;
-    if (status.didJustFinish) this.completed = true;
-
-    this.listener?.({
-      isPlaying: status.isPlaying,
-      isBuffering: status.isBuffering,
-      position: (status.positionMillis ?? 0) / 1000,
-      duration: (status.durationMillis ?? 0) / 1000,
-      didFinish: !!status.didJustFinish,
-    });
-  };
-
-  private loadToken = 0;
-  private usingWebHls = false;
-
-  async load(url: string, autoPlay = true, hlsToken: string | null = null) {
-    const token = ++this.loadToken;
-    this.resetTelemetry();
-
-    // Don't await the previous sound's teardown: if it's still stuck mid-network-load
-    // (a dead/blocked stream host), unloadAsync() never resolves and would hang every
-    // future load() call forever. Best-effort unload in the background instead.
-    if (this.sound) {
-      this.sound.unloadAsync().catch(() => {});
-      this.sound = null;
-    }
-
-    // Trên web, Chrome/Firefox không phát được .m3u8 qua thẻ <audio> — phải đi
-    // đường hls.js riêng. iOS (AVPlayer) và Android (ExoPlayer) phát HLS gốc nên
-    // vẫn dùng expo-av như thường.
-    destroyHlsWeb();
-    this.usingWebHls = false;
-    if (isWeb() && isHlsUrl(url)) {
-      await loadHlsWeb(url, autoPlay, hlsToken, (st) => {
-        if (!this.firstSoundAt && st.isPlaying && st.position > 0) this.firstSoundAt = Date.now();
-        if (st.isBuffering && this.firstSoundAt && !this.bufferingSince) {
-          this.bufferingSince = Date.now();
-          this.rebufferCount += 1;
-        } else if (!st.isBuffering && this.bufferingSince) {
-          this.rebufferMs += Date.now() - this.bufferingSince;
-          this.bufferingSince = 0;
-        }
-        this.lastPositionMs = st.position * 1000;
-        if (st.didFinish) this.completed = true;
+  constructor() {
+    this.decks.forEach((deck, i) => {
+      deck.onStatus = (st) => {
+        if (i !== this.activeIdx) return; // deck đang chờ/đang tắt dần không được báo lên UI
+        this.telemetry.observe(st);
         this.listener?.(st);
-      }, (reason) => this.errorListener?.(reason));
-      this.usingWebHls = true;
-      return;
+      };
+      deck.onError = (reason) => {
+        if (i !== this.activeIdx) {
+          // Nạp sẵn hỏng: bỏ, lúc hết bài sẽ nạp thường.
+          if (this.standbyKey) this.standbyKey = null;
+          return;
+        }
+        console.warn('Playback error:', reason);
+        this.errorListener?.(reason);
+      };
+    });
+  }
+
+  private get active() { return this.decks[this.activeIdx]; }
+  private get standby() { return this.decks[1 - this.activeIdx]; }
+  private apply(i: number, fadeFactor = 1) { this.decks[i].setVolume(this.volume * this.gains[i] * fadeFactor); }
+
+  onStatus(listener: StatusListener) { this.listener = listener; }
+  // Lỗi giữa chừng (mất mạng, 401 vì token hết hạn) — store xin token mới và nạp lại (HM-13).
+  onError(listener: ErrorListener) { this.errorListener = listener; }
+  // Chốt số liệu của bài vừa nghe. Gọi trước khi chuyển bài hoặc khi dừng hẳn.
+  takeTelemetry() { return this.telemetry.take(); }
+
+  // Kết thúc ngay một lần chồng tiếng đang dở (người dùng tua, tạm dừng, đổi bài...).
+  private endFade() { this.fade?.finish(); }
+
+  async load(url: string, autoPlay = true, opts: { startAt?: number; gain?: number; hlsToken?: string | null } = {}) {
+    this.endFade();
+    this.telemetry.reset();
+    this.gains[this.activeIdx] = opts.gain ?? 1;
+    // Cú bấm của người dùng dẫn tới đây → tranh thủ mở khoá deck kia cho lần chuyển bài tự động.
+    if (autoPlay) this.standby.unlock?.();
+    this.dropStandby();
+    this.apply(this.activeIdx);
+    await this.active.load(url, { autoPlay, startAt: opts.startAt, hlsToken: opts.hlsToken });
+    this.apply(this.activeIdx);
+  }
+
+  // Nạp sẵn bài kế vào deck chờ, dừng sẵn ở `startAt`. `key` để store biết đã nạp bài nào.
+  async preload(url: string, key: string, opts: { startAt?: number; gain?: number; hlsToken?: string | null } = {}) {
+    const i = 1 - this.activeIdx;
+    this.standbyKey = null;
+    this.gains[i] = opts.gain ?? 1;
+    this.apply(i, 0);
+    await this.decks[i].load(url, { autoPlay: false, startAt: opts.startAt, hlsToken: opts.hlsToken });
+    this.apply(i, 0);
+    this.standbyKey = key;
+  }
+
+  preloadedKey() { return this.standbyKey; }
+
+  dropStandby() {
+    this.standbyKey = null;
+    this.standby.unload().catch(() => {});
+  }
+
+  // Trình duyệt iOS khoá volume của <audio> → không fade được; khi đó chuyển thẳng (vẫn bỏ được im lặng).
+  canFade() { return this.active.canFade(); }
+
+  // Chọn loa/thiết bị phát (AirPlay) — chỉ Safari có bộ chọn thật; nơi khác nút này không hiện.
+  canPickOutput() {
+    return Platform.OS === 'web' && typeof window !== 'undefined' && 'WebKitPlaybackTargetAvailabilityEvent' in window;
+  }
+  pickOutput() { this.active.pickOutput?.(); }
+
+  // Chuyển sang bài đã nạp sẵn: deck chờ phát lên, deck cũ tắt dần trong `fadeMs`, rồi hai deck
+  // đổi vai. Trả về số liệu của bài vừa rời để store gửi đi.
+  async crossfade(fadeMs: number): Promise<PlaybackTelemetry | null> {
+    if (!this.standbyKey) return null;
+    this.endFade();
+    const outIdx = this.activeIdx;
+    const inIdx = 1 - outIdx;
+    const outgoing = this.decks[outIdx];
+    const incoming = this.decks[inIdx];
+    const report = this.telemetry.take();
+    this.telemetry.reset();
+    this.standbyKey = null;
+    this.activeIdx = inIdx; // từ giờ UI theo bài mới
+
+    const smooth = fadeMs > 0 && this.canFade();
+    this.apply(inIdx, smooth ? 0 : 1);
+    await incoming.play();
+
+    const started = Date.now();
+    const finish = () => {
+      if (!this.fade) return;
+      if (this.fade.timer) clearTimeout(this.fade.timer);
+      this.fade = null;
+      this.apply(inIdx, 1);
+      outgoing.unload().catch(() => {});
+    };
+    this.fade = { timer: null, finish };
+    if (!smooth) {
+      finish();
+      return report;
     }
-
-    const { sound } = await Promise.race([
-      Audio.Sound.createAsync({ uri: url }, { shouldPlay: autoPlay }, this.handleStatus),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Audio load timed out')), 15000)
-      ),
-    ]);
-
-    if (token !== this.loadToken) {
-      // A newer load() started while this one was in flight - drop this stale result.
-      sound.unloadAsync().catch(() => {});
-      return;
-    }
-    this.sound = sound;
+    const step = Platform.OS === 'web' ? 30 : 60; // native: mỗi setVolume đi qua bridge
+    const tick = () => {
+      if (!this.fade) return;
+      const p = Math.min(1, (Date.now() - started) / fadeMs);
+      this.apply(outIdx, Math.cos((p * Math.PI) / 2));
+      this.apply(inIdx, Math.sin((p * Math.PI) / 2));
+      if (p >= 1) finish();
+      else this.fade.timer = setTimeout(tick, step);
+    };
+    tick();
+    return report;
   }
 
-  hasSound(): boolean {
-    return this.sound !== null || (this.usingWebHls && !!getWebAudioEl());
-  }
+  hasSound() { return this.active.isLoaded(); }
 
-  async play() {
-    if (this.usingWebHls) { await getWebAudioEl()?.play(); return; }
-    await this.sound?.playAsync();
-  }
+  // Chẩn đoán (kiểm thử): vai của hai deck lúc này.
+  debugState() { return { activeIdx: this.activeIdx, standbyKey: this.standbyKey, fading: !!this.fade, gains: [...this.gains] }; }
+
+  async play() { await this.active.play(); }
 
   async pause() {
-    if (this.usingWebHls) { getWebAudioEl()?.pause(); return; }
-    await this.sound?.pauseAsync();
+    this.endFade();
+    await this.active.pause();
   }
 
+  // Vị trí phát thật lúc gọi (giây) — phòng nghe chung dùng để đo độ lệch với đồng hồ phòng.
+  async getPosition() { return this.active.getPosition(); }
+
+  // Tốc độ phát (giữ cao độ) — phòng nghe chung dùng để bắt kịp đồng hồ phòng mà không phải tua.
+  async setRate(rate: number) { await this.active.setRate(rate); }
+
   async seek(seconds: number) {
-    if (this.usingWebHls) {
-      const el = getWebAudioEl();
-      if (el) el.currentTime = Math.max(0, seconds);
-      return;
-    }
-    if (!this.sound) return;
-    try {
-      await this.sound.setPositionAsync(Math.max(0, Math.round(seconds * 1000)));
-    } catch (err) {
-      console.warn('Seek error:', err);
-    }
+    this.endFade();
+    await this.active.seek(seconds);
   }
 
   async setVolume(volume: number) {
-    if (this.usingWebHls) {
-      const el = getWebAudioEl();
-      if (el) el.volume = Math.max(0, Math.min(1, volume));
-      return;
-    }
-    if (!this.sound) return;
-    try {
-      await this.sound.setVolumeAsync(Math.max(0, Math.min(1, volume)));
-    } catch (err) {
-      console.warn('SetVolume error:', err);
-    }
+    this.volume = Math.max(0, Math.min(1, volume));
+    if (!this.fade) this.apply(this.activeIdx); // đang fade thì nhịp fade kế tiếp tự áp mức mới
+  }
+
+  // Hệ số cân âm lượng (Sound Check) của bài đang phát.
+  setGain(gain: number) {
+    this.gains[this.activeIdx] = gain;
+    if (!this.fade) this.apply(this.activeIdx);
   }
 
   async unload() {
-    destroyHlsWeb();
-    this.usingWebHls = false;
-    await this.sound?.unloadAsync();
-    this.sound = null;
+    this.endFade();
+    this.standbyKey = null;
+    await Promise.all(this.decks.map((d) => d.unload()));
   }
 }
 

@@ -1,17 +1,5 @@
 import { useColorScheme } from 'react-native';
-
-// The actual brand gradient for the "Hugo" wordmark.
-// In light mode: Starts with a bold, rich dark forest green (#076653) at the 'H' for maximum contrast
-// and readability against white/light backgrounds, transitioning into vibrant emerald (#16A34A) and fresh lime (#65A30D).
-export const BRAND_GRADIENT_LIGHT = ['#076653', '#16A34A', '#65A30D'] as const;
-export const BRAND_GRADIENT_LIGHT_LOCATIONS = [0, 0.5, 1.0] as const;
-
-// In dark mode: Starts with a luminous lime (#84CC16) at 'H' so it pops cleanly against dark backgrounds,
-// transitioning into emerald (#10B981) and radiant teal (#059669).
-export const BRAND_GRADIENT_DARK = ['#84CC16', '#10B981', '#059669'] as const;
-export const BRAND_GRADIENT_DARK_LOCATIONS = [0, 0.5, 1.0] as const;
-
-// Default exported constants for backwards compatibility
+import { useStore } from '../store/useStore';
 
 // Values follow Apple's semantic system colors (systemBackground, label, separator,
 // fills) so screens read like a native Apple app in both appearances. `accent` is the
@@ -43,7 +31,7 @@ export interface ThemeColors {
   fill: string;
 }
 
-export const darkColors: ThemeColors = {
+const darkColors: ThemeColors = {
   isDark: true,
   background: '#000000',
   surface: '#1C1C1E',
@@ -60,12 +48,13 @@ export const darkColors: ThemeColors = {
   iconActive: '#FFFFFF',
   accent: '#11A37F',
   modalBg: '#1C1C1E',
-  glass: 'rgba(40, 40, 44, 0.52)',
+  // Đủ đặc để chữ trên thanh phát/tab đọc được khi đè lên ảnh bìa nhiều màu.
+  glass: 'rgba(28, 28, 30, 0.56)',
   glassSolid: 'rgba(30, 30, 32, 0.96)',
   fill: 'rgba(120, 120, 128, 0.32)',
 };
 
-export const lightColors: ThemeColors = {
+const lightColors: ThemeColors = {
   isDark: false,
   background: '#FFFFFF',
   surface: '#F2F2F7',
@@ -88,9 +77,10 @@ export const lightColors: ThemeColors = {
 };
 
 export function useAppTheme(): { isDark: boolean; colors: ThemeColors } {
-  // 100% Auto from device system color scheme
+  // Theo hệ thống, trừ khi người dùng chọn Sáng/Tối trong mục "Thêm" (themeMode, lưu máy).
   const systemScheme = useColorScheme();
-  const isDark = systemScheme !== 'light';
+  const mode = useStore((s) => s.themeMode);
+  const isDark = mode === 'auto' ? systemScheme !== 'light' : mode === 'dark';
   const colors = isDark ? darkColors : lightColors;
 
   return { isDark, colors };

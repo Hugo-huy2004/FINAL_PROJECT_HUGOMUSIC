@@ -62,9 +62,14 @@ export function useSongManager() {
     [run]
   );
 
+  const handleCoverChange = useCallback(
+    (id: string, form: FormData) => run(() => api.updateSongCover(id, form)),
+    [run]
+  );
+
   const handleDelete = useCallback(async (id: string, title: string) => {
     if (await confirmAlert(`Xoá hẳn "${title}" (cả tệp trên R2)?`)) await run(() => api.deleteSong(id));
   }, [run]);
 
-  return { status, setStatus, songs, counts, isUploading, handleUpload, handleUpdate, handleReview, handleDelete };
+  return { status, setStatus, songs, counts, isUploading, handleUpload, handleUpdate, handleReview, handleDelete, handleCoverChange };
 }

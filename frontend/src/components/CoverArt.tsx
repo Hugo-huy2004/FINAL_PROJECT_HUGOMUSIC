@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, ImageStyle, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { API_BASE_URL } from '../utils/api';
+import { API_BASE_URL, CDN_BASE_URL } from '../utils/api';
+import GlassArt from '../ui/kit/GlassArt';
 
 // The raw R2 endpoint has no CORS/CORP headers, so Chrome's Opaque Response
 // Blocking rejects a cross-origin fetch/XHR-loaded <Image> the same way it rejects
 // audio (see backend/controllers/songController.js streamSong for the full
-// writeup) — route it through our own backend instead, same fix as audio.
+// writeup) — serve it from the Worker CDN (covers/ is public there, with CORS, cached at the edge),
+// falling back to our own backend proxy when no CDN is configured. Keeps image bytes off the API tier.
 export function resolveImageUri(uri?: string): string | undefined {
   if (!uri) return uri;
   const match = uri.match(/r2\.cloudflarestorage\.com\/[^/]+\/(covers\/.+)$/);
   if (!match) return uri;
+  if (CDN_BASE_URL) return `${CDN_BASE_URL.replace(/\/$/, '')}/${match[1].split('/').map(encodeURIComponent).join('/')}`;
   return `${API_BASE_URL}/api/images/proxy?key=${encodeURIComponent(match[1])}`;
 }
+
+// Kho có ~300 bài dùng chung ảnh minh hoạ lấy từ Unsplash làm ảnh giữ chỗ — đó không phải
+// ảnh bìa thật. Những bài đó (và bài không có ảnh) hiện ảnh bìa TẠO TỰ ĐỘNG (ui/kit/GlassArt).
+export const isRealCover = (uri?: string) => !!uri && !/images\.unsplash\.com/.test(uri);
 
 export default function CoverArt({
   uri,
@@ -21,7 +28,9 @@ export default function CoverArt({
   size,
   radius = 6,
   style,
+  title,
 }: {
+  title?: string;
   uri?: string;
   fallbackUri?: string;
   fallbackIcon?: keyof typeof Ionicons.glyphMap;
@@ -38,6 +47,11 @@ export default function CoverArt({
     setHasError(false);
     setHasFallbackError(false);
   }, [uri, fallbackUri]);
+
+  // Ảnh giữ chỗ / không có ảnh / ảnh lỗi → ảnh bìa tạo tự động
+  if (!isRealCover(uri) || (hasError && !resolvedFallbackUri)) {
+    return <GlassArt title={title || ''} width={size} height={size} radius={radius} style={style as ViewStyle} />;
+  }
 
   // Primary image
   if (resolvedUri && !hasError) {

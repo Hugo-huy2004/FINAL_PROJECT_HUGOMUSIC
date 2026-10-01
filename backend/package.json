@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "node utils/playbackToken.js && node utils/songReview.js && node scripts/streaming/buildHls.js --self-check && node ../worker/cache-check.mjs"
+    "test": "node scripts/run-tests.js"
   },
   "keywords": [],
   "author": "",

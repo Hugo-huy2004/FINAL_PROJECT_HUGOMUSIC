@@ -23,7 +23,10 @@ const ensureAdminUser = async () => {
 const connectDB = async () => {
   try {
     // useNewUrlParser/useUnifiedTopology are no-ops on modern mongoose; dropped.
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    // Đọc từ PRIMARY: đọc ngay sau khi ghi phải thấy dữ liệu vừa ghi (read-your-writes). readPreference=nearest
+    // trong MONGO_URI từng cho ~0,5% lần đọc dữ liệu cũ (vừa lưu xong tải lại vẫn thấy bản cũ). Ba node replica
+    // chạy chung máy nên đọc node phụ không nhanh hơn — chỉ mất tính nhất quán.
+    const conn = await mongoose.connect(process.env.MONGO_URI, { readPreference: 'primary' });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     await ensureAdminUser();
   } catch (error) {

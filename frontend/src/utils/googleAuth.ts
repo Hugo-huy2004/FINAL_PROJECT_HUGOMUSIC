@@ -1,49 +1,36 @@
-// Google Identity Services (GIS) integration — web only. Renders Google's own sign-in
-// button into a DOM node and hands back the signed ID token, which the backend verifies
-// in controllers/authController.js (googleAuth). No expo-auth-session dependency needed
-// for the web target; add that (+ native OAuth client setup) if a native build needs
-// Google Sign-In too — not covered here since this app has only been tested on web.
+import { Platform } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
+import { API_BASE_URL } from './api';
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: { client_id: string; callback: (resp: { credential: string }) => void }) => void;
-          renderButton: (container: HTMLElement, options: Record<string, unknown>) => void;
-        };
-      };
-    };
-  }
+// Đăng nhập Google qua backend (controllers/authController.js googleStart/googleCallback) — một đường
+// cho cả web lẫn ứng dụng: backend đổi mã với Google rồi trả phiên của Hugo về #token=… (hoặc #error=…).
+//  - Ứng dụng: trình duyệt trong app (ASWebAuthenticationSession / Custom Tab), tự đóng khi quay về.
+//  - Web: chuyển cả trang; lúc quay lại, takeGoogleRedirect() đọc phiên trên thanh địa chỉ.
+const startUrl = (back: string) => `${API_BASE_URL}/api/auth/google/start?redirect=${encodeURIComponent(back)}`;
+
+function readFragment(url: string): string | null {
+  const params = new URLSearchParams(url.split('#')[1] || '');
+  const error = params.get('error');
+  if (error) throw new Error(error);
+  return params.get('token');
 }
 
-let scriptLoadPromise: Promise<void> | null = null;
+// Trả token phiên, null nếu người dùng đóng giữa chừng (hoặc web: trang đang chuyển sang Google).
+export async function signInWithGoogle(): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    window.location.assign(startUrl(`${window.location.origin}/`));
+    return null;
+  }
+  const back = Linking.createURL('auth');
+  const result = await WebBrowser.openAuthSessionAsync(startUrl(back), back);
+  return result.type === 'success' ? readFragment(result.url) : null;
+}
 
-const loadGisScript = (): Promise<void> => {
-  if (window.google?.accounts?.id) return Promise.resolve();
-  if (scriptLoadPromise) return scriptLoadPromise;
-
-  scriptLoadPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to load Google Sign-In'));
-    document.head.appendChild(script);
-  });
-  return scriptLoadPromise;
-};
-
-export const renderGoogleButton = async (
-  clientId: string,
-  container: HTMLElement,
-  onCredential: (idToken: string) => void
-) => {
-  await loadGisScript();
-  window.google!.accounts.id.initialize({
-    client_id: clientId,
-    callback: (response) => onCredential(response.credential),
-  });
-  window.google!.accounts.id.renderButton(container, { theme: 'outline', size: 'large', width: 320 });
-};
+// Web: vừa quay về từ Google → lấy token (hoặc lỗi) khỏi địa chỉ rồi xoá nó đi.
+export function takeGoogleRedirect(): string | null {
+  if (Platform.OS !== 'web' || typeof window === 'undefined' || !/[#&](token|error)=/.test(window.location.hash)) return null;
+  const url = window.location.href;
+  window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  return readFragment(url);
+}

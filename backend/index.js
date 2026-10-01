@@ -1,15 +1,18 @@
-// Load .env before any other require — several modules read process.env at load time.
-require('dotenv').config();
+// Hugo Music API - Server Entrypoint
+// Tuân thủ Rule #2: File index.js chỉ dùng để khởi tạo và kết nối các module, không chứa logic nghiệp vụ
+const http = require('http');
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
-const http = require('http');
-const { Server } = require('socket.io');
-const connectDB = require('./config/db');
-const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
+// 1. Cấu hình & Cơ sở dữ liệu (Rule #4)
+const { env, validateEnv, connectDB } = require('./config');
+validateEnv();
+connectDB();
+
+// 2. Middlewares & Routing
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const songRoutes = require('./routes/songRoutes');
 const playlistRoutes = require('./routes/playlistRoutes');
@@ -17,281 +20,101 @@ const radioRoutes = require('./routes/radioRoutes');
 const artistRoutes = require('./routes/artistRoutes');
 const imageRoutes = require('./routes/imageRoutes');
 const metricRoutes = require('./routes/metricRoutes');
-const partyRoutes = require('./routes/partyRoutes');
-const PartyRoom = require('./models/PartyRoom');
+const roomRoutes = require('./routes/roomRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const { describeApi } = require('./utils/apiDocs');
+const { SOCKET_EVENTS } = require('./sockets/events');
 
-// Every session token in the app is signed with this — silently falling back to a
-// hardcoded default here would mean anyone reading the source could forge one.
-// Fail loudly at boot instead, same as a bad Mongo URI does in connectDB.
-if (!process.env.JWT_SECRET) {
-  console.error('Error: JWT_SECRET is not set (see backend/.env.example).');
-  process.exit(1);
-}
-
-connectDB();
+const mongoose = require('mongoose');
+const { client: redis, isReady: redisReady } = require('./config/redis');
+const realtime = env.ROLE !== 'api'; // tầng realtime giữ Socket.IO + phòng nghe chung
 
 const app = express();
-app.use(helmet({ crossOriginResourcePolicy: false })); // keep streamed audio/avatars embeddable cross-origin
-app.use(compression()); // gzip JSON responses — the song catalog list is the big one
+app.set('trust proxy', env.TRUST_PROXY); // req.ip = IP thật của người nghe do bộ cân bằng tải chuyển tiếp
+app.use(helmet({ crossOriginResourcePolicy: false })); // cho phép phát audio và ảnh đại diện cross-origin
+app.use(compression());                                // nén gzip dữ liệu trả về
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => res.json({ status: 'ok', service: 'hugo-music-api' }));
-
-// The rate limiter itself, and which auth routes actually need it, live in
-// routes/authRoutes.js — only the brute-forceable ones (login/otp/register/google),
-// not the already-authenticated ones (/me, /profile, /avatar...) that a normal
-// session hits repeatedly just by using the app.
-app.use('/api/auth', authRoutes);
-app.use('/api/songs', songRoutes);
-app.use('/api/playlists', playlistRoutes);
-app.use('/api/radio', radioRoutes);
-app.use('/api/artists', artistRoutes);
-app.use('/api/images', imageRoutes);
-app.use('/api/metrics', metricRoutes);
-app.use('/api/party', partyRoutes);
-
-app.use(notFound);
-app.use(errorHandler);
-
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
-app.set('io', io);
-
-// In-memory party-room state for fast fallback
-const partyRooms = new Map();
-
-const broadcastMemberCount = (roomId, excludeSocketId) => {
-  const room = io.sockets.adapter.rooms.get(roomId);
-  const count = room ? room.size - (excludeSocketId && room.has(excludeSocketId) ? 1 : 0) : 0;
-  io.to(roomId).emit('room_members', { roomId, count });
-};
-
-// Party codes are case-insensitive (the schema uppercases them). Workspace rooms embed
-// a lowercase hex ObjectId, so uppercasing those too broke multi-device sync: clients
-// joined WORKSPACE:<ID> while play_sync and room_members used workspace:<id>.
-const WORKSPACE = 'workspace:';
-const roomKey = (id) => {
-  const s = String(id).trim();
-  return s.startsWith(WORKSPACE) ? s : s.toUpperCase();
-};
-
-// Optional identity: guests can still listen in, but host-only actions and a user's own
-// workspace room need a verified user. The client passes its session JWT in the
-// handshake (frontend/src/utils/socket.ts) and reconnects when it logs in/out.
-io.use((socket, next) => {
-  const token = socket.handshake.auth?.token;
-  if (token) {
-    try {
-      socket.data.userId = String(jwt.verify(token, process.env.JWT_SECRET).id);
-    } catch {
-      // invalid/expired token -> treated as a guest
-    }
-  }
+// Mỗi phản hồi ghi rõ instance nào xử lý — bằng chứng phân tải khi đo, và để lần ra lỗi của một bản.
+// Đang tắt (draining): bảo client đóng kết nối keep-alive để lần sau đi sang instance khác.
+let draining = false;
+app.use((req, res, next) => {
+  res.set('X-Instance', env.INSTANCE_ID);
+  if (draining) res.set('Connection', 'close');
   next();
 });
 
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  // Handle joining a room (supports both legacy PIN & persistent MongoDB party room)
-  socket.on('join_room', async (roomId, userInfo) => {
-    if (!roomId) return;
-    const roomCode = roomKey(roomId);
-    const isWorkspace = roomCode.startsWith(WORKSPACE);
-    // Someone else's workspace room would let a stranger watch and drive their playback.
-    if (isWorkspace && roomCode !== `${WORKSPACE}${socket.data.userId}`) return;
-
-    // Anti-collision: Evict socket from any previous party room (joining the personal
-    // workspace room must not kick the user out of the party they're in).
-    if (!isWorkspace) {
-      for (const r of socket.rooms) {
-        if (r !== socket.id && !r.startsWith(WORKSPACE) && r !== roomCode) {
-          socket.leave(r);
-          broadcastMemberCount(r);
-          console.log(`Socket ${socket.id} automatically left previous party room ${r}`);
-        }
-      }
-    }
-
-    socket.join(roomCode);
-    console.log(`User ${socket.id} joined room ${roomCode}`);
-
-    // Check MongoDB for persistent party room
-    try {
-      const dbRoom = isWorkspace ? null : await PartyRoom.findOne({ code: roomCode, isActive: true });
-      if (dbRoom) {
-        // Identity comes from the verified handshake token only — userInfo.userId,
-        // userInfo.isHost and a matching display name are all client-controlled.
-        const userId = socket.data.userId;
-        const userName = userInfo?.name;
-        const isHost = Boolean(userId && dbRoom.host && dbRoom.host.toString() === userId);
-
-        let participant = null;
-        if (isHost) {
-          participant = dbRoom.participants.find(p =>
-            p.role === 'host' ||
-            (p.userId && p.userId.toString() === userId)
-          );
-        } else {
-          if (userId) {
-            participant = dbRoom.participants.find(p => p.userId && p.userId.toString() === userId.toString());
-          }
-          if (!participant && socket.id) {
-            participant = dbRoom.participants.find(p => p.socketId === socket.id);
-          }
-          if (!participant && userName && userName !== 'Khách') {
-            participant = dbRoom.participants.find(p => p.name === userName && p.role !== 'host');
-          }
-        }
-
-        if (participant) {
-          participant.isOnline = true;
-          participant.socketId = socket.id;
-          if (userId && !participant.userId) participant.userId = userId;
-          if (userInfo?.name) participant.name = userInfo.name;
-          if (userInfo?.avatar) participant.avatar = userInfo.avatar;
-          if (isHost) participant.role = 'host';
-        } else if (userInfo) {
-          dbRoom.participants.push({
-            userId: userId || undefined,
-            socketId: socket.id,
-            name: userInfo.name || 'Khách',
-            avatar: userInfo.avatar || '',
-            role: isHost ? 'host' : 'guest',
-            isOnline: true,
-            joinedAt: new Date(),
-          });
-        }
-
-        // Deduplicate participants: keep only unique host and unique users/names
-        const seenParticipants = new Set();
-        dbRoom.participants = dbRoom.participants.filter(p => {
-          if (p.role === 'host') {
-            if (seenParticipants.has('host')) return false;
-            seenParticipants.add('host');
-            return true;
-          }
-          // Drop any non-host participant with host's name or host's userId
-          if (p.name === dbRoom.hostName) return false;
-          if (p.userId && dbRoom.host && p.userId.toString() === dbRoom.host.toString()) return false;
-
-          const key = p.userId ? `u_${p.userId.toString()}` : `n_${p.name}`;
-          if (seenParticipants.has(key)) return false;
-          seenParticipants.add(key);
-          return true;
-        });
-
-        // Compute true real-time online status based on currently connected socket IDs in roomCode
-        const activeSockets = io.sockets.adapter.rooms.get(roomCode);
-        for (const p of dbRoom.participants) {
-          p.isOnline = Boolean(p.socketId && activeSockets && activeSockets.has(p.socketId));
-        }
-
-        await dbRoom.save();
-
-        // Send full room state to the newly joined socket
-        socket.emit('party:room_state', { room: dbRoom });
-        io.to(roomCode).emit('party:room_updated', { room: dbRoom });
-      }
-    } catch (err) {
-      console.warn('Error querying persistent room on join:', err.message);
-    }
-
-    // Also support in-memory state
-    const state = partyRooms.get(roomCode);
-    if (state) {
-      socket.emit('room_state', state);
-    }
-    broadcastMemberCount(roomCode);
-  });
-
-  // Host playback action: play, pause, seek, change song, update queue
-  socket.on('party:host_action', async (data) => {
-    if (!data || !data.roomId) return;
-    const roomCode = roomKey(data.roomId);
-
-    try {
-      const dbRoom = await PartyRoom.findOne({ code: roomCode, isActive: true });
-      // Only the verified host drives playback — room codes are listed publicly, so
-      // without this any visitor could hijack any room.
-      if (!dbRoom || !socket.data.userId || dbRoom.host.toString() !== socket.data.userId) return;
-
-      socket.to(roomCode).emit('party:sync_playback', data);
-
-      // Persist so the room survives even if everyone leaves
-      if (data.currentSong !== undefined) dbRoom.currentSong = data.currentSong;
-      if (data.position !== undefined) dbRoom.position = data.position;
-      if (data.isPlaying !== undefined) dbRoom.isPlaying = data.isPlaying;
-      if (data.queueIndex !== undefined) dbRoom.queueIndex = data.queueIndex;
-      if (Array.isArray(data.queue)) dbRoom.queue = data.queue;
-      dbRoom.lastSyncTime = new Date();
-      await dbRoom.save();
-    } catch (err) {
-      console.warn('Error saving party host action to DB:', err.message);
-    }
-  });
-
-  // Legacy sync signal (used by personal workspace sync & legacy party)
-  socket.on('play_sync', (data) => {
-    if (!data || !data.roomId || !socket.rooms.has(data.roomId)) return; // only rooms this socket is in
-    partyRooms.set(data.roomId, data);
-    io.to(data.roomId).emit('sync_playback', data);
-  });
-
-  // Participant leaves room (persistent room stays active!)
-  socket.on('leave_room', async (roomId) => {
-    if (!roomId) return;
-    const roomCode = roomKey(roomId);
-    socket.leave(roomCode);
-    broadcastMemberCount(roomCode);
-
-    try {
-      const dbRoom = await PartyRoom.findOne({ code: roomCode, isActive: true });
-      if (dbRoom) {
-        const participant = dbRoom.participants.find(p => p.socketId === socket.id);
-        if (participant) {
-          participant.isOnline = false;
-          await dbRoom.save();
-          io.to(roomCode).emit('party:room_updated', { room: dbRoom });
-        }
-      }
-    } catch (err) {
-      console.warn('Error updating participant offline status on leave:', err.message);
-    }
-  });
-
-  socket.on('disconnecting', () => {
-    for (const roomId of socket.rooms) {
-      if (roomId !== socket.id) {
-        broadcastMemberCount(roomId, socket.id);
-        // Mark participant offline in DB asynchronously
-        PartyRoom.findOne({ code: roomId, isActive: true }).then(dbRoom => {
-          if (dbRoom) {
-            const p = dbRoom.participants.find(part => part.socketId === socket.id);
-            if (p) {
-              p.isOnline = false;
-              dbRoom.save().then(() => {
-                io.to(roomId).emit('party:room_updated', { room: dbRoom });
-              });
-            }
-          }
-        }).catch(() => {});
-      }
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
+// GET /api mặc định "no-cache" = ĐƯỢC lưu nhưng phải hỏi lại trước khi dùng: client gửi If-None-Match,
+// dữ liệu không đổi thì nhận 304 rỗng (ETag của Express băm theo nội dung → trùng nhau giữa mọi instance
+// sau bộ cân bằng tải). Route nhạc/ảnh tự đặt Cache-Control riêng, ghi đè giá trị này.
+app.use('/api', (req, res, next) => {
+  if (req.method === 'GET') res.set('Cache-Control', 'no-cache');
+  next();
 });
 
-const PORT = process.env.PORT || 5001;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Healthcheck
+app.get('/', (req, res) => res.json({ status: 'ok', service: 'hugo-music-api' }));
+// Health check chủ động của bộ cân bằng tải (lb/): chỉ 200 khi thật sự phục vụ được — có Mongo, có
+// Redis, không đang tắt. Trả 503 thì bộ cân bằng tải ngừng gửi request mới tới bản này.
+app.get('/healthz', (req, res) => {
+  const checks = { mongo: mongoose.connection.readyState === 1, redis: redisReady(), draining };
+  const ok = checks.mongo && checks.redis && !draining;
+  res.status(ok ? 200 : 503).json({ ok, instance: env.INSTANCE_ID, role: env.ROLE, uptime: Math.round(process.uptime()), ...checks });
 });
+
+// REST API Endpoints
+// Danh sách route DUY NHẤT: vừa để gắn vào app, vừa để sinh tài liệu API (GET /api/docs, utils/apiDocs.js).
+// tier 'realtime': chỉ gắn ở tầng giữ Socket.IO + trạng thái phòng (bộ cân bằng tải lb/ định tuyến /api/rooms về đó).
+const MOUNTS = [
+  { prefix: '/api/auth', router: authRoutes, title: 'Xác thực & tài khoản' },
+  { prefix: '/api/songs', router: songRoutes, title: 'Bài hát & phát nhạc' },
+  { prefix: '/api/playlists', router: playlistRoutes, title: 'Danh sách phát' },
+  { prefix: '/api/radio', router: radioRoutes, title: 'Radio trực tuyến' },
+  { prefix: '/api/artists', router: artistRoutes, title: 'Nghệ sĩ' },
+  { prefix: '/api/images', router: imageRoutes, title: 'Ảnh' },
+  { prefix: '/api/metrics', router: metricRoutes, title: 'Số liệu nghe' },
+  { prefix: '/api/rooms', router: roomRoutes, title: 'Phòng nghe chung', tier: 'realtime' },
+  { prefix: '/api/admin', router: adminRoutes, title: 'Quản trị' },
+];
+for (const m of MOUNTS) if (m.tier !== 'realtime' || realtime) app.use(m.prefix, m.router);
+
+// GET /api/docs — tài liệu API tự sinh (công khai: chỉ mô tả, không lộ dữ liệu; route admin vẫn cần quyền admin).
+const apiDocs = describeApi(MOUNTS);
+app.get('/api/docs', (req, res) => res.json({ generatedAt: new Date().toISOString(), groups: apiDocs, socketEvents: SOCKET_EVENTS }));
+
+// Error Middlewares
+app.use(notFound);
+app.use(errorHandler);
+
+// 3. HTTP & Socket.IO Server (Tách biệt logic theo Rule #2)
+const server = http.createServer(app);
+// Keep-alive của Node phải sống LÂU HƠN của bộ cân bằng tải (lb/ giữ kết nối rảnh 30 s): nếu Node đóng
+// trước, bộ cân bằng tải có thể gửi request vào đúng kết nối vừa bị đóng → lỗi ECONNRESET ngẫu nhiên.
+server.keepAliveTimeout = 65_000;
+server.headersTimeout = 66_000;
+const io = realtime ? require('./sockets').initSockets(server, app) : null;
+
+// 4. Khởi động lắng nghe cổng
+server.listen(env.PORT, () => {
+  console.log(`Server running on port ${env.PORT} [${env.NODE_ENV}] role=${env.ROLE} id=${env.INSTANCE_ID}`);
+});
+
+// 5. Tắt êm (graceful shutdown) — triển khai lại / thu nhỏ không làm rớt request đang chạy:
+//    (1) /healthz trả 503 để bộ cân bằng tải ngừng gửi request mới, (2) chờ nó kịp nhận ra,
+//    (3) ngừng nhận kết nối, chờ request đang dở xong, (4) đóng DB/Redis. Quá hạn thì thoát cứng.
+const DRAIN_MS = Number(process.env.DRAIN_MS || 3000);
+async function shutdown(signal) {
+  if (draining) return;
+  draining = true;
+  console.log(`[shutdown] ${signal}: draining ${DRAIN_MS} ms`);
+  setTimeout(() => process.exit(1), DRAIN_MS + 10_000).unref();
+  await new Promise((r) => setTimeout(r, DRAIN_MS));
+  io?.close();
+  server.closeIdleConnections();
+  await new Promise((r) => server.close(r));
+  await Promise.allSettled([mongoose.disconnect(), redis.quit()]);
+  process.exit(0);
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

@@ -1,0 +1,20 @@
+{
+  "name": "hugo-music",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hugo Music - Fullstack Streaming Platform",
+  "scripts": {
+    "dev": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
+    "dev:web": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm run web --prefix frontend\"",
+    "dev:ios": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
+    "dev:android": "npm run clean:ports && concurrently -n \"BACKEND,EXPO\" -c \"blue.bold,magenta.bold\" --kill-others \"npm run dev --prefix backend\" \"npm run android --prefix frontend\"",
+    "clean:ports": "kill -9 $(lsof -t -i:8081 -i:5001) 2>/dev/null || true",
+    "start": "npm run dev",
+    "web": "npm run dev:web",
+    "test": "npm test --prefix backend && npm test --prefix frontend && npm test --prefix worker && node lb/lb.test.js",
+    "cluster": "node lb/cluster.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

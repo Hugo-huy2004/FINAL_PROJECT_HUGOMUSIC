@@ -1,143 +1,112 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import LiquidGlassButton from '../../../components/LiquidGlass/LiquidGlassButton';
+import { useState } from 'react';
+import { View, Text, Platform, Image } from 'react-native';
 import LicensePicker from './LicensePicker';
+import { C, Btn, Field, ErrorLine, s as ui } from '../ui';
 
-// Bài tải lên vào thẳng hàng chờ duyệt. Giấy phép và URL nguồn là bắt buộc:
-// thiếu chúng thì bài không bao giờ qua được tầng bản quyền.
-export default function UploadForm({
-  isUploading,
-  onUpload,
-}: {
-  isUploading: boolean;
-  onUpload: (form: FormData) => Promise<boolean>;
-}) {
-  const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('');
-  const [genre, setGenre] = useState('');
+const AUDIO_MAX = 50 * 1024 * 1024;
+const COVER_MAX = 5 * 1024 * 1024;
+const mb = (n: number) => `${(n / 1024 / 1024).toFixed(1)} MB`;
+
+// Tải bài vào kho → hàng chờ duyệt. Bắt buộc: tệp nhạc, giấy phép, URL nguồn (thiếu thì không bao giờ qua tầng
+// bản quyền). Tuỳ chọn: ảnh bìa riêng (không có thì lấy ảnh nhúng trong tệp), album, tên/nghệ sĩ (không nhập thì
+// đọc từ thẻ ID3). Kiểm tra loại/cỡ tệp ngay trên máy trước khi tốn băng thông tải lên.
+export default function UploadForm({ isUploading, onUpload }: { isUploading: boolean; onUpload: (form: FormData) => Promise<boolean> }) {
+  const [f, setF] = useState({ title: '', artist: '', genre: '', category: '', albumTitle: '', albumYear: '', trackNo: '', sourceUrl: '', licenseUrl: '', attribution: '' });
   const [licenseType, setLicenseType] = useState('');
-  const [sourceUrl, setSourceUrl] = useState('');
-  const [attribution, setAttribution] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const sourceOk = /^https?:\/\/\S+$/i.test(sourceUrl.trim());
+  const [audio, setAudio] = useState<File | null>(null);
+  const [cover, setCover] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const set = (k: keyof typeof f) => (v: string) => setF((x) => ({ ...x, [k]: k === 'albumYear' || k === 'trackNo' ? v.replace(/\D/g, '') : v }));
+  const sourceOk = /^https?:\/\/\S+$/i.test(f.sourceUrl.trim());
+  const ready = !!audio && !!licenseType && sourceOk && !isUploading;
 
   if (Platform.OS !== 'web') {
-    return (
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Tải bài hát lên</Text>
-        <Text style={styles.hint}>Mở trang quản trị trên trình duyệt web để tải bài hát lên.</Text>
-      </View>
-    );
+    return <Text style={ui.rowSub}>Mở trang quản trị trên trình duyệt web để tải bài hát lên (cần chọn tệp từ máy).</Text>;
   }
 
-  const handlePickFile = (e: any) => setFile(e.target.files?.[0] ?? null);
+  const pickAudio = (e: any) => {
+    const file: File | undefined = e.target.files?.[0];
+    setError(null);
+    if (!file) return setAudio(null);
+    if (!file.type.startsWith('audio/')) { setError('Tệp nhạc phải là định dạng âm thanh (mp3, flac, ogg, wav…)'); return setAudio(null); }
+    if (file.size > AUDIO_MAX) { setError(`Tệp nhạc ${mb(file.size)} — tối đa 50 MB`); return setAudio(null); }
+    setAudio(file);
+  };
+  const pickCover = (e: any) => {
+    const file: File | undefined = e.target.files?.[0];
+    setError(null);
+    if (!file) { setCover(null); setCoverPreview(null); return; }
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { setError('Ảnh bìa phải là JPEG, PNG hoặc WebP'); return; }
+    if (file.size > COVER_MAX) { setError(`Ảnh bìa ${mb(file.size)} — tối đa 5 MB`); return; }
+    setCover(file);
+    setCoverPreview(URL.createObjectURL(file));
+  };
 
-  const onSubmit = async () => {
-    if (!file || !licenseType || !sourceOk) return;
+  const submit = async () => {
+    if (!ready) return;
     const form = new FormData();
-    form.append('audio', file);
+    form.append('audio', audio!);
+    if (cover) form.append('cover', cover);
     form.append('licenseType', licenseType);
-    form.append('sourceUrl', sourceUrl.trim());
-    if (title.trim()) form.append('title', title.trim());
-    if (artist.trim()) form.append('artist', artist.trim());
-    if (genre.trim()) form.append('genre', genre.trim());
-    if (attribution.trim()) form.append('attribution', attribution.trim());
-
-    const success = await onUpload(form);
-    if (success) {
-      setTitle('');
-      setArtist('');
-      setGenre('');
+    Object.entries(f).forEach(([k, v]) => { if (v.trim()) form.append(k, v.trim()); });
+    if (await onUpload(form)) {
+      setF({ title: '', artist: '', genre: '', category: '', albumTitle: '', albumYear: '', trackNo: '', sourceUrl: '', licenseUrl: '', attribution: '' });
       setLicenseType('');
-      setSourceUrl('');
-      setAttribution('');
-      setFile(null);
-      // Reset file input value
-      const fileInput = document.getElementById('audioUploadInput') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
+      setAudio(null);
+      setCover(null);
+      setCoverPreview(null);
     }
   };
 
+  const fileBox = (label: string, hint: string, accept: string, onChange: (e: any) => void, picked: File | null) => (
+    <View style={{ marginBottom: 12 }}>
+      <Text style={ui.fieldLabel}>{label}</Text>
+      <View style={{ borderWidth: 1, borderStyle: 'dashed', borderColor: C.border, borderRadius: 10, padding: 12, backgroundColor: C.sunken }}>
+        <input type="file" accept={accept} onChange={onChange} style={{ color: C.text, fontSize: 13 }} />
+        <Text style={[ui.rowSub, { marginTop: 6 }]}>{picked ? `${picked.name} · ${mb(picked.size)}` : hint}</Text>
+      </View>
+    </View>
+  );
+
+  const section = (t: string) => <Text style={{ fontSize: 12, fontWeight: '800', color: C.faint, letterSpacing: 0.4, marginTop: 8, marginBottom: 8 }}>{t}</Text>;
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>Thêm bài vào kho</Text>
-      <Text style={styles.hint}>Bài mới vào hàng chờ duyệt, chưa hiện với người nghe.</Text>
-      <TextInput 
-        style={styles.input} 
-        placeholder="Tên bài hát (tùy chọn - tự nhận diện)" 
-        placeholderTextColor="#888" 
-        value={title} 
-        onChangeText={setTitle} 
-      />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Nghệ sĩ (tùy chọn - tự nhận diện)" 
-        placeholderTextColor="#888" 
-        value={artist} 
-        onChangeText={setArtist} 
-      />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Thể loại (tùy chọn - tự nhận diện)" 
-        placeholderTextColor="#888" 
-        value={genre} 
-        onChangeText={setGenre} 
-      />
-      <Text style={styles.label}>Giấy phép *</Text>
+    <View>
+      <ErrorLine message={error} />
+      {section('TỆP')}
+      {fileBox('Tệp nhạc *', 'mp3, flac, ogg, wav… tối đa 50 MB', 'audio/*', pickAudio, audio)}
+      <View style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+        <View style={{ flex: 1 }}>{fileBox('Ảnh bìa', 'JPEG/PNG/WebP ≤ 5 MB — để trống thì lấy ảnh nhúng trong tệp nhạc', 'image/jpeg,image/png,image/webp', pickCover, cover)}</View>
+        {coverPreview && <Image source={{ uri: coverPreview }} style={{ width: 88, height: 88, borderRadius: 8, marginTop: 22 }} />}
+      </View>
+
+      {section('THÔNG TIN BÀI (để trống → đọc từ thẻ ID3 của tệp)')}
+      <Field label="Tên bài" value={f.title} onChange={set('title')} />
+      <Field label="Nghệ sĩ" value={f.artist} onChange={set('artist')} />
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flex: 1 }}><Field label="Thể loại" value={f.genre} onChange={set('genre')} placeholder="vd. Electronic" /></View>
+        <View style={{ flex: 1 }}><Field label="Danh mục" value={f.category} onChange={set('category')} placeholder="vd. Nhạc Quốc Tế" /></View>
+      </View>
+
+      {section('ALBUM')}
+      <Field label="Tên album" value={f.albumTitle} onChange={set('albumTitle')} />
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flex: 1 }}><Field label="Năm phát hành" value={f.albumYear} onChange={set('albumYear')} keyboardType="number-pad" /></View>
+        <View style={{ flex: 1 }}><Field label="Số thứ tự trong album" value={f.trackNo} onChange={set('trackNo')} keyboardType="number-pad" /></View>
+      </View>
+
+      {section('BẢN QUYỀN (bắt buộc để qua duyệt)')}
+      <Text style={ui.fieldLabel}>Giấy phép *</Text>
       <LicensePicker value={licenseType} onChange={setLicenseType} />
-      <TextInput
-        style={styles.input}
-        placeholder="URL nguồn * (vd. https://archive.org/details/...)"
-        placeholderTextColor="#888"
-        value={sourceUrl}
-        onChangeText={setSourceUrl}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ghi công tác giả (mặc định: tên nghệ sĩ)"
-        placeholderTextColor="#888"
-        value={attribution}
-        onChangeText={setAttribution}
-      />
-      
-      {/* Native web file input */}
-      <input 
-        id="audioUploadInput"
-        type="file" 
-        accept="audio/*" 
-        onChange={handlePickFile} 
-        style={{ marginBottom: 16, color: '#333' }} 
-      />
-      
-      <LiquidGlassButton
-        variant="primary"
-        size="lg"
-        title={isUploading ? undefined : 'Tải lên và gửi duyệt'}
-        icon={isUploading ? <ActivityIndicator color="#fff" /> : undefined}
-        onPress={onSubmit}
-        disabled={!file || !licenseType || !sourceOk || isUploading}
-        style={{ width: '100%', marginTop: 8 }}
-      />
+      <View style={{ height: 8 }} />
+      <Field label="URL nguồn *" value={f.sourceUrl} onChange={set('sourceUrl')} placeholder="https://archive.org/details/…" />
+      {!!f.sourceUrl && !sourceOk && <Text style={{ color: C.danger, fontSize: 12, marginTop: -8, marginBottom: 8 }}>URL phải bắt đầu bằng http:// hoặc https://</Text>}
+      <Field label="URL giấy phép" value={f.licenseUrl} onChange={set('licenseUrl')} placeholder="https://creativecommons.org/licenses/…" />
+      <Field label="Ghi công tác giả" value={f.attribution} onChange={set('attribution')} placeholder="Mặc định: tên nghệ sĩ" />
+
+      <Btn variant="primary" icon="cloud-upload-outline" label={isUploading ? 'Đang tải lên…' : 'Tải lên và đưa vào hàng chờ duyệt'} onPress={submit} disabled={!ready} loading={isUploading} />
+      {!ready && !isUploading && <Text style={[ui.rowSub, { marginTop: 8 }]}>Cần: tệp nhạc, giấy phép và URL nguồn hợp lệ.</Text>}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: { backgroundColor: '#fff', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } },
-  cardTitle: { fontSize: 18, fontWeight: '700', color: '#000', marginBottom: 16 },
-  hint: { color: '#999', fontSize: 14, marginBottom: 16 },
-  label: { fontSize: 13, fontWeight: '600', color: '#333', marginBottom: 8 },
-  input: {
-    width: '100%',
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 15,
-    marginBottom: 16,
-    color: '#333',
-    backgroundColor: '#fafafa',
-  },
-});

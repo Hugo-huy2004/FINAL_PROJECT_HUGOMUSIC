@@ -7,6 +7,8 @@ const notFound = (req, res, next) => {
 // asyncHandler-wrapped controller, ends up here instead of Express's default HTML page.
 const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  // Lỗi tự ném kèm mã (throw Object.assign(new Error('...'), { status: 404 })).
+  if (Number.isInteger(err.status) && err.status >= 400 && err.status < 600) statusCode = err.status;
   let message = err.message || 'Server error';
 
   // Mongoose bad ObjectId -> 404 instead of a raw 500 cast error.

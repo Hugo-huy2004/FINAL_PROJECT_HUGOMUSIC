@@ -5,7 +5,7 @@ import { resolvePlayback, getAuthToken } from './api';
 // Với HLS, prefetch rẻ hơn hẳn so với file rời: chỉ cần master playlist +
 // playlist biến thể + 1 segment đầu là đủ phát, thay vì phải kéo cả file vài MB.
 //
-// Từ khi segment rút từ 10 giây xuống 4 giây (xem buildHls.js), chi phí prefetch
+// Từ khi segment rút từ 10 giây xuống 4 giây (xem backend/pipeline/jobs/HlsJob.js), chi phí prefetch
 // giảm tiếp: segment đầu ở tier 64k chỉ còn ~39 KB thay vì ~90 KB. So với file
 // rời 7.2 MB thì giảm 99.5%.
 //

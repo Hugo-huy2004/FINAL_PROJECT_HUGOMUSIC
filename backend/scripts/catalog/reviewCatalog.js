@@ -23,11 +23,10 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 const mongoose = require('mongoose');
 const connectDB = require('../../config/db');
+const { saveResult, loadResult } = require('../../utils/researchStore');
 const Song = require('../../models/Song');
 const { reviewSong } = require('../../utils/songReview');
 
-const CEILING_PATH = path.join(__dirname, '..', '..', 'research', 'results', 'source_ceiling_audit.json');
-const OUT_PATH = path.join(__dirname, '..', '..', 'research', 'results', 'two_tier_review.json');
 
 async function main() {
   await connectDB();
@@ -36,7 +35,7 @@ async function main() {
 
   const ceilingById = new Map();
   if (fs.existsSync(CEILING_PATH)) {
-    JSON.parse(fs.readFileSync(CEILING_PATH, 'utf8')).forEach((r) => ceilingById.set(r.id, r));
+    (await loadResult('source_ceiling_audit')).forEach((r) => ceilingById.set(r.id, r));
   }
 
   const report = [];
@@ -58,7 +57,7 @@ async function main() {
     });
   }
 
-  fs.writeFileSync(OUT_PATH, JSON.stringify(report, null, 2));
+  await saveResult('two_tier_review', report);
 
   const total = report.length;
   const cPass = report.filter((r) => r.copyrightPass).length;
@@ -85,7 +84,6 @@ async function main() {
   if (!ceilingById.size) {
     console.log('\n(chưa có source_ceiling_audit.json nên chưa xét được tiêu chí "đạt trần nguồn")');
   }
-  console.log(`\nChi tiết: ${OUT_PATH}`);
   await mongoose.disconnect();
 }
 

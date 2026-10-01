@@ -1,1324 +1,205 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-  ScrollView,
-  Image,
-  useWindowDimensions,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Image, StyleSheet, Pressable, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useStore } from '../../store/useStore';
-import {
-  useAppTheme,
-  BRAND_GRADIENT_LIGHT,
-  BRAND_GRADIENT_LIGHT_LOCATIONS,
-  BRAND_GRADIENT_DARK,
-  BRAND_GRADIENT_DARK_LOCATIONS,
-} from '../../theme/theme';
+import { useAppTheme } from '../../theme/theme';
 import { useTranslation } from '../../i18n/i18n';
+import { TabId } from '../../utils/tabRouting';
+import { useSidebarDock, setSidebarPref, SIDEBAR_FULL, SIDEBAR_RAIL, SIDEBAR_INSET } from '../../ui/sidebar';
+import Glass from '../LiquidGlass/Glass';
 import { UserAvatar } from '../UserAvatar';
 
-export type SidebarMode = 'bubble' | 'rail' | 'full';
+// Thanh bên desktop — một tấm kính nổi: Tìm kiếm, Trang chủ, Mới, Radio, Thư viện + tài khoản (ui/sidebar.ts quyết dạng).
+//  - Dạng rail chỉ còn icon; rê chuột vào thì tấm kính GIÃN ra đè lên nội dung, rê ra thì co.
+//  - Nút ở góc: đang mở → thu gọn; đang xem tạm → ghim mở. Lựa chọn được nhớ.
+//  - Mục đang chọn nằm trong một "giọt kính" trượt theo lò xo: khi di chuyển giọt kéo dài
+//    theo chiều dọc và thắt lại chiều ngang, tới nơi thì nảy về tròn — như giọt nước.
+// Icon giữ nguyên vị trí ở cả hai dạng; chỉ tấm kính nở ra và chữ hiện dần.
+const PAD = 10;
+const ROW = 44;
+const GAP = 4;
+const ICON_X = (SIDEBAR_RAIL - PAD * 2 - 22) / 2; // icon 22px nằm giữa rail
+const USE_NATIVE = false; // nội suy bề rộng — native driver không làm được
+const HOVER_OPEN_MS = 120;
+const HOVER_CLOSE_MS = 220;
 
-export interface SidebarProps {
-  onLoginPress: () => void;
-  onProfilePress: () => void;
-  activeTab: string;
-  onTabChange: (tabId: string) => void;
-}
+type Item = { id: TabId; icon: keyof typeof Ionicons.glyphMap; iconActive: keyof typeof Ionicons.glyphMap; label: string };
 
-// -----------------------------------------------------------------------------
-// High-Precision Spring Physics Helper (Symplectic Euler Integration)
-// -----------------------------------------------------------------------------
-interface SpringVal {
-  current: number;
-  target: number;
-  velocity: number;
-}
-
-function createSpring(initial: number): SpringVal {
-  return { current: initial, target: initial, velocity: 0 };
-}
-
-function updateSpring(s: SpringVal, stiffness: number, damping: number, dt: number): boolean {
-  const displacement = s.current - s.target;
-  const springForce = -stiffness * displacement;
-  const dampingForce = -damping * s.velocity;
-  const acceleration = springForce + dampingForce; // mass = 1
-
-  s.velocity += acceleration * dt;
-  s.current += s.velocity * dt;
-
-  // Snap to target when settled to stop continuous RAF
-  if (Math.abs(displacement) < 0.04 && Math.abs(s.velocity) < 0.04) {
-    s.current = s.target;
-    s.velocity = 0;
-    return true; // settled
-  }
-  return false;
-}
-
-export default function Sidebar({
-  onLoginPress,
-  onProfilePress,
-  activeTab,
-  onTabChange,
-}: SidebarProps) {
-  const user = useStore((state) => state.user);
-  const logout = useStore((state) => state.logout);
-  const partyRoomId = useStore((state) => state.partyRoomId);
+export default function Sidebar({ activeTab, onTabChange }: { activeTab: TabId; onTabChange: (tab: TabId) => void }) {
   const { colors, isDark } = useAppTheme();
   const { t } = useTranslation();
-  const { height: windowHeight } = useWindowDimensions();
+  const user = useStore((s) => s.user);
+  const setLoginModalVisible = useStore((s) => s.setLoginModalVisible);
+  const { full } = useSidebarDock();
+  const [peek, setPeek] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const open = full || peek;
 
-  // 3-state mode: 'bubble' (54px) <-> 'rail' (68px) <-> 'full' (262px)
-  const [mode, setMode] = useState<SidebarMode>('rail');
-  const [isPinned, setIsPinned] = useState(false);
+  const items: Item[] = [
+    { id: 'home', icon: 'home-outline', iconActive: 'home', label: t('home') },
+    { id: 'new', icon: 'grid-outline', iconActive: 'grid', label: 'Mới' },
+    { id: 'radio', icon: 'radio-outline', iconActive: 'radio', label: t('radio') },
+    { id: 'library', icon: 'albums-outline', iconActive: 'albums', label: t('library') },
+  ];
+  const activeIndex = items.findIndex((i) => i.id === activeTab);
 
-  // DOM Refs for direct 120fps hardware-accelerated RAF animation
-  const containerRef = useRef<any>(null);
-  const bodyRef = useRef<any>(null);
-  const wordmarkRef = useRef<any>(null);
-  const actionsRef = useRef<any>(null);
-  const labelsContainerRef = useRef<any[]>([]);
-
-  // Spring state values
-  const maxHeight = Platform.OS === 'web' ? window.innerHeight - 36 : windowHeight - 36;
-  const springs = useRef({
-    width: createSpring(68),
-    height: createSpring(maxHeight),
-    radius: createSpring(28),
-    scaleX: createSpring(1),
-    scaleY: createSpring(1),
-    contentOpacity: createSpring(1),
-    wordmarkWidth: createSpring(0),
-    wordmarkOpacity: createSpring(0),
-    labelsWidth: createSpring(0),
-    labelsOpacity: createSpring(0),
-  }).current;
-
-  const rafIdRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number | null>(null);
-  const prevModeRef = useRef<SidebarMode>('rail');
-
-  // Interactive Live Gesture Drag State
-  const isDraggingRef = useRef(false);
-  const dragStartRef = useRef<{
-    clientX: number;
-    clientY: number;
-    initialWidth: number;
-    initialHeight: number;
-    time: number;
-    lastClientX: number;
-    lastClientY: number;
-    lastTime: number;
-    hasMoved: boolean;
-  }>({
-    clientX: 0,
-    clientY: 0,
-    initialWidth: 68,
-    initialHeight: maxHeight,
-    time: 0,
-    lastClientX: 0,
-    lastClientY: 0,
-    lastTime: 0,
-    hasMoved: false,
-  });
-
-  const brandColors = isDark ? BRAND_GRADIENT_DARK : BRAND_GRADIENT_LIGHT;
-  const brandLocations = isDark ? BRAND_GRADIENT_DARK_LOCATIONS : BRAND_GRADIENT_LIGHT_LOCATIONS;
-
-  // ---------------------------------------------------------------------------
-  // Master DOM Styles Renderer (120fps direct mutation, zero React re-render lag)
-  // ---------------------------------------------------------------------------
-  const applyDOMStyles = useCallback(() => {
-    if (Platform.OS !== 'web') return;
-    const el = containerRef.current;
-    if (!el) return;
-
-    const w = springs.width.current;
-    const h = springs.height.current;
-    const r = springs.radius.current;
-    const sx = springs.scaleX.current;
-    const sy = springs.scaleY.current;
-
-    // Apply main morphing container dimensions with liquid scale and hardware acceleration
-    el.style.width = `${Math.max(48, w)}px`;
-    el.style.height = `${Math.max(48, h)}px`;
-    el.style.borderRadius = `${Math.max(20, r)}px`;
-    el.style.transform = `scale(${sx}, ${sy}) translate3d(0, 0, 0)`;
-
-    // Body content fade
-    if (bodyRef.current) {
-      bodyRef.current.style.opacity = `${Math.max(0, Math.min(1, springs.contentOpacity.current))}`;
-    }
-
-    // Wordmark text reveal with subtle slide
-    if (wordmarkRef.current) {
-      const wOpacity = Math.max(0, Math.min(1, springs.wordmarkOpacity.current));
-      wordmarkRef.current.style.maxWidth = `${Math.max(0, springs.wordmarkWidth.current)}px`;
-      wordmarkRef.current.style.opacity = `${wOpacity}`;
-      const slideX = (1 - wOpacity) * -10;
-      wordmarkRef.current.style.transform = `translateX(${slideX}px)`;
-    }
-
-    // Header actions
-    if (actionsRef.current) {
-      const aOpacity = Math.max(0, Math.min(1, springs.wordmarkOpacity.current));
-      actionsRef.current.style.opacity = `${aOpacity}`;
-      actionsRef.current.style.maxWidth = `${Math.max(0, springs.wordmarkWidth.current > 30 ? 90 : 0)}px`;
-      actionsRef.current.style.pointerEvents = springs.wordmarkWidth.current > 70 ? 'auto' : 'none';
-    }
-
-    // Menu text labels reveal with micro-staggered fluid cascade
-    const labelW = springs.labelsWidth.current;
-    const labelOp = Math.max(0, Math.min(1, springs.labelsOpacity.current));
-    labelsContainerRef.current.forEach((node, idx) => {
-      if (node) {
-        const staggerW = Math.max(0, labelW - idx * 2.2);
-        const staggerOp = Math.max(0, Math.min(1, (labelOp - idx * 0.015) / 0.85));
-        node.style.maxWidth = `${staggerW}px`;
-        node.style.opacity = `${staggerOp}`;
-        const slideX = (1 - staggerOp) * -8;
-        node.style.transform = `translateX(${slideX}px)`;
-      }
-    });
-  }, [springs]);
-
-  // ---------------------------------------------------------------------------
-  // Master requestAnimationFrame Spring Loop
-  // ---------------------------------------------------------------------------
-  const startSpringLoop = useCallback(() => {
-    if (rafIdRef.current !== null) return;
-    lastTimeRef.current = null;
-
-    const loop = (timestamp: number) => {
-      if (lastTimeRef.current === null) {
-        lastTimeRef.current = timestamp;
-      }
-      const dt = Math.min((timestamp - lastTimeRef.current) / 1000, 0.025);
-      lastTimeRef.current = timestamp;
-
-      // Spring Physics Parameters (Tuned for Apple Fluid Elastic Response):
-      // Stiffness 240, damping 18.5 -> damping ratio ~0.597 produces a silky 5% bounce!
-      const wSettled = updateSpring(springs.width, 240, 18.5, dt);
-      const hSettled = updateSpring(springs.height, 220, 18.0, dt);
-      const rSettled = updateSpring(springs.radius, 260, 22.0, dt);
-      const sxSettled = updateSpring(springs.scaleX, 210, 16.0, dt);
-      const sySettled = updateSpring(springs.scaleY, 210, 16.0, dt);
-      const cSettled = updateSpring(springs.contentOpacity, 260, 22.0, dt);
-      const wwSettled = updateSpring(springs.wordmarkWidth, 240, 19.0, dt);
-      const woSettled = updateSpring(springs.wordmarkOpacity, 260, 22.0, dt);
-      const lwSettled = updateSpring(springs.labelsWidth, 240, 19.0, dt);
-      const loSettled = updateSpring(springs.labelsOpacity, 260, 22.0, dt);
-
-      applyDOMStyles();
-
-      const allSettled =
-        wSettled &&
-        hSettled &&
-        rSettled &&
-        sxSettled &&
-        sySettled &&
-        cSettled &&
-        wwSettled &&
-        woSettled &&
-        lwSettled &&
-        loSettled;
-
-      if (!allSettled) {
-        rafIdRef.current = requestAnimationFrame(loop);
-      } else {
-        rafIdRef.current = null;
-      }
-    };
-
-    rafIdRef.current = requestAnimationFrame(loop);
-  }, [springs, applyDOMStyles]);
-
-  // Initial layout application on mount
+  // --- tấm kính nở/co ---
+  const progress = useRef(new Animated.Value(open ? 1 : 0)).current;
   useEffect(() => {
-    applyDOMStyles();
-  }, [applyDOMStyles]);
-
-  // When `mode` changes, set target spring values and apply liquid impulse
-  useEffect(() => {
-    const curH = Platform.OS === 'web' ? window.innerHeight - 36 : windowHeight - 36;
-    const prev = prevModeRef.current;
-    prevModeRef.current = mode;
-
-    if (mode === 'bubble') {
-      springs.width.target = 54;
-      springs.height.target = 54;
-      springs.radius.target = 27;
-      springs.contentOpacity.target = 0;
-      springs.wordmarkWidth.target = 0;
-      springs.wordmarkOpacity.target = 0;
-      springs.labelsWidth.target = 0;
-      springs.labelsOpacity.target = 0;
-
-      // Elastic snap-back impulse
-      if (prev === 'rail' || prev === 'full') {
-        springs.scaleY.velocity = -1.8;
-        springs.scaleX.velocity = 0.9;
-      }
-    } else if (mode === 'rail') {
-      springs.width.target = 68;
-      springs.height.target = curH;
-      springs.radius.target = 28;
-      springs.contentOpacity.target = 1;
-      springs.wordmarkWidth.target = 0;
-      springs.wordmarkOpacity.target = 0;
-      springs.labelsWidth.target = 0;
-      springs.labelsOpacity.target = 0;
-
-      if (prev === 'bubble') {
-        // Vertical droplet drop stretch
-        springs.scaleY.velocity = 2.0;
-        springs.scaleX.velocity = -0.9;
-      } else if (prev === 'full') {
-        // Horizontal retraction bounce
-        springs.scaleX.velocity = -1.6;
-        springs.scaleY.velocity = 0.7;
-      }
-    } else if (mode === 'full') {
-      springs.width.target = 262;
-      springs.height.target = curH;
-      springs.radius.target = 28;
-      springs.contentOpacity.target = 1;
-      springs.wordmarkWidth.target = 140;
-      springs.wordmarkOpacity.target = 1;
-      springs.labelsWidth.target = 160;
-      springs.labelsOpacity.target = 1;
-
-      // Horizontal liquid surge impulse
-      springs.scaleX.velocity = 1.7;
-      springs.scaleY.velocity = -0.6;
-    }
-
-    startSpringLoop();
-
-    return () => {
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-    };
-  }, [mode, windowHeight, springs, startSpringLoop]);
-
-  // Handle window resize dynamically
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    const onResize = () => {
-      if (mode !== 'bubble') {
-        springs.height.target = window.innerHeight - 36;
-        startSpringLoop();
-      }
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [mode, springs, startSpringLoop]);
-
-  // ---------------------------------------------------------------------------
-  // Real-Time Gesture Drag & Swipe Controller ("vuốt ra, thu vào mượt mà")
-  // ---------------------------------------------------------------------------
-  const onWindowPointerMove = useCallback((e: PointerEvent) => {
-    if (!isDraggingRef.current) return;
-
-    const dx = e.clientX - dragStartRef.current.clientX;
-    const dy = e.clientY - dragStartRef.current.clientY;
-
-    if (!dragStartRef.current.hasMoved) {
-      if (Math.hypot(dx, dy) > 5) {
-        dragStartRef.current.hasMoved = true;
-        if (containerRef.current) {
-          containerRef.current.classList.add('is-dragging');
-        }
-      } else {
-        return;
-      }
-    }
-
-    e.preventDefault();
-
-    const now = performance.now();
-    dragStartRef.current.lastClientX = e.clientX;
-    dragStartRef.current.lastClientY = e.clientY;
-    dragStartRef.current.lastTime = now;
-
-    // Interactive tracking depending on active mode:
-    if (mode === 'rail') {
-      if (dx > 0) {
-        // Vuốt ra: stretching outward towards Full (68 -> 262)
-        let w = 68 + dx;
-        if (w > 262) {
-          // Rubber band resistance past 262
-          w = 262 + (w - 262) * 0.22;
-        }
-        springs.width.current = w;
-        springs.width.target = w;
-
-        // Progress 0..1
-        const progress = Math.min(1, Math.max(0, (w - 68) / (262 - 68)));
-        springs.wordmarkWidth.current = progress * 140;
-        springs.wordmarkOpacity.current = progress;
-        springs.labelsWidth.current = progress * 160;
-        springs.labelsOpacity.current = progress;
-        springs.contentOpacity.current = 1;
-
-        // Subtle fluid squash & stretch
-        springs.scaleX.current = 1 + progress * 0.025;
-        springs.scaleY.current = 1 - progress * 0.012;
-      } else {
-        // Thu vào: pulling inward towards bubble
-        const w = Math.max(50, 68 + dx * 0.6);
-        springs.width.current = w;
-        springs.width.target = w;
-        springs.radius.current = 28 - (68 - w) * 0.1;
-      }
-    } else if (mode === 'full') {
-      if (dx < 0) {
-        // Thu vào: collapsing inward towards rail (262 -> 68)
-        let w = 262 + dx;
-        if (w < 68) {
-          // Rubber band resistance past 68
-          w = 68 + (w - 68) * 0.22;
-        }
-        springs.width.current = w;
-        springs.width.target = w;
-
-        const progress = Math.min(1, Math.max(0, (w - 68) / (262 - 68)));
-        springs.wordmarkWidth.current = progress * 140;
-        springs.wordmarkOpacity.current = progress;
-        springs.labelsWidth.current = progress * 160;
-        springs.labelsOpacity.current = progress;
-
-        springs.scaleX.current = 1 - (1 - progress) * 0.025;
-        springs.scaleY.current = 1 + (1 - progress) * 0.012;
-      }
-    } else if (mode === 'bubble') {
-      if (dy > 0) {
-        // Vuốt xuống: dropping downward towards rail (54 -> maxHeight)
-        const curH = window.innerHeight - 36;
-        let h = 54 + dy;
-        if (h > curH) h = curH + (h - curH) * 0.2;
-        springs.height.current = h;
-        springs.height.target = h;
-
-        const progress = Math.min(1, Math.max(0, (h - 54) / (curH - 54)));
-        springs.width.current = 54 + progress * 14;
-        springs.width.target = springs.width.current;
-        springs.radius.current = 27 + progress * 1;
-        springs.contentOpacity.current = progress;
-
-        // Droplet stretch
-        springs.scaleY.current = 1 + Math.min(0.08, progress * 0.14);
-        springs.scaleX.current = 1 - Math.min(0.04, progress * 0.07);
-      }
-    }
-
-    applyDOMStyles();
-  }, [mode, springs, applyDOMStyles]);
-
-  const onWindowPointerUp = useCallback((e: PointerEvent) => {
-    window.removeEventListener('pointermove', onWindowPointerMove);
-    window.removeEventListener('pointerup', onWindowPointerUp);
-    window.removeEventListener('pointercancel', onWindowPointerUp);
-
-    if (containerRef.current) {
-      containerRef.current.classList.remove('is-dragging');
-    }
-
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-
-    const dx = e.clientX - dragStartRef.current.clientX;
-    const dy = e.clientY - dragStartRef.current.clientY;
-    const dt = Math.max(1, performance.now() - dragStartRef.current.time);
-    const vx = dx / dt; // px/ms
-    const vy = dy / dt; // px/ms
-
-    if (!dragStartRef.current.hasMoved) {
-      // Clean tap, do not intercept
-      return;
-    }
-
-    // Cancel synthetic click underneath to protect buttons from firing on swipe
-    const preventClick = (ev: MouseEvent) => {
-      ev.stopPropagation();
-      ev.preventDefault();
-      window.removeEventListener('click', preventClick, true);
-    };
-    window.addEventListener('click', preventClick, true);
-
-    // Gesture decision and dynamic momentum velocity injection:
-    if (mode === 'rail') {
-      if (dx > 45 || vx > 0.3) {
-        // Vuốt bung ra Full!
-        springs.width.velocity = Math.max(300, vx * 1000);
-        springs.scaleX.velocity = 0.85;
-        springs.scaleY.velocity = -0.4;
-        setMode('full');
-      } else if (dx < -30 || vx < -0.3 || dy < -45 || vy < -0.3) {
-        // Vuốt thu vào Bubble!
-        setMode('bubble');
-      } else {
-        // Snap back to rail
-        springs.width.target = 68;
-        springs.scaleX.velocity = -0.3;
-        startSpringLoop();
-      }
-    } else if (mode === 'full') {
-      if (dx < -45 || vx < -0.3) {
-        // Vuốt thu vào Rail!
-        springs.width.velocity = Math.min(-300, vx * 1000);
-        springs.scaleX.velocity = -0.85;
-        springs.scaleY.velocity = 0.4;
-        setMode('rail');
-      } else {
-        // Snap back to full
-        springs.width.target = 262;
-        springs.labelsWidth.target = 160;
-        springs.labelsOpacity.target = 1;
-        springs.wordmarkWidth.target = 140;
-        springs.wordmarkOpacity.target = 1;
-        startSpringLoop();
-      }
-    } else if (mode === 'bubble') {
-      if (dy > 45 || vy > 0.3 || dx > 35 || vx > 0.3) {
-        // Vuốt bung xuống Rail!
-        springs.height.velocity = Math.max(350, vy * 1000);
-        setMode('rail');
-      } else {
-        // Snap back to bubble
-        springs.width.target = 54;
-        springs.height.target = 54;
-        startSpringLoop();
-      }
-    }
-  }, [mode, onWindowPointerMove, springs, startSpringLoop]);
-
-  const handlePointerDown = (e: any) => {
-    if (Platform.OS !== 'web') return;
-    if (e.button !== undefined && e.button !== 0) return;
-
-    const now = performance.now();
-    isDraggingRef.current = true;
-    dragStartRef.current = {
-      clientX: e.clientX,
-      clientY: e.clientY,
-      initialWidth: springs.width.current,
-      initialHeight: springs.height.current,
-      time: now,
-      lastClientX: e.clientX,
-      lastClientY: e.clientY,
-      lastTime: now,
-      hasMoved: false,
-    };
-
-    // Stop currently running RAF loop so user has 1:1 direct control
-    if (rafIdRef.current !== null) {
-      cancelAnimationFrame(rafIdRef.current);
-      rafIdRef.current = null;
-    }
-
-    window.addEventListener('pointermove', onWindowPointerMove, { passive: false });
-    window.addEventListener('pointerup', onWindowPointerUp, { passive: false });
-    window.addEventListener('pointercancel', onWindowPointerUp, { passive: false });
+    Animated.spring(progress, { toValue: open ? 1 : 0, damping: 17, stiffness: 200, mass: 0.9, useNativeDriver: USE_NATIVE }).start();
+  }, [open]);
+  const panelWidth = progress.interpolate({ inputRange: [0, 1], outputRange: [SIDEBAR_RAIL, SIDEBAR_FULL] });
+  const labelStyle = {
+    opacity: progress.interpolate({ inputRange: [0.45, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
+    transform: [{ translateX: progress.interpolate({ inputRange: [0, 1], outputRange: [-8, 0] }) }],
   };
 
-  const handleLogoPress = () => {
-    if (mode === 'bubble') setMode('rail');
-    else if (mode === 'rail') setMode('full');
-    else if (mode === 'full') setMode('rail');
+  // --- giọt kính chọn mục ---
+  const y = useRef(new Animated.Value(Math.max(0, activeIndex) * (ROW + GAP))).current;
+  const stretch = useRef(new Animated.Value(1)).current;
+  const lensOpacity = useRef(new Animated.Value(activeIndex >= 0 ? 1 : 0)).current;
+  useEffect(() => {
+    Animated.timing(lensOpacity, { toValue: activeIndex >= 0 ? 1 : 0, duration: 160, useNativeDriver: USE_NATIVE }).start();
+    if (activeIndex < 0) return;
+    Animated.parallel([
+      Animated.spring(y, { toValue: activeIndex * (ROW + GAP), damping: 16, stiffness: 190, mass: 0.9, useNativeDriver: USE_NATIVE }),
+      Animated.sequence([
+        Animated.timing(stretch, { toValue: 1.35, duration: 110, useNativeDriver: USE_NATIVE }),
+        Animated.spring(stretch, { toValue: 1, damping: 7, stiffness: 230, useNativeDriver: USE_NATIVE }),
+      ]),
+    ]).start();
+  }, [activeIndex]);
+  const squeeze = stretch.interpolate({ inputRange: [1, 1.35], outputRange: [1, 0.9] }); // giữ "thể tích" giọt
+
+  // Rê chuột: mở sau một nhịp ngắn (lướt ngang qua thì không bật), đóng trễ hơn chút.
+  const hover = (inside: boolean) => {
+    if (full) return;
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setPeek(inside), inside ? HOVER_OPEN_MS : HOVER_CLOSE_MS);
+  };
+  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => setPeek(false), [full]);
+
+  const hoverBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
+  const go = (tab: TabId) => {
+    setPeek(false);
+    onTabChange(tab);
   };
 
-  const handleItemClick = (tabId: string) => {
-    if (dragStartRef.current.hasMoved) return;
-    onTabChange(tabId);
-  };
-
-  const isBubble = mode === 'bubble';
-  const isRail = mode === 'rail';
-  const isFull = mode === 'full';
+  const row = (key: string, icon: React.ReactNode, label: string, onPress: () => void, selected: boolean, extra?: React.ReactNode) => (
+    <Pressable
+      key={key}
+      onPress={onPress}
+      style={({ hovered }: any) => [styles.row, hovered && !selected && { backgroundColor: hoverBg }]}
+      accessibilityRole="tab"
+      accessibilityState={{ selected }}
+      accessibilityLabel={label}
+    >
+      <View style={styles.icon}>{icon}</View>
+      <Animated.Text style={[styles.label, { color: colors.text }, selected && styles.labelActive, labelStyle]} numberOfLines={1}>
+        {label}
+      </Animated.Text>
+      {extra}
+    </Pressable>
+  );
 
   return (
-    <View
-      ref={containerRef}
-      style={[
-        styles.polymorphicContainer,
-        { backgroundColor: Platform.OS === 'web' ? colors.glass : colors.glassSolid },
-        Platform.OS === 'web' &&
-          ({
-            position: 'fixed',
-            top: 18,
-            left: 18,
-            zIndex: 1000,
-            cursor: isBubble ? 'pointer' : 'default',
-            transformOrigin: 'top left',
-          } as any),
-      ]}
-      // @ts-ignore dataSet is react-native-web only
-      dataSet={{ glass: isDark ? 'dark' : 'light' }}
-      // @ts-ignore
-      onPointerDown={handlePointerDown}
+    <Animated.View
+      style={[styles.dock, { width: panelWidth }]}
+      {...(Platform.OS === 'web' ? ({ onMouseEnter: () => hover(true), onMouseLeave: () => hover(false) } as object) : {})}
     >
-
-      {/* Interactive Edge Swipe Grabber Handle ("Vuốt ra / Thu vào") */}
-      {!isBubble && (
-        <TouchableOpacity
-          style={[
-            styles.edgeGrabberZone,
-            { cursor: isFull ? 'w-resize' : 'e-resize' } as any,
-          ]}
-          onPress={() => {
-            if (isFull) setMode('rail');
-            else if (isRail) setMode('full');
-          }}
-          activeOpacity={0.8}
-          // @ts-ignore
-          title={isFull ? 'Kéo hoặc nhấp để thu vào (Rail)' : 'Vuốt hoặc nhấp để mở rộng (Full)'}
-        >
-          <View
-            style={[
-              styles.edgeGrabberPill,
-              {
-                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.32)' : 'rgba(0, 0, 0, 0.25)',
-              },
-            ]}
-            // @ts-ignore
-            className="liquid-grabber-pill"
-          />
-        </TouchableOpacity>
-      )}
-
-      {/* ================================================================= */}
-      {/* 1. PERSISTENT TOP HEADER / LOGO BAR                                */}
-      {/* ================================================================= */}
-      <View
-        style={[
-          styles.headerBar,
-          {
-            paddingHorizontal: isFull ? 12 : 0,
-            justifyContent: isFull ? 'space-between' : 'center',
-            height: isBubble ? 54 : 52,
-          },
-        ]}
-      >
-        {/* Brand Group (Logo + Wordmark) */}
-        <TouchableOpacity
-          style={[
-            styles.brandGroupTouch,
-            { width: isFull ? 'auto' : '100%', justifyContent: isFull ? 'flex-start' : 'center', alignItems: 'center' },
-          ]}
-          onPress={handleLogoPress}
-          activeOpacity={0.8}
-          accessibilityLabel="Hugo Music"
-        >
-          {/* Official High-Res Hugo Music Logo (frontend/assets/logo.png) */}
-          <View
-            style={[
-              styles.logoWrapper,
-              {
-                width: isBubble ? 42 : isRail ? 38 : 32,
-                height: isBubble ? 42 : isRail ? 38 : 32,
-                borderRadius: (isBubble ? 42 : isRail ? 38 : 32) / 2,
-              },
-            ]}
-          >
-            <Image
-              source={require('../../../assets/logo.png')}
-              style={{
-                width: isBubble ? 42 : isRail ? 38 : 32,
-                height: isBubble ? 42 : isRail ? 38 : 32,
-              }}
-              resizeMode="contain"
-            />
-          </View>
-
-          {/* Hugo Music Wordmark - smoothly animated via RAF */}
-          <View
-            ref={wordmarkRef}
-            style={[
-              styles.wordmarkContainer,
-              {
-                marginLeft: isFull ? 8 : 0,
-              },
-            ]}
-          >
-            {Platform.OS === 'web' ? (
-              <Text
-                style={[
-                  styles.logoHugo,
-                  {
-                    backgroundImage: `linear-gradient(90deg, ${brandColors.map((c, i) => `${c} ${brandLocations[i] * 100}%`).join(', ')})`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    color: 'transparent',
-                    display: 'inline-block',
-                  } as any,
-                ]}
-              >
-                Hugo
-              </Text>
-            ) : (
-              <MaskedView
-                style={{ flexDirection: 'row', height: 24 }}
-                maskElement={<Text style={styles.logoHugo}>Hugo</Text>}
-              >
-                <LinearGradient
-                  colors={brandColors}
-                  locations={brandLocations}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ flex: 1 }}
-                >
-                  <Text style={[styles.logoHugo, { opacity: 0 }]}>Hugo</Text>
-                </LinearGradient>
-              </MaskedView>
-            )}
-            <Text style={[styles.logoMusic, { color: colors.text }]}>Music</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Header Action Tools in Full Mode: Pin, Collapse to Rail, Minimize */}
-        <View ref={actionsRef} style={styles.headerActions}>
-          {/* Pin Button */}
-          <TouchableOpacity
-            style={[
-              styles.headerToolBtn,
-              isPinned && { backgroundColor: 'rgba(16, 185, 129, 0.22)' },
-            ]}
-            onPress={() => setIsPinned(!isPinned)}
-            activeOpacity={0.7}
-            accessibilityLabel={isPinned ? 'Unpin Sidebar' : 'Pin Sidebar'}
-          >
-            <Ionicons
-              name={isPinned ? 'pin' : 'pin-outline'}
-              size={15}
-              color={isPinned ? '#10B981' : colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          {/* Quick Collapse to Rail */}
-          <TouchableOpacity
-            style={styles.headerToolBtn}
-            onPress={() => setMode('rail')}
-            activeOpacity={0.7}
-            accessibilityLabel="Thu gọn dạng cột icon"
-          >
-            <Ionicons name="chevron-back" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-
-          {/* Minimize to Bubble */}
-          <TouchableOpacity
-            style={styles.headerToolBtn}
-            onPress={() => setMode('bubble')}
-            activeOpacity={0.7}
-            accessibilityLabel="Thu nhỏ thành logo tròn"
-          >
-            <Ionicons name="remove" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
+      <Glass radius={26} style={styles.panel}>
+        <View style={styles.brand}>
+          <Image source={require('../../../assets/logo.png')} style={styles.logo} />
+          <Animated.Text style={[styles.brandText, { color: colors.text }, labelStyle]} numberOfLines={1}>Hugo Music</Animated.Text>
+          <Animated.View style={[{ opacity: labelStyle.opacity }, { pointerEvents: open ? 'auto' : 'none' }]}>
+            <Pressable
+              onPress={() => setSidebarPref(full ? 'rail' : 'full')}
+              style={({ hovered }: any) => [styles.pin, hovered && { backgroundColor: hoverBg }]}
+              accessibilityRole="button"
+              accessibilityLabel={full ? 'Thu gọn thanh bên' : 'Ghim thanh bên luôn mở'}
+            >
+              <Ionicons name={full ? 'chevron-back' : 'pin-outline'} size={17} color={colors.textSecondary} />
+            </Pressable>
+          </Animated.View>
         </View>
 
-        {/* Bubble Mode Live Party Dot */}
-        {isBubble && partyRoomId && <View style={styles.bubblePartyDot} />}
-      </View>
+        <View style={[styles.search, { backgroundColor: activeTab === 'search' ? (isDark ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.08)') : isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.04)' }]}>
+          {row('search', <Ionicons name="search" size={19} color={activeTab === 'search' ? colors.accent : colors.textSecondary} />, t('search'), () => go('search'), activeTab === 'search')}
+        </View>
 
-      {/* ================================================================= */}
-      {/* 2. REVEALABLE BODY (Rail Icons & Full Menu Items)                  */}
-      {/* ================================================================= */}
-      <View
-        ref={bodyRef}
-        style={[
-          styles.morphBody,
-          {
-            pointerEvents: isBubble ? 'none' : 'auto',
-          },
-        ]}
-      >
-        <View style={styles.glassDivider} />
+        <View style={styles.items}>
+          <Animated.View
+            style={[
+              styles.lens,
+              {
+                opacity: lensOpacity,
+                backgroundColor: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.75)',
+                borderColor: isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.06)',
+                transform: [{ translateY: y }, { scaleY: stretch }, { scaleX: squeeze }],
+              },
+              LENS_WEB,
+              { pointerEvents: 'none' },
+            ]}
+          />
+          {items.map((item) => {
+            const selected = activeTab === item.id;
+            return row(
+              item.id,
+              <Ionicons name={selected ? item.iconActive : item.icon} size={22} color={selected ? colors.accent : colors.text} />,
+              item.label,
+              () => go(item.id),
+              selected,
+            );
+          })}
+        </View>
 
-        {/* User Profile Card / Avatar */}
-        <TouchableOpacity
-          style={[
-            styles.profileRowTouch,
-            isFull && {
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
-            },
-          ]}
-          onPress={user ? onProfilePress : onLoginPress}
-          activeOpacity={0.8}
+        <View style={{ flex: 1 }} />
+
+        <Pressable
+          onPress={() => (user ? go('account') : setLoginModalVisible(true))}
+          style={({ hovered }: any) => [styles.profile, (activeTab === 'account' || hovered) && { backgroundColor: hoverBg }]}
+          accessibilityRole="button"
+          accessibilityLabel={user ? t('account') : t('login')}
         >
           {user ? (
-            <UserAvatar
-              avatarUrl={user.avatarUrl}
-              username={user.username}
-              nickname={user.nickname}
-              size={isFull ? 34 : 32}
-            />
+            <UserAvatar avatarUrl={user.avatarUrl} username={user.username} nickname={user.nickname} size={34} />
           ) : (
-            <Image
-              source={require('../../../assets/logo.png')}
-              style={{ width: 32, height: 32, borderRadius: 16 }}
-              resizeMode="contain"
-            />
+            <Ionicons name="person-circle" size={34} color={colors.accent} />
           )}
-
-          {/* Profile Details (reveals smoothly in Full mode) */}
-          <View
-            ref={(el) => {
-              if (el) labelsContainerRef.current[0] = el;
-            }}
-            style={styles.profileDetails}
-          >
-            <Text style={[styles.profileNickname, { color: colors.text }]} numberOfLines={1}>
-              {user ? user.nickname || user.username || 'Hugo Member' : 'Hugo Wishpax Le'}
+          <Animated.View style={[{ flex: 1, minWidth: 0 }, labelStyle]}>
+            <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
+              {user ? user.nickname || user.username : t('login')}
             </Text>
-            <Text style={[styles.profileRole, { color: colors.textSecondary }]} numberOfLines={1}>
-              {user ? t('account') : t('login')}
+            <Text style={[styles.sub, { color: colors.textSecondary }]} numberOfLines={1}>
+              {user ? t('account') : 'Lưu bài, tạo danh sách phát'}
             </Text>
-          </View>
-
-          {isFull && <Ionicons name="chevron-forward" size={14} color={colors.textSecondary} />}
-        </TouchableOpacity>
-
-        <View style={styles.glassDivider} />
-
-        {/* Scrollable Navigation Menu */}
-        <ScrollView
-          style={[
-            styles.navScrollView,
-            Platform.OS === 'web' && ({
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              overflowY: isRail ? 'hidden' : 'auto',
-            } as any),
-          ]}
-          contentContainerStyle={{
-            paddingBottom: 16,
-            alignItems: 'center',
-          }}
-          showsVerticalScrollIndicator={false}
-          // @ts-ignore dataSet is react-native-web only
-          dataSet={{ scrollbar: 'none' }}
-        >
-          {/* Section: MENU */}
-          <View style={styles.sectionContainer}>
-            {isFull && (
-              <Text style={[styles.sectionHeading, { color: isDark ? '#8E8E93' : '#6E6E73' }]}>
-                MENU
-              </Text>
-            )}
-
-            {[
-              { id: 'search', icon: 'search-outline', label: t('search') },
-              { id: 'home', icon: 'home-outline', label: t('home') },
-              { id: 'new', icon: 'compass-outline', label: t('browse') },
-              { id: 'radio', icon: 'radio-outline', label: t('radio') },
-              {
-                id: 'party',
-                icon: 'people-outline',
-                label: partyRoomId ? `Party (#${partyRoomId})` : t('partySync') || 'Sync Party',
-                isParty: true,
-              },
-            ].map((item, idx) => {
-              const isActive = activeTab === item.id;
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.navItemRow,
-                    isRail && styles.navItemRowRail,
-                    isActive && {
-                      backgroundColor: colors.fill,
-                      borderColor: 'transparent',
-                    },
-                    Platform.OS === 'web' && ({
-                      touchAction: 'manipulation',
-                      WebkitTapHighlightColor: 'transparent',
-                      cursor: 'pointer',
-                    } as any),
-                  ]}
-                  onPress={() => handleItemClick(item.id)}
-                  activeOpacity={0.7}
-                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                  accessibilityLabel={item.label}
-                >
-                  <Ionicons
-                    name={item.icon as any}
-                    size={20}
-                    color={
-                      isActive
-                        ? colors.accent
-                        : isDark
-                        ? 'rgba(255, 255, 255, 0.82)'
-                        : colors.text
-                    }
-                    style={isRail ? styles.navItemIconRail : styles.navItemIcon}
-                  />
-
-                  {/* Label - driven smoothly by requestAnimationFrame */}
-                  <View
-                    ref={(el) => {
-                      if (el) labelsContainerRef.current[idx + 1] = el;
-                    }}
-                    style={styles.labelWrapper}
-                  >
-                    <Text
-                      style={[
-                        styles.navItemText,
-                        { color: colors.text },
-                        isActive && styles.navItemTextActive,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {item.label}
-                    </Text>
-                  </View>
-
-                  {item.isParty && partyRoomId && (
-                    <View style={[styles.partyBadgeDot, isRail && styles.partyBadgeDotRail]} />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Section: THƯ VIỆN */}
-          <View style={styles.sectionContainer}>
-            {isFull && (
-              <Text style={[styles.sectionHeading, { color: isDark ? '#8E8E93' : '#6E6E73' }]}>
-                {t('librarySection')}
-              </Text>
-            )}
-
-            {/* Chỉ những gì THUỘC VỀ NGƯỜI DÙNG. Trước đây mục này gộp lẫn đồ
-                cá nhân với các trục duyệt kho (thể loại, quốc gia, album, nghệ
-                sĩ) thành 6 dòng — hai nhóm khác hẳn nhau về mục đích. */}
-            {[
-              { id: 'songs', icon: 'musical-note-outline', label: t('songs') },
-              { id: 'playlists', icon: 'list-outline', label: t('allPlaylists') },
-              { id: 'recently-added', icon: 'time-outline', label: t('recentlyAdded') },
-            ].map((item, idx) => {
-              const isActive = activeTab === item.id;
-              const refIndex = idx + 6;
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.navItemRow,
-                    isRail && styles.navItemRowRail,
-                    isActive && {
-                      backgroundColor: colors.fill,
-                      borderColor: 'transparent',
-                    },
-                    Platform.OS === 'web' && ({
-                      touchAction: 'manipulation',
-                      WebkitTapHighlightColor: 'transparent',
-                      cursor: 'pointer',
-                    } as any),
-                  ]}
-                  onPress={() => handleItemClick(item.id)}
-                  activeOpacity={0.7}
-                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                  accessibilityLabel={item.label}
-                >
-                  <Ionicons
-                    name={item.icon as any}
-                    size={20}
-                    color={
-                      isActive
-                        ? colors.accent
-                        : isDark
-                        ? 'rgba(255, 255, 255, 0.82)'
-                        : colors.text
-                    }
-                    style={isRail ? styles.navItemIconRail : styles.navItemIcon}
-                  />
-
-                  <View
-                    ref={(el) => {
-                      if (el) labelsContainerRef.current[refIndex] = el;
-                    }}
-                    style={styles.labelWrapper}
-                  >
-                    <Text
-                      style={[
-                        styles.navItemText,
-                        { color: colors.text },
-                        isActive && styles.navItemTextActive,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {item.label}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Section: DUYỆT THEO — các trục khám phá kho nhạc.
-              Xếp thể loại/quốc gia trước vì 452/516 bài có thể loại, trong khi
-              chỉ 2/255 nghệ sĩ có ảnh thật: duyệt theo nghệ sĩ gần như vô dụng
-              với kho này. */}
-          <View style={styles.sectionContainer}>
-            {isFull && (
-              <Text style={[styles.sectionHeading, { color: isDark ? '#8E8E93' : '#6E6E73' }]}>
-                DUYỆT THEO
-              </Text>
-            )}
-
-            {[
-              { id: 'genres', icon: 'grid-outline', label: 'Thể loại' },
-              { id: 'countries', icon: 'globe-outline', label: 'Quốc gia' },
-              { id: 'albums', icon: 'albums-outline', label: t('albums') },
-              { id: 'artists', icon: 'mic-outline', label: t('artists') },
-            ].map((item, idx) => {
-              const isActive = activeTab === item.id;
-              const refIndex = idx + 10;
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.navItemRow,
-                    isActive && {
-                      backgroundColor: colors.fill,
-                      borderColor: 'transparent',
-                    },
-                  ]}
-                  onPress={() => handleItemClick(item.id)}
-                  activeOpacity={0.7}
-                  accessibilityLabel={item.label}
-                >
-                  <Ionicons
-                    name={item.icon as any}
-                    size={20}
-                    color={
-                      isActive
-                        ? colors.accent
-                        : isDark
-                        ? 'rgba(255, 255, 255, 0.82)'
-                        : colors.text
-                    }
-                    style={styles.navItemIcon}
-                  />
-
-                  <View
-                    ref={(el) => {
-                      if (el) labelsContainerRef.current[refIndex] = el;
-                    }}
-                    style={styles.labelWrapper}
-                  >
-                    <Text
-                      style={[
-                        styles.navItemText,
-                        { color: colors.text },
-                        isActive && styles.navItemTextActive,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {item.label}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </ScrollView>
-
-        {/* Rail Mode Bottom Controls: Quick expand [>] or minimize [—] */}
-        {isRail && (
-          <View style={styles.railBottomDock}>
-            <TouchableOpacity
-              style={styles.railBottomBtn}
-              onPress={() => setMode('full')}
-              activeOpacity={0.7}
-              accessibilityLabel="Mở rộng đầy đủ"
-            >
-              <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.railBottomBtn}
-              onPress={() => setMode('bubble')}
-              activeOpacity={0.7}
-              accessibilityLabel="Thu nhỏ thành logo tròn"
-            >
-              <Ionicons name="remove" size={18} color={colors.textSecondary} />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Footer: Logout in Full mode */}
-        {user && isFull && (
-          <View
-            style={[
-              styles.footerBlock,
-              { borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' },
-            ]}
-          >
-            <TouchableOpacity
-              style={styles.logoutBtn}
-              onPress={() => logout()}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name="log-out-outline"
-                size={18}
-                color={colors.textSecondary}
-                style={{ marginRight: 8 }}
-              />
-              <Text style={[styles.logoutText, { color: colors.textSecondary }]}>
-                {t('logout')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </View>
+          </Animated.View>
+        </Pressable>
+      </Glass>
+    </Animated.View>
   );
 }
 
+const LENS_WEB = Platform.OS === 'web'
+  ? ({ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 16px -6px rgba(0,0,0,0.35)' } as object)
+  : {};
+
 const styles = StyleSheet.create({
-  polymorphicContainer: {
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  edgeGrabberZone: {
-    position: 'absolute',
-    top: 70,
-    bottom: 70,
-    right: 0,
-    width: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 5,
-    ...(Platform.OS === 'web' ? ({ touchAction: 'none' } as any) : {}),
-  },
-  edgeGrabberPill: {
-    width: 3,
-    height: 28,
-    borderRadius: 1.5,
-    opacity: 0.3,
-  },
-  headerBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    position: 'relative',
-  },
-  brandGroupTouch: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoWrapper: {
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoImage: {
-    width: '100%',
-    height: '100%',
-  },
-  wordmarkContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    overflow: 'hidden',
-    maxWidth: 0,
-    opacity: 0,
-    ...(Platform.OS === 'web' ? ({ whiteSpace: 'nowrap' } as any) : {}),
-  },
-  logoHugo: {
-    fontSize: 20,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  logoMusic: {
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-    marginLeft: 4,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    overflow: 'hidden',
-    maxWidth: 0,
-    opacity: 0,
-    pointerEvents: 'none',
-  },
-  headerToolBtn: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bubblePartyDot: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#10B981',
-  },
-  morphBody: {
-    flex: 1,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  glassDivider: {
-    width: '80%',
-    alignSelf: 'center',
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
-    marginVertical: 6,
-  },
-  profileRowTouch: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'transparent',
-    alignSelf: 'center',
-    width: '92%',
-  },
-  profileDetails: {
-    flex: 1,
-    marginLeft: 8,
-    marginRight: 4,
-    overflow: 'hidden',
-    maxWidth: 0,
-    opacity: 0,
-  },
-  profileNickname: {
-    fontSize: 13.5,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-  },
-  profileRole: {
-    fontSize: 11,
-    marginTop: 1,
-  },
-  navScrollView: {
-    flex: 1,
-    width: '100%',
-    paddingHorizontal: 0,
-  },
-  sectionContainer: {
-    marginBottom: 8,
-    width: '100%',
-    alignItems: 'center',
-  },
-  sectionHeading: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    letterSpacing: 0.6,
-    paddingHorizontal: 12,
-    marginVertical: 4,
-    alignSelf: 'flex-start',
-  },
-  navItemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8.5,
-    paddingHorizontal: 12,
-    borderRadius: 14,
-    marginVertical: 3.5,
-    borderWidth: 1.5,
-    borderColor: 'transparent',
-    overflow: 'hidden',
-    width: '92%',
-    alignSelf: 'center',
-  },
-  navItemRowRail: {
-    width: 42,
-    height: 42,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 13,
-  },
-  navItemIcon: {
-    width: 28,
-    textAlign: 'center',
-  },
-  navItemIconRail: {
-    width: 24,
-    textAlign: 'center',
-  },
-  labelWrapper: {
-    flex: 1,
-    overflow: 'hidden',
-    marginLeft: 4,
-    maxWidth: 0,
-    opacity: 0,
-  },
-  navItemText: {
-    fontSize: 13.5,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-  },
-  navItemTextActive: {
-    fontWeight: '700',
-  },
-  partyBadgeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#10B981',
-    marginLeft: 4,
-  },
-  partyBadgeDotRail: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    marginLeft: 0,
-    borderWidth: 1,
-    borderColor: '#ffffff',
-  },
-  railBottomDock: {
-    paddingVertical: 8,
-    alignItems: 'center',
-    gap: 6,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  railBottomBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footerBlock: {
-    paddingTop: 8,
-    paddingHorizontal: 14,
-    paddingBottom: 6,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  logoutBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-  },
-  logoutText: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
+  dock: { position: 'absolute', left: SIDEBAR_INSET, top: SIDEBAR_INSET, bottom: SIDEBAR_INSET, zIndex: 900 },
+  panel: { flex: 1, padding: PAD, overflow: 'hidden' },
+  brand: { flexDirection: 'row', alignItems: 'center', height: ROW, marginBottom: 8, paddingLeft: (SIDEBAR_RAIL - PAD * 2 - 30) / 2 },
+  logo: { width: 30, height: 30, borderRadius: 8 },
+  brandText: { flex: 1, fontSize: 18, fontWeight: '800', letterSpacing: -0.4, marginLeft: 10 },
+  pin: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  search: { borderRadius: 12 },
+  items: { marginTop: 12, gap: GAP },
+  lens: { position: 'absolute', left: 0, right: 0, top: 0, height: ROW, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth },
+  row: { flexDirection: 'row', alignItems: 'center', height: ROW, borderRadius: 14, paddingLeft: ICON_X, overflow: 'hidden' },
+  icon: { width: 22, alignItems: 'center' },
+  label: { fontSize: 15, marginLeft: 14, flexShrink: 0 },
+  labelActive: { fontWeight: '700' },
+  profile: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: (SIDEBAR_RAIL - PAD * 2 - 34) / 2, borderRadius: 16, overflow: 'hidden' },
+  name: { fontSize: 15, fontWeight: '600' },
+  sub: { fontSize: 12, marginTop: 1 },
 });

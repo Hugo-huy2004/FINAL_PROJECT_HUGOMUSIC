@@ -1,19 +1,21 @@
-const fs = require('fs');
 const path = require('path');
 const { PassThrough, pipeline } = require('stream');
 const Song = require('../models/Song');
 const User = require('../models/User');
 const PlaybackMetric = require('../models/PlaybackMetric');
 const asyncHandler = require('../utils/asyncHandler');
-const { cacheGet, cacheSet, cacheDel } = require('../utils/redisClient');
+const { cacheGet, cacheSet, cacheDel } = require('../config/redis');
 const { findLyrics } = require('../utils/lyricsLookup');
-const { mintToken, verifyToken, guestMayPlay, TTL_SECONDS, GUEST_FREE_SONGS } = require('../utils/playbackToken');
+const { mintToken, verifyToken, TTL_SECONDS } = require('../utils/playbackToken');
+const { guestMayPlay, GUEST_FREE_SONGS } = require('../utils/guestQuota');
+const { playbackSources } = require('../utils/cdnSources');
+const { removeSongCompletely } = require('../utils/songRemoval');
 
 const { spawn } = require('child_process');
 const {
-  uploadToR2, getR2Stream, deleteFromR2, deletePrefixFromR2, keyFromR2Url,
+  uploadToR2, getR2Stream, keyFromR2Url, deleteFromR2,
 } = require('../utils/r2');
-const { reviewSong, isHttpUrl, LICENSE_TYPES, NO_DERIVATIVE } = require('../utils/songReview');
+const { reviewSong, isHttpUrl, LICENSE_TYPES } = require('../utils/songReview');
 
 let mm;
 async function loadMusicMetadata() {
@@ -33,12 +35,46 @@ function sanitizeFilename(name) {
     .toLowerCase();
 }
 
-const uploadSong = asyncHandler(async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'No audio file uploaded' });
+// Ảnh bìa tải lên: tối đa 5 MB, chỉ ảnh; tên tệp theo bài + thời điểm (Worker cache vĩnh viễn theo key).
+const COVER_MAX = 5 * 1024 * 1024;
+function checkCover(file) {
+  if (!file) return null;
+  if (!/^image\/(jpeg|png|webp)$/.test(file.mimetype)) throw Object.assign(new Error('Ảnh bìa phải là JPEG, PNG hoặc WebP'), { status: 400 });
+  if (file.size > COVER_MAX) throw Object.assign(new Error('Ảnh bìa tối đa 5 MB'), { status: 400 });
+  return file;
+}
+const coverExt = (mime) => ({ 'image/png': '.png', 'image/webp': '.webp' }[mime] || '.jpg');
+
+// Thông tin album nhập tay (bài tải lên lẻ không có nguồn phát hành để tra).
+function albumFields(body) {
+  const out = {};
+  if (typeof body.albumTitle === 'string' && body.albumTitle.trim()) out.title = body.albumTitle.trim().slice(0, 200);
+  const year = Number(body.albumYear);
+  if (body.albumYear) {
+    if (!Number.isInteger(year) || year < 1850 || year > new Date().getFullYear() + 1) throw Object.assign(new Error('Năm phát hành không hợp lệ'), { status: 400 });
+    out.year = year;
   }
+  const track = Number(body.trackNo);
+  if (body.trackNo) {
+    if (!Number.isInteger(track) || track < 1 || track > 999) throw Object.assign(new Error('Số thứ tự bài không hợp lệ'), { status: 400 });
+    out.trackNo = track;
+  }
+  return out;
+}
+
+const uploadSong = asyncHandler(async (req, res) => {
+  const audio = req.files?.audio?.[0];
+  if (!audio) {
+    return res.status(400).json({ message: 'Chọn tệp nhạc để tải lên' });
+  }
+  const coverFile = checkCover(req.files?.cover?.[0]);
+  req.file = audio; // phần dưới dùng req.file như trước
 
   const { title, artist, category, genre, licenseType, sourceUrl, licenseUrl, attribution } = req.body;
+  if ((title && title.length > 200) || (artist && artist.length > 120)) {
+    return res.status(400).json({ message: 'Tên bài tối đa 200 ký tự, nghệ sĩ tối đa 120 ký tự' });
+  }
+  const album = albumFields(req.body);
   // Tầng bản quyền được kiểm TRƯỚC khi tốn công đẩy tệp lên R2: bài CC/PD
   // không có giấy phép và nguồn thì không bao giờ được phát.
   if (!LICENSE_TYPES.includes(licenseType)) {
@@ -55,6 +91,14 @@ const uploadSong = asyncHandler(async (req, res) => {
   const parsedTitle = title || metadata.common.title || 'Unknown Title';
   const parsedArtist = artist || metadata.common.artist || 'Unknown Artist';
   const duration = Math.round(metadata.format.duration || 0);
+  if (duration < 5) return res.status(400).json({ message: 'Không đọc được thời lượng — tệp nhạc hỏng hoặc quá ngắn' });
+
+  // Trùng bài đã có (cùng tên + nghệ sĩ, không phân biệt hoa thường): hỏi lại thay vì tạo bản sao âm thầm.
+  const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const dup = await Song.findOne({ title: new RegExp(`^${esc(parsedTitle)}$`, 'i'), artist: new RegExp(`^${esc(parsedArtist)}$`, 'i') }).select('_id status').lean();
+  if (dup && req.body.allowDuplicate !== 'true') {
+    return res.status(409).json({ message: `Đã có bài "${parsedTitle}" của ${parsedArtist} trong kho (${dup.status}). Gửi lại với allowDuplicate=true nếu vẫn muốn tải.`, duplicateOf: dup._id });
+  }
 
   // Hậu tố ngẫu nhiên: Worker cache tệp vĩnh viễn (immutable) theo key, nên hai
   // bài trùng tên không được ghi đè lên nhau.
@@ -65,8 +109,10 @@ const uploadSong = asyncHandler(async (req, res) => {
   const publicAudioUrl = await uploadToR2(buffer, audioKey, req.file.mimetype);
   let publicCoverUrl = '';
 
-  // Extract and Upload Cover Art if exists
-  if (metadata.common.picture && metadata.common.picture.length > 0) {
+  // Ảnh bìa: tệp admin chọn được ưu tiên; không có thì lấy ảnh nhúng trong tệp nhạc.
+  if (coverFile) {
+    publicCoverUrl = await uploadToR2(coverFile.buffer, `covers/${safeBaseName}${coverExt(coverFile.mimetype)}`, coverFile.mimetype);
+  } else if (metadata.common.picture && metadata.common.picture.length > 0) {
     const picture = metadata.common.picture[0];
     const imageExt = picture.format === 'image/png' ? '.png' : '.jpg';
     const coverKey = `covers/${safeBaseName}${imageExt}`;
@@ -85,6 +131,7 @@ const uploadSong = asyncHandler(async (req, res) => {
     coverArt: publicCoverUrl,
     duration,
     category: category || 'Nhạc trẻ',
+    ...(Object.keys(album).length ? { album } : {}),
     genre: genre || metadata.common.genre?.[0],
     licenseType,
     sourceUrl: sourceUrl.trim(),
@@ -109,58 +156,16 @@ const SONGS_CACHE_KEY = 'songs:all';
 const SONGS_CACHE_TTL_SECONDS = 60;
 
 const getSongs = asyncHandler(async (req, res) => {
-  const { q } = req.query;
-  if (!q) {
-    const cached = await cacheGet(SONGS_CACHE_KEY);
-    if (cached) {
-      res.setHeader('X-Cache', 'HIT');
-      return res.json(cached);
-    }
+  const cached = await cacheGet(SONGS_CACHE_KEY);
+  if (cached) {
+    res.setHeader('X-Cache', 'HIT');
+    return res.json(cached);
   }
-
-  let filter = { status: 'published' };
-  if (q && q.trim()) {
-    const trimmed = q.trim();
-    const escapedQ = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(escapedQ, 'i');
-
-    const orConditions = [
-      { title: regex },
-      { artist: regex },
-      { category: regex },
-    ];
-
-    // Category aliases mapping
-    const lower = trimmed.toLowerCase();
-    if (lower.includes('acoustic') || lower.includes('lofi') || lower.includes('mộc')) {
-      orConditions.push({ category: 'Acoustic & Lofi' });
-    }
-    if (lower.includes('pop') || lower.includes('nhạc trẻ') || lower.includes('v-pop') || lower.includes('modern')) {
-      orConditions.push({ category: 'Nhạc trẻ' });
-    }
-    if (lower.includes('quốc tế') || lower.includes('international') || lower.includes('indie')) {
-      orConditions.push({ category: 'Nhạc Quốc Tế' });
-    }
-    if (lower.includes('phụng vụ') || lower.includes('thánh ca') || lower.includes('liturgical') || lower.includes('hymn')) {
-      orConditions.push({ category: 'Nhạc Phụng Vụ' });
-    }
-    if (lower.includes('hòa tấu') || lower.includes('cổ điển') || lower.includes('classical') || lower.includes('instrumental')) {
-      orConditions.push({ category: 'Hòa tấu' });
-    }
-    if (lower.includes('podcast') || lower.includes('radio') || lower.includes('bưu thiếp')) {
-      orConditions.push({ category: 'Podcast' });
-    }
-
-    filter = { status: 'published', $or: orConditions };
-  }
-
   // Lyrics text is fetched on-demand via GET /api/songs/:id/lyrics, not on every
   // list load - plainLyrics/syncedLyrics can be several KB each across hundreds of songs.
-  const songs = await Song.find(filter).select('-plainLyrics -syncedLyrics').sort({ createdAt: -1 });
-  if (!q) {
-    res.setHeader('X-Cache', 'MISS');
-    await cacheSet(SONGS_CACHE_KEY, songs, SONGS_CACHE_TTL_SECONDS);
-  }
+  const songs = await Song.find({ status: 'published' }).select('-plainLyrics -syncedLyrics').sort({ createdAt: -1 });
+  res.setHeader('X-Cache', 'MISS');
+  await cacheSet(SONGS_CACHE_KEY, songs, SONGS_CACHE_TTL_SECONDS);
   res.json(songs);
 });
 
@@ -220,7 +225,7 @@ const getPlaybackToken = asyncHandler(async (req, res) => {
   }
 
   // Khách nghe trọn vài bài đầu, sau đó bắt buộc đăng nhập (utils/playbackToken.js).
-  if (!req.user && !guestMayPlay(req.ip, String(song._id))) {
+  if (!req.user && !(await guestMayPlay(req.ip, String(song._id)))) {
     return res.status(401).json({
       message: `Đăng nhập để nghe tiếp — khách được nghe ${GUEST_FREE_SONGS} bài mỗi ngày`,
       requiresLogin: true,
@@ -233,6 +238,8 @@ const getPlaybackToken = asyncHandler(async (req, res) => {
     fileToken: fileKey ? mintToken(fileKey) : null,
     hlsToken: hlsKey ? mintToken(hlsKey) : null,
     expiresIn: TTL_SECONDS,
+    // Cùng bài trên mọi CDN đang bật — client chọn và chuyển CDN (utils/cdnSources.js).
+    sources: playbackSources({ fileKey, hlsKey }),
   });
 });
 
@@ -298,9 +305,11 @@ const toggleLikeSong = asyncHandler(async (req, res) => {
 });
 
 // GET /api/songs/liked/mine — the current user's liked songs.
+// Thả tim mới nhất đứng đầu (favorites được push theo thứ tự thả tim), bỏ bài đã bị xoá khỏi kho
+// (populate trả null cho id không còn).
 const getLikedSongs = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).populate('favorites');
-  res.json(user.favorites);
+  res.json(user.favorites.filter(Boolean).reverse());
 });
 
 // DELETE /api/songs/:id — admin-only (see routes/songRoutes.js), any admin can
@@ -311,25 +320,9 @@ const deleteSong = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: 'Song not found' });
   }
 
-  await song.deleteOne();
+  // Gỡ bản ghi, mọi tham chiếu và tệp trên R2 (utils/songRemoval.js).
+  const { storageCleaned } = await removeSongCompletely(song);
   await cacheDel(SONGS_CACHE_KEY);
-
-  // Dọn tệp trên R2 sau khi đã gỡ khỏi kho: tệp mồ côi vừa tốn chỗ vừa còn
-  // phát được bằng token cũ. Lỗi dọn dẹp không được làm hỏng việc xoá.
-  let storageCleaned = true;
-  try {
-    const audioKey = keyFromR2Url(song.filePath);
-    if (audioKey) await deleteFromR2(audioKey);
-    await deletePrefixFromR2(`hls/${song._id}/`);
-    // Ảnh bìa có thể dùng chung cho cả album — chỉ xoá khi không còn bài nào trỏ tới.
-    const coverKey = keyFromR2Url(song.coverArt);
-    if (coverKey?.startsWith('covers/') && !(await Song.exists({ coverArt: song.coverArt }))) {
-      await deleteFromR2(coverKey);
-    }
-  } catch (err) {
-    storageCleaned = false;
-    console.warn(`Không dọn được R2 cho bài ${song._id}: ${err.message}`);
-  }
   res.json({ message: 'Song deleted', storageCleaned });
 });
 
@@ -340,8 +333,9 @@ const deleteSong = asyncHandler(async (req, res) => {
 // cứng: thiếu nguồn/giấy phép/ghi công thì không duyệt được.
 
 const REVIEW_FIELDS = 'title artist coverArt duration category genre sourceUrl license licenseUrl licenseType '
-  + 'attribution status reviewNote reviewedAt hlsPath hlsTiers pslLadder filePath createdAt';
+  + 'attribution status reviewNote reviewedAt hlsPath hlsTiers pslLadder filePath createdAt album plainLyrics syncedLyrics';
 const EDITABLE_FIELDS = ['title', 'artist', 'category', 'genre', 'sourceUrl', 'licenseUrl', 'licenseType', 'attribution'];
+const FIELD_MAX = { title: 200, artist: 120, category: 60, genre: 60, sourceUrl: 500, licenseUrl: 500, attribution: 200 };
 
 const withReview = (song) => ({ ...song.toObject(), review: reviewSong(song) });
 
@@ -366,28 +360,43 @@ const updateSong = asyncHandler(async (req, res) => {
   if (!song) return res.status(404).json({ message: 'Song not found' });
 
   for (const f of EDITABLE_FIELDS) {
-    if (req.body[f] !== undefined) song[f] = typeof req.body[f] === 'string' ? req.body[f].trim() : req.body[f];
+    if (req.body[f] === undefined) continue;
+    const v = typeof req.body[f] === 'string' ? req.body[f].trim() : req.body[f];
+    if (typeof v !== 'string' || v.length > FIELD_MAX[f]) return res.status(400).json({ message: `${f}: tối đa ${FIELD_MAX[f]} ký tự` });
+    if ((f === 'title' || f === 'artist') && !v) return res.status(400).json({ message: 'Tên bài và nghệ sĩ không được trống' });
+    if ((f === 'sourceUrl' || f === 'licenseUrl') && v && !isHttpUrl(v)) return res.status(400).json({ message: `${f} phải là URL http/https` });
+    song[f] = v;
   }
   if (song.licenseType && !LICENSE_TYPES.includes(song.licenseType)) {
     return res.status(400).json({ message: 'Giấy phép không hợp lệ' });
+  }
+  // Album (nhúng trong bài) và lời bài hát — lời có mốc thời gian phải đúng định dạng LRC "[mm:ss.xx] lời".
+  const album = albumFields({ albumTitle: req.body.albumTitle, albumYear: req.body.albumYear, trackNo: req.body.trackNo });
+  for (const [k, v] of Object.entries(album)) song.set(`album.${k}`, v);
+  if (req.body.plainLyrics !== undefined) song.plainLyrics = String(req.body.plainLyrics || '').slice(0, 20000) || undefined;
+  if (req.body.syncedLyrics !== undefined) {
+    const lrc = String(req.body.syncedLyrics || '').trim();
+    if (lrc && !lrc.split('\n').some((l) => /^\[\d{1,2}:\d{2}(\.\d{1,3})?\]/.test(l.trim()))) {
+      return res.status(400).json({ message: 'Lời có mốc thời gian phải theo định dạng LRC: [mm:ss.xx] lời' });
+    }
+    song.syncedLyrics = lrc.slice(0, 40000) || undefined;
+  }
+  if (req.body.plainLyrics !== undefined || req.body.syncedLyrics !== undefined) {
+    song.lyricsSource = 'admin';
+    song.lyricsCheckedAt = new Date();
   }
   await song.save();
   if (song.status === 'published') await cacheDel(SONGS_CACHE_KEY);
   res.json(withReview(song));
 });
 
-// Đo PSL (ViSQOL) rồi dựng HLS cho bài vừa xuất bản, chạy nền để không chặn phản hồi.
-// Cùng script với lúc dựng hàng loạt nên cùng một quy tắc (thang PSL, đoạn 4 s,
-// BANDWIDTH đo thật). Kết quả ghi vào logs/pipeline.log.
-// ponytail: tiến trình con không có hàng đợi — duyệt dồn nhiều bài cùng lúc sẽ chạy
-// nhiều ViSQOL/FFmpeg song song; thêm hàng đợi khi cần.
-const PIPELINE_LOG = path.join(__dirname, '..', 'logs', 'pipeline.log');
-function buildHlsInBackground(songId) {
-  const script = path.join(__dirname, '..', 'scripts', 'streaming', 'buildHls.js');
-  fs.mkdirSync(path.dirname(PIPELINE_LOG), { recursive: true });
-  const log = fs.openSync(PIPELINE_LOG, 'a');
-  spawn(process.execPath, [script, `--id=${songId}`], { stdio: ['ignore', log, log], detached: true }).unref();
-  fs.closeSync(log);
+// Sau khi duyệt: chạy chuỗi xử lý bài (pipeline/: thông tin phát hành & ảnh bìa → PSL → chuyển bài →
+// HLS) ở TIẾN TRÌNH CON — các bước gọi FFmpeg/Python đồng bộ, chạy trong tiến trình API sẽ chặn mọi
+// request khác. Tiến trình con tự ghi từng bước vào PipelineRun (DB), API không cần theo dõi.
+// ponytail: chưa có hàng đợi — duyệt dồn nhiều bài cùng lúc sẽ chạy nhiều tiến trình song song; thêm hàng đợi khi cần.
+function runApprovalPipeline(songId) {
+  const cli = path.join(__dirname, '..', 'pipeline', 'cli.js');
+  spawn(process.execPath, [cli, 'approve', `--id=${songId}`, '--trigger=approve'], { stdio: 'ignore', detached: true }).unref();
 }
 
 // POST /api/songs/:id/review  { decision: 'publish' | 'reject', note? }
@@ -411,9 +420,26 @@ const reviewSongDecision = asyncHandler(async (req, res) => {
   await song.save();
   await cacheDel(SONGS_CACHE_KEY);
 
-  const buildsHls = song.status === 'published' && !song.hlsPath && !NO_DERIVATIVE.includes(song.licenseType);
-  if (buildsHls) buildHlsInBackground(song._id);
-  res.json({ ...withReview(song), hlsBuildStarted: buildsHls });
+  const processing = song.status === 'published';
+  if (processing) runApprovalPipeline(song._id);
+  res.json({ ...withReview(song), pipelineStarted: processing });
+});
+
+// PATCH /api/songs/:id/cover (multipart: cover) — đổi ảnh bìa một bài. Ảnh cũ bị xoá khỏi R2 nếu không còn bài
+// nào dùng chung (ảnh album dùng chung giữa các bài cùng album thì giữ).
+const updateSongCover = asyncHandler(async (req, res) => {
+  const file = checkCover(req.file);
+  if (!file) return res.status(400).json({ message: 'Chọn ảnh bìa' });
+  const song = await Song.findById(req.params.id).select(REVIEW_FIELDS);
+  if (!song) return res.status(404).json({ message: 'Song not found' });
+  const old = song.coverArt;
+  song.coverArt = await uploadToR2(file.buffer, `covers/admin/${song._id}-${Date.now().toString(36)}${coverExt(file.mimetype)}`, file.mimetype);
+  song.coverSourceUrl = 'admin-upload';
+  await song.save();
+  const oldKey = keyFromR2Url(old);
+  if (oldKey?.startsWith('covers/') && !(await Song.exists({ coverArt: old }))) await deleteFromR2(oldKey).catch(() => {});
+  await cacheDel(SONGS_CACHE_KEY);
+  res.json(withReview(song));
 });
 
 // GET /api/songs/:id/lyrics — fetched on demand (not on the list endpoint) since
@@ -437,5 +463,6 @@ const getLyrics = asyncHandler(async (req, res) => {
 
 module.exports = {
   uploadSong, getSongs, streamSong, getPlaybackToken, toggleLikeSong, getLikedSongs, deleteSong, getLyrics,
-  getReviewQueue, updateSong, reviewSongDecision,
+  getReviewQueue, updateSong, reviewSongDecision, updateSongCover,
+  runApprovalPipeline, withReview, REVIEW_FIELDS, SONGS_CACHE_KEY,
 };

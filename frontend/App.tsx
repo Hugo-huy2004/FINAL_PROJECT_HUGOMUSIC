@@ -1,16 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import { View } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { LiquidGlassContainerView } from '@callstack/liquid-glass';
 
+// Không bọc SafeAreaProvider: mọi màn tự chừa tai thỏ/thanh home bằng
+// `const insets = useSafeAreaInsets()` + padding thủ công. Giá trị insets do native stack
+// (react-navigation, SafeAreaProviderCompat) cung cấp cho mọi màn bên trong.
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <LiquidGlassContainerView style={{ flex: 1 }}>
-        <StatusBar style="auto" />
-        <AppNavigator />
-      </LiquidGlassContainerView>
-    </SafeAreaProvider>
+    <View style={{ flex: 1 }}>
+      <StatusBar style="auto" />
+      <AppNavigator />
+    </View>
   );
 }

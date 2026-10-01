@@ -1,7 +1,5 @@
-import React from 'react';
 import { Platform, StyleSheet, View, ViewProps } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 import { useAppTheme } from '../../theme/theme';
 
 // The one Liquid Glass material for the app's navigation layer (tab bar, sidebar,
@@ -9,8 +7,7 @@ import { useAppTheme } from '../../theme/theme';
 // above content — never to the content itself — so screens stay plain and artwork
 // supplies the colour the glass picks up.
 //
-//   iOS 26+   real system Liquid Glass (lensing, specular highlights, adaptive tint)
-//   iOS < 26  UIKit chrome material via expo-blur
+//   iOS       UIKit chrome material via expo-blur (systemChromeMaterial)
 //   Android   near-opaque fill — expo-blur's Android blur needs a BlurTargetView
 //             wrapping the whole screen, not worth it for a translucent bar
 //   Web/PWA   backdrop-filter + specular rim, styled by [data-glass] in
@@ -18,19 +15,15 @@ import { useAppTheme } from '../../theme/theme';
 type GlassProps = ViewProps & {
   radius?: number;
   interactive?: boolean;
+  // Ép tông kính bất kể giao diện sáng/tối (vd. trình phát luôn nền tối → 'dark').
+  tone?: 'light' | 'dark';
 };
 
-export default function Glass({ radius = 999, interactive = false, style, children, ...rest }: GlassProps) {
-  const { colors, isDark } = useAppTheme();
+export default function Glass({ radius = 999, interactive = false, tone, style, children, ...rest }: GlassProps) {
+  const theme = useAppTheme();
+  const isDark = tone ? tone === 'dark' : theme.isDark;
+  const colors = tone === 'dark' ? { ...theme.colors, glass: 'rgba(255,255,255,0.14)', glassSolid: 'rgba(60,60,64,0.9)', cardBorder: 'rgba(255,255,255,0.2)' } : theme.colors;
   const shape = { borderRadius: radius, overflow: 'hidden' as const };
-
-  if (Platform.OS === 'ios' && isLiquidGlassSupported) {
-    return (
-      <LiquidGlassView effect="regular" interactive={interactive} style={[shape, style]} {...rest}>
-        {children}
-      </LiquidGlassView>
-    );
-  }
 
   if (Platform.OS === 'ios') {
     return (

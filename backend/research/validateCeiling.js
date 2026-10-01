@@ -15,11 +15,14 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const mongoose = require('mongoose');
+const connectDB = require('../config/db');
+const { saveResult } = require('../utils/researchStore');
 const { analyze } = require('./spectralCeiling');
 
 // Thư mục nhạc mẫu (tham số 1). Không có thì hiệu chuẩn chỉ dùng nhiễu hồng.
 const SEED_DIR = process.argv[2] || path.join(__dirname, 'seed_audio');
-const OUT_PATH = path.join(__dirname, 'results', 'ceiling_validation.json');
 const TRUE_BITRATES = [64, 96, 128, 160, 192, 256, 320];
 
 // Nguồn phải là lossless THẬT — đã xác minh bằng chính bộ dò (không có vách).
@@ -34,7 +37,7 @@ function ff(args) {
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...args], { timeout: 300000 });
 }
 
-function main() {
+async function main() {
   const work = fs.mkdtempSync(path.join(os.tmpdir(), 'validate-'));
   const rows = [];
 
@@ -73,7 +76,7 @@ function main() {
       }
     }
 
-    fs.writeFileSync(OUT_PATH, JSON.stringify(rows, null, 2));
+    await saveResult('ceiling_validation', rows);
 
     const exact = rows.filter((r) => r.exact).length;
     const within = rows.filter((r) => r.within1Step).length;
@@ -83,10 +86,13 @@ function main() {
     console.log(`Phát hiện có nén    : ${detected}/${rows.length} (${(detected / rows.length * 100).toFixed(0)}%)`);
     console.log(`Đoán đúng chính xác : ${exact}/${rows.length} (${(exact / rows.length * 100).toFixed(0)}%)`);
     console.log(`Đoán lệch <= 1 bậc  : ${within}/${rows.length} (${(within / rows.length * 100).toFixed(0)}%)`);
-    console.log(`Đã ghi ${OUT_PATH}`);
   } finally {
     fs.rmSync(work, { recursive: true, force: true });
   }
 }
 
-main();
+// Kết quả lưu vào DB (ResearchResult) — kết nối trước khi chạy, ngắt khi xong.
+connectDB()
+  .then(main)
+  .then(() => mongoose.disconnect())
+  .catch((err) => { console.error(err); process.exit(1); });

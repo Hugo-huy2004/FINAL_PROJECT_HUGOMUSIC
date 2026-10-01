@@ -22,10 +22,9 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const mongoose = require('mongoose');
 const connectDB = require('../config/db');
+const { saveResult, loadResult } = require('../utils/researchStore');
 const Song = require('../models/Song');
 
-const AUDIT_IN = path.join(__dirname, 'results', 'audio_quality_audit.json');
-const OUT_PATH = path.join(__dirname, 'results', 'source_ceiling_audit.json');
 const CONCURRENCY = 2;
 
 // Xếp hạng định dạng archive.org theo chất lượng. Số lớn hơn = tốt hơn.
@@ -103,7 +102,7 @@ async function main() {
     process.exit(1);
   }
   const bitrateById = new Map(
-    JSON.parse(fs.readFileSync(AUDIT_IN, 'utf8')).map((a) => [a.id, a])
+    (await loadResult('audio_quality_audit')).map((a) => [a.id, a])
   );
 
   await connectDB();
@@ -201,7 +200,7 @@ async function main() {
   }
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 
-  fs.writeFileSync(OUT_PATH, JSON.stringify(results, null, 2));
+  await saveResult('source_ceiling_audit', results);
 
   const by = (v) => results.filter((r) => r.verdict === v);
   const keep = by('KEEP_AT_CEILING');
@@ -215,7 +214,6 @@ async function main() {
   console.log(`     tải lại sẽ đạt >= 1411 kbps    : ${refetch.filter((r) => r.bestKbps >= 1411).length}`);
   console.log(`     tải lại vẫn < 1411 kbps        : ${refetch.filter((r) => r.bestKbps < 1411).length}`);
   console.log(`  KHÔNG TRA ĐƯỢC NGUỒN              : ${none.length}`);
-  console.log(`\nĐã ghi: ${OUT_PATH}`);
   await mongoose.disconnect();
 }
 

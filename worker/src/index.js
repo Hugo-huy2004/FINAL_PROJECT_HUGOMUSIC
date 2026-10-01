@@ -8,7 +8,7 @@
 //
 // Quy ước prefix key trong bucket:
 //   audio/*    - file gốc      — cần token phát
-//   hls/*      - HLS đa tier   — cần token phát (scripts/streaming/buildHls.js)
+//   hls/*      - HLS đa tier   — cần token phát (backend/pipeline/jobs/HlsJob.js)
 //   covers/*   - ảnh bìa, công khai
 // Token do backend cấp (GET /api/songs/:id/playback); luật cấp và định dạng ở
 // backend/utils/playbackToken.js — file này là bản cài song song bằng Web Crypto.

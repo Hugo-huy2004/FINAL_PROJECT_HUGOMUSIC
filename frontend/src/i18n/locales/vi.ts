@@ -1,73 +1,23 @@
-import { TranslationDict, LanguageMeta } from '../types';
-
-export const metaVi: LanguageMeta = {
-  code: 'vi',
-  name: 'Vietnamese',
-  nativeName: 'Tiếng Việt',
-  direction: 'ltr',
-};
+import { TranslationDict } from '../types';
 
 export const vi: TranslationDict = {
   // Navigation & Sidebar
   home: 'Trang chủ',
-  browse: 'Khám phá',
   radio: 'Radio',
   library: 'Thư viện',
-  recentlyAdded: 'Đã thêm gần đây',
   recentlyPlayed: 'Đã nghe gần đây',
-  songs: 'Bài hát',
-  favorites: 'Yêu thích',
-  artists: 'Nghệ sĩ',
-  albums: 'Album',
-  playlists: 'Danh sách phát',
-  allPlaylists: 'Tất cả danh sách phát',
-  librarySection: 'Thư viện',
   account: 'Tài khoản',
-  admin: 'Quản trị',
-  genres: 'Thể loại',
-  countries: 'Quốc gia',
 
   // Common Buttons & Actions
   login: 'Đăng nhập',
   logout: 'Đăng xuất',
   search: 'Tìm kiếm',
-  cancel: 'Hủy',
-  create: 'Tạo',
-  listenLive: 'Nghe trực tiếp',
-  partySync: 'Nghe cùng nhau',
-  back: 'Quay lại',
   close: 'Đóng',
-  seeAll: 'Xem tất cả',
 
   // Home Screen
   newReleases: 'Mới phát hành',
   favoriteArtists: 'Nghệ sĩ gợi ý',
   classicalMasterworks: 'Cổ điển và hòa tấu',
-  singAlongWithHugo: 'Hát theo lời',
-
-  // Browse Screen
-  categoryAll: 'Tất cả',
-  categoryPodcast: 'Podcast',
-  categoryLiturgical: 'Nhạc phụng vụ',
-  categoryInstrumental: 'Cổ điển và hòa tấu',
-  categoryPop: 'Nhạc trẻ',
-  categoryInternational: 'Quốc tế',
-  categoryAnthems: 'Quốc ca',
-  categoryAcoustic: 'Acoustic và lofi',
-  tracksCount: 'bài',
-
-  // Radio Screen
-  radioSubtitle: 'Các đài phát trực tiếp, suốt ngày đêm.',
-  featuredLiveBroadcast: 'Đài nổi bật',
-  publicStations: 'Đài công khai',
-  worldRadio: 'Radio thế giới',
-  worldRadioDesc: 'Hàng trăm đài phát trực tiếp từ khắp nơi.',
-  tuningIn: 'Đang dò đài…',
-  liveNow: 'Đang phát',
-  tuneIn: 'Bật đài',
-  connecting: 'Đang kết nối…',
-
-  // Library Screen
 
   // Player & Controls
   play: 'Phát',
@@ -90,29 +40,18 @@ export const vi: TranslationDict = {
   loadingLyrics: 'Đang tải lời bài hát…',
   noLyricsTitle: 'Không có lời bài hát',
   noLyricsDesc: 'Chưa có lời đồng bộ cho “{title}”.',
-  lyricsBadge: 'Lời',
 
   // Member / Account / Dashboard
-  profileTitle: 'Hồ sơ',
-  saveProfile: 'Lưu',
   changePassword: 'Đổi mật khẩu',
   currentPassword: 'Mật khẩu hiện tại',
   newPassword: 'Mật khẩu mới (ít nhất 6 ký tự)',
-  dangerZone: 'Xóa dữ liệu',
   deleteAccount: 'Xóa tài khoản',
   deleteAccountHint: 'Tài khoản và mọi danh sách phát của bạn sẽ bị xóa vĩnh viễn.',
   deleteAccountConfirm: 'Xóa tài khoản? Bạn không thể hoàn tác thao tác này.',
   language: 'Ngôn ngữ',
-  languageDesc: 'Ngôn ngữ hiển thị trong ứng dụng.',
-  additionalInfo: 'Thông tin khác',
   dateOfBirth: 'Ngày sinh',
   location: 'Nơi sinh sống',
-  artistRole: 'Nghệ sĩ',
-  offlineBannerDesc: 'Bạn đang ngoại tuyến. Đang hiển thị {count} bài hát đã tải về.',
-  publicStationsDesc: 'Không cần đăng nhập. Chọn một đài để nghe ngay.',
   googleLinkedHint: 'Bạn đăng nhập bằng Google nên không có mật khẩu để đổi.',
-  explore: 'Khám phá',
-  openLibrary: 'Mở thư viện',
   nickname: 'Tên hiển thị',
   username: 'Tên người dùng',
   phoneNumber: 'Số điện thoại',
@@ -120,7 +59,4 @@ export const vi: TranslationDict = {
   phonePlaceholder: 'Chưa thêm. Có thể dùng để đăng nhập.',
   devicesSyncing: '{count} thiết bị đang đồng bộ',
   workspaceHint: 'Các thiết bị đăng nhập cùng tài khoản sẽ phát cùng một bài, đúng cùng một nhịp. Bật riêng trên từng thiết bị.',
-  switchLanguage: 'Đổi ngôn ngữ',
-  moreLanguages: 'Ngôn ngữ khác…',
-  searchLanguagePlaceholder: 'Tìm ngôn ngữ',
 };

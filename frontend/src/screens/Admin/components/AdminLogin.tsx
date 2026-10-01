@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -148,10 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 40,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
+    boxShadow: '0px 10px 40px rgba(0,0,0,0.1)',
     zIndex: 1,
   },
   cardHeader: {

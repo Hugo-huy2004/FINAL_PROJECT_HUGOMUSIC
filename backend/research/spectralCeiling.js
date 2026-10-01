@@ -228,7 +228,4 @@ function analyze(filePath) {
   };
 }
 
-module.exports = {
-  analyze, spectralProfile, findCodecCliff, bandEnergyDb, probeFormat, ceilingFromCutoff,
-  DIGITAL_SILENCE_DB, CALIBRATION,
-};
+module.exports = { analyze };

@@ -14,12 +14,25 @@ const protect = asyncHandler(async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
-      return res.status(401).json({ message: 'Not authorized, user no longer exists' });
+      return res.status(401).json({ message: 'Not authorized, user no longer exists', sessionExpired: true });
+    }
+    // JWT không thu hồi được từng cái — thay vào đó, token cấp trước lần đổi mật khẩu gần nhất hết hiệu lực.
+    // So theo mili-giây (iatMs); token cũ chưa có iatMs thì so theo giây của `iat`.
+    const issuedMs = decoded.iatMs ?? decoded.iat * 1000;
+    if (user.passwordChangedAt && issuedMs < user.passwordChangedAt.getTime() - (decoded.iatMs ? 0 : 999)) {
+      return res.status(401).json({ message: 'Mật khẩu đã được đổi — đăng nhập lại', sessionExpired: true });
+    }
+    if (user.disabled) {
+      return res.status(403).json({ message: 'Tài khoản đã bị khoá', sessionExpired: true });
+    }
+    // Hoạt động gần nhất cho trang quản trị — ghi thưa (10 phút) để không thêm một lần ghi DB mỗi request.
+    if (!user.lastSeenAt || Date.now() - user.lastSeenAt.getTime() > 10 * 60 * 1000) {
+      User.updateOne({ _id: user._id }, { lastSeenAt: new Date() }).catch(() => {});
     }
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Not authorized, token invalid or expired' });
+    return res.status(401).json({ message: 'Not authorized, token invalid or expired', sessionExpired: true });
   }
 });
 

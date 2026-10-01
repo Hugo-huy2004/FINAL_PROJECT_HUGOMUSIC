@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Linking, Platform, ActivityIndicator } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import CoverArt from '../../../components/CoverArt';
 import { LICENSE_LABELS } from '../../../components/LicenseBadge';
@@ -8,15 +9,18 @@ import { ReviewedSong } from '../hooks/useSongManager';
 import LicensePicker from './LicensePicker';
 
 const NO_DERIVATIVE = ['cc-by-nd', 'cc-by-nc-nd'];
-const EDIT_FIELDS: [keyof ReviewedSong, string][] = [
-  ['title', 'Tên bài'],
-  ['artist', 'Nghệ sĩ'],
-  ['genre', 'Thể loại'],
-  ['sourceUrl', 'URL nguồn'],
-  ['attribution', 'Ghi công tác giả'],
+// Trường sửa được, chia nhóm, có nhãn (backend kiểm tra từng trường: độ dài, URL, năm, định dạng LRC).
+type Field = { key: string; label: string; hint?: string; multiline?: boolean; numeric?: boolean; url?: boolean };
+const GROUPS: { title: string; fields: Field[] }[] = [
+  { title: 'Thông tin bài', fields: [{ key: 'title', label: 'Tên bài' }, { key: 'artist', label: 'Nghệ sĩ' }, { key: 'genre', label: 'Thể loại' }, { key: 'category', label: 'Danh mục' }] },
+  { title: 'Album', fields: [{ key: 'albumTitle', label: 'Tên album' }, { key: 'albumYear', label: 'Năm phát hành', numeric: true }, { key: 'trackNo', label: 'Số thứ tự trong album', numeric: true }] },
+  { title: 'Bản quyền', fields: [{ key: 'sourceUrl', label: 'URL nguồn', url: true }, { key: 'licenseUrl', label: 'URL giấy phép', url: true }, { key: 'attribution', label: 'Ghi công tác giả' }] },
+  { title: 'Lời bài hát', fields: [{ key: 'plainLyrics', label: 'Lời thường', multiline: true }, { key: 'syncedLyrics', label: 'Lời có mốc thời gian (LRC)', hint: '[00:12.30] Câu hát…', multiline: true }] },
 ];
 
+
 interface Props {
+  onCoverChange?: (id: string, form: FormData) => Promise<boolean>;
   song: ReviewedSong;
   onUpdate: (id: string, fields: Record<string, string>) => Promise<boolean>;
   onReview: (id: string, decision: 'publish' | 'reject', note?: string) => Promise<boolean>;
@@ -24,7 +28,7 @@ interface Props {
 }
 
 // Một bài trong hàng chờ: kết quả kiểm tra hai tầng + các thao tác của admin.
-export const SongListItem = React.memo(({ song, onUpdate, onReview, onDelete }: Props) => {
+export const SongListItem = React.memo(({ song, onUpdate, onReview, onDelete, onCoverChange }: Props) => {
   const { copyright, quality } = song.review;
   const [mode, setMode] = useState<'view' | 'edit' | 'reject'>('view');
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -35,11 +39,46 @@ export const SongListItem = React.memo(({ song, onUpdate, onReview, onDelete }: 
   const playSong = useStore((s) => s.playSong);
   const togglePlay = useStore((s) => s.togglePlay);
 
+  const [uploadingCover, setUploadingCover] = useState(false);
   const startEdit = () => {
-    const d: Record<string, string> = { licenseType: song.licenseType || '' };
-    EDIT_FIELDS.forEach(([k]) => { d[k as string] = (song[k] as string) || ''; });
-    setDraft(d);
+    const x = song as any;
+    setDraft({
+      licenseType: song.licenseType || '', title: song.title || '', artist: song.artist || '', genre: x.genre || '', category: x.category || '',
+      albumTitle: x.album?.title || '', albumYear: x.album?.year ? String(x.album.year) : '', trackNo: x.album?.trackNo ? String(x.album.trackNo) : '',
+      sourceUrl: x.sourceUrl || '', licenseUrl: x.licenseUrl || '', attribution: x.attribution || '',
+      plainLyrics: x.plainLyrics || '', syncedLyrics: x.syncedLyrics || '',
+    });
     setMode('edit');
+  };
+  // Chỉ gửi trường đã đổi — không ghi đè lời bài/album bằng chuỗi rỗng nếu admin không động tới.
+  const save = async () => {
+    const x = song as any;
+    const before: Record<string, string> = {
+      licenseType: song.licenseType || '', title: song.title || '', artist: song.artist || '', genre: x.genre || '', category: x.category || '',
+      albumTitle: x.album?.title || '', albumYear: x.album?.year ? String(x.album.year) : '', trackNo: x.album?.trackNo ? String(x.album.trackNo) : '',
+      sourceUrl: x.sourceUrl || '', licenseUrl: x.licenseUrl || '', attribution: x.attribution || '', plainLyrics: x.plainLyrics || '', syncedLyrics: x.syncedLyrics || '',
+    };
+    const changed = Object.fromEntries(Object.entries(draft).filter(([k, v]) => v !== before[k]));
+    if (!Object.keys(changed).length) return setMode('view');
+    if (await onUpdate(song._id, changed)) setMode('view');
+  };
+  const pickCover = async () => {
+    if (!onCoverChange) return;
+    const send = async (form: FormData) => { setUploadingCover(true); try { await onCoverChange(song._id, form); } finally { setUploadingCover(false); } };
+    if (Platform.OS === 'web') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/jpeg,image/png,image/webp';
+      input.onchange = () => { const f = input.files?.[0]; if (f) { const form = new FormData(); form.append('cover', f); send(form); } };
+      input.click();
+      return;
+    }
+    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.9 });
+    const a = res.assets?.[0];
+    if (res.canceled || !a) return;
+    const form = new FormData();
+    form.append('cover', { uri: a.uri, name: a.fileName || 'cover.jpg', type: a.mimeType || 'image/jpeg' } as any);
+    send(form);
   };
 
   const hlsLabel = song.hlsPath
@@ -49,7 +88,7 @@ export const SongListItem = React.memo(({ song, onUpdate, onReview, onDelete }: 
   return (
     <View style={styles.card}>
       <View style={styles.row}>
-        <CoverArt uri={song.coverArt} size={48} />
+        <CoverArt uri={song.coverArt} title={song.title} size={48} />
         <View style={styles.info}>
           <Text style={styles.title} numberOfLines={1}>{song.title}</Text>
           <Text style={styles.sub} numberOfLines={1}>
@@ -88,20 +127,41 @@ export const SongListItem = React.memo(({ song, onUpdate, onReview, onDelete }: 
 
       {mode === 'edit' && (
         <View style={styles.panel}>
-          {EDIT_FIELDS.map(([k, label]) => (
-            <TextInput
-              key={k as string}
-              style={styles.input}
-              placeholder={label}
-              placeholderTextColor="#888"
-              value={draft[k as string]}
-              onChangeText={(v) => setDraft((d) => ({ ...d, [k as string]: v }))}
-              autoCapitalize={k === 'sourceUrl' ? 'none' : 'sentences'}
-            />
+          {onCoverChange && (
+            <View style={styles.coverRow}>
+              <CoverArt uri={song.coverArt} title={song.title} size={72} radius={8} />
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text style={styles.groupTitle}>Ảnh bìa</Text>
+                <Text style={styles.hint}>JPEG, PNG hoặc WebP, tối đa 5 MB. Ảnh cũ bị xoá nếu không bài nào khác dùng.</Text>
+                <TouchableOpacity onPress={pickCover} disabled={uploadingCover} style={[styles.action, { borderColor: '#007AFF', alignSelf: 'flex-start' }]}>
+                  {uploadingCover ? <ActivityIndicator size="small" color="#007AFF" /> : <Text style={[styles.actionText, { color: '#007AFF' }]}>Đổi ảnh bìa</Text>}
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          {GROUPS.map((g) => (
+            <View key={g.title} style={{ marginBottom: 8 }}>
+              <Text style={styles.groupTitle}>{g.title}</Text>
+              {g.title === 'Bản quyền' && <LicensePicker value={draft.licenseType} onChange={(v) => setDraft((d) => ({ ...d, licenseType: v }))} />}
+              {g.fields.map((f) => (
+                <View key={f.key}>
+                  <Text style={styles.label}>{f.label}</Text>
+                  <TextInput
+                    style={[styles.input, f.multiline && styles.multiline]}
+                    placeholder={f.hint}
+                    placeholderTextColor="#aaa"
+                    value={draft[f.key]}
+                    onChangeText={(v) => setDraft((d) => ({ ...d, [f.key]: f.numeric ? v.replace(/\D/g, '') : v }))}
+                    autoCapitalize={f.url ? 'none' : 'sentences'}
+                    keyboardType={f.numeric ? 'number-pad' : f.url ? 'url' : 'default'}
+                    multiline={f.multiline}
+                  />
+                </View>
+              ))}
+            </View>
           ))}
-          <LicensePicker value={draft.licenseType} onChange={(v) => setDraft((d) => ({ ...d, licenseType: v }))} />
           <View style={styles.actions}>
-            <Action label="Lưu" color="#07875F" onPress={async () => { if (await onUpdate(song._id, draft)) setMode('view'); }} />
+            <Action label="Lưu thay đổi" color="#07875F" onPress={save} />
             <Action label="Huỷ" color="#666" onPress={() => setMode('view')} />
           </View>
         </View>
@@ -168,6 +228,11 @@ const styles = StyleSheet.create({
   check: { fontSize: 12, fontWeight: '600' },
   meta: { fontSize: 12, color: '#666' },
   panel: { marginTop: 12 },
+  coverRow: { flexDirection: 'row', gap: 12, alignItems: 'center', marginBottom: 12 },
+  groupTitle: { fontSize: 13, fontWeight: '800', color: '#101828', marginTop: 8, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.4 },
+  label: { fontSize: 12, fontWeight: '600', color: '#475467', marginBottom: 4 },
+  hint: { fontSize: 12, color: '#667085' },
+  multiline: { height: 110, paddingTop: 10, textAlignVertical: 'top' },
   input: {
     height: 40, borderWidth: 1, borderColor: '#eee', borderRadius: 8, paddingHorizontal: 12,
     fontSize: 14, marginBottom: 8, color: '#333', backgroundColor: '#fafafa',

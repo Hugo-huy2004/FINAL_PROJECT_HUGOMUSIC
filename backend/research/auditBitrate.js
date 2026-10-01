@@ -11,15 +11,14 @@
 //
 // Dùng: node research/auditBitrate.js
 
-const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const mongoose = require('mongoose');
 const { headR2, keyFromR2Url } = require('../utils/r2');
 const connectDB = require('../config/db');
+const { saveResult } = require('../utils/researchStore');
 const Song = require('../models/Song');
 
-const OUT_PATH = path.join(__dirname, 'results', 'audio_quality_audit.json');
 const CONCURRENCY = 12;
 
 async function main() {
@@ -67,7 +66,7 @@ async function main() {
     }
   }
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
-  fs.writeFileSync(OUT_PATH, JSON.stringify(results, null, 2));
+  await saveResult('audio_quality_audit', results);
 
   const ok = results.filter((r) => r.verdict === 'ok');
   const bad = results.filter((r) => r.verdict !== 'ok');
@@ -83,7 +82,6 @@ async function main() {
 
   const refetchable = results.filter((r) => r.hasHiResSource).length;
   console.log(`\n  Có nguồn 24-bit để tải lại    ${String(refetchable).padStart(4)}`);
-  console.log(`\nĐã ghi kết quả: ${OUT_PATH}`);
   await mongoose.disconnect();
 }
 

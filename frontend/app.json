@@ -28,6 +28,12 @@
       "display": "standalone",
       "orientation": "portrait",
       "startUrl": "/"
-    }
+    },
+    "plugins": [
+      "expo-audio",
+      "expo-font",
+      "expo-asset",
+      "expo-web-browser"
+    ]
   }
 }

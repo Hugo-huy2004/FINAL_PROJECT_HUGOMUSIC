@@ -1,44 +1,46 @@
 const crypto = require('crypto');
+const { client } = require('../config/redis');
 
-// In-memory pending-OTP store, keyed by a random one-time token handed to the client
-// after step 1 of admin login (password correct, OTP sent). Never keyed by userId
+// Pending-OTP store, keyed by a random one-time token handed to the client after step 1
+// (admin login: password correct; registration: email entered). Never keyed by userId
 // directly, so a client can't guess/target another session's OTP slot.
-// ponytail: process-local Map — fine for a single-server, admin-only 2FA flow. Move
-// to Redis (or add TTL cleanup) if this needs to survive restarts or scale out.
-const pending = new Map();
+// Lives in Redis so every API instance behind the load balancer sees the same slot —
+// step 1 and step 2 routinely land on different instances.
 const OTP_TTL_MS = 5 * 60 * 1000;
-
 const MAX_ATTEMPTS = 5;
+// `purpose` ngăn dùng mã của luồng này cho luồng khác: mã xác minh email khi đăng ký hay mã đặt lại
+// mật khẩu không bao giờ mở được bước 2 của đăng nhập admin, và ngược lại.
+const keyOf = (purpose, tempToken) => `otp:${purpose}:${tempToken}`;
 
-const createOtp = (userId) => {
+const createOtp = async (userId, purpose) => {
+  if (!purpose) throw new Error('createOtp: purpose is required');
   const tempToken = crypto.randomBytes(24).toString('hex');
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  pending.set(tempToken, { userId, code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 });
+  const code = String(crypto.randomInt(100000, 1000000));
+  await client.multi()
+    .hSet(keyOf(purpose, tempToken), { userId, code, attempts: 0 })
+    .pExpire(keyOf(purpose, tempToken), OTP_TTL_MS)
+    .exec();
   return { tempToken, code };
 };
 
-// A wrong code (e.g. a typo) does NOT burn the tempToken — the admin can just retry,
-// up to MAX_ATTEMPTS, without going all the way back to re-entering their password.
-// The entry is only consumed on success, expiry, or exhausting the attempt budget.
-const verifyOtp = (tempToken, code) => {
-  const entry = pending.get(tempToken);
-  if (!entry) return null;
-
-  if (Date.now() > entry.expiresAt) {
-    pending.delete(tempToken);
+// A wrong code (e.g. a typo) does NOT burn the tempToken — retry up to MAX_ATTEMPTS without
+// re-entering the password. Consumed only on success, expiry (Redis TTL), or attempt budget.
+const verifyOtp = async (tempToken, code, purpose) => {
+  if (typeof tempToken !== 'string' || !purpose) return null;
+  const key = keyOf(purpose, tempToken);
+  const attempts = await client.hIncrBy(key, 'attempts', 1);
+  const entry = await client.hGetAll(key);
+  if (!entry.code) { // không tồn tại/đã hết hạn — HINCRBY vừa tạo ra một hash rỗng, dọn đi
+    await client.del(key);
     return null;
   }
-
-  entry.attempts += 1;
-  if (entry.attempts > MAX_ATTEMPTS) {
-    pending.delete(tempToken);
+  if (attempts > MAX_ATTEMPTS) {
+    await client.del(key);
     return null;
   }
-
   if (entry.code !== String(code)) return null;
-
-  pending.delete(tempToken); // correct — one-time use, consumed now
-  return entry.userId;
+  // Hai request đúng mã tới hai instance cùng lúc: chỉ bên xoá được mới thắng (dùng một lần).
+  return (await client.del(key)) === 1 ? entry.userId : null;
 };
 
 module.exports = { createOtp, verifyOtp };

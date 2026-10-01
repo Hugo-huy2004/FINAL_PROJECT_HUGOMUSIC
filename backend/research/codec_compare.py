@@ -103,9 +103,8 @@ def main():
             else:
                 print(f"  AAC {kbps}k (MOS {target:.3f}) -> Opus cần {match}k (không lợi)")
 
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "codec_compare.json")
-    json.dump(per_file, open(out, "w"), indent=1)
-    print(f"\nĐã ghi {os.path.normpath(out)}")
+    # Kết quả vào DB, không ghi tệp:  … | node research/saveResult.js codec_compare
+    print(json.dumps(per_file, indent=1))
 
 
 if __name__ == "__main__":

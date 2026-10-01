@@ -13,7 +13,7 @@ export interface StationData {
 }
 
 // Fallbacks based on genre / tags / country
-export function getStationFallback(station: StationData): string {
+function getStationFallback(station: StationData): string {
   const g = (station.genre || '').toLowerCase();
   const n = (station.name || '').toLowerCase();
   const c = (station.countryCode || '').toUpperCase();

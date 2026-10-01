@@ -22,3 +22,9 @@ npm-debug.log*
 .venv/
 logs/
 __pycache__/
+
+# Dữ liệu (kết quả thí nghiệm, log xử lý) nằm trong MongoDB/R2 — không bao giờ commit tệp dữ liệu.
+research/results/
+*.jsonl
+*.ndjson
+*.csv

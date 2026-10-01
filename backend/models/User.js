@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, unique: true, sparse: true }, // optional extra login identifier
   // Not required: accounts created via Google Sign-In have no password at all.
   password: { type: String },
+  // Đổi/đặt lại mật khẩu thì mọi phiên (JWT) cấp TRƯỚC mốc này bị từ chối — middleware/authMiddleware.js.
+  passwordChangedAt: { type: Date },
   googleId: { type: String, unique: true, sparse: true },
   avatarUrl: { type: String }, // R2 URL (see utils/r2.js) or the Google profile picture
   dateOfBirth: { type: Date },
@@ -32,6 +34,10 @@ const userSchema = new mongoose.Schema({
   // utils/playbackToken.js.
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Song' }],
+  // Admin khoá tài khoản (Quản trị › Người dùng): mọi phiên bị từ chối, không đăng nhập được.
+  disabled: { type: Boolean, default: false },
+  // Lần cuối gọi API bằng phiên hợp lệ (authMiddleware ghi, tối đa 1 lần / 10 phút).
+  lastSeenAt: { type: Date },
 }, { timestamps: true });
 
 // Async pre-save hooks in mongoose 9 don't receive a `next` callback — mongoose
