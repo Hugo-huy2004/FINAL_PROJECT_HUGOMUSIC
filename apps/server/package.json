@@ -31,7 +31,7 @@
     "mongoose": "^9.9.5",
     "multer": "^2.3.0",
     "music-metadata": "^11.15.0",
-    "nodemailer": "^10.0.1",
+    "nodemailer": "^10.0.9",
     "redis": "^6.2.1",
     "socket.io": "^4.8.3"
   },
