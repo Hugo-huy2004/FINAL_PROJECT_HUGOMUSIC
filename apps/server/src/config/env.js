@@ -15,6 +15,8 @@ const env = {
   INSTANCE_ID: process.env.INSTANCE_ID || `${require('os').hostname()}:${process.env.PORT || '5001'}`,
   // Trust X-Forwarded-For from where (Express 'trust proxy'). The load balancer runs with the machine → 'loopback'.
   TRUST_PROXY: process.env.TRUST_PROXY || 'loopback',
+  // Requests per minute per client IP across /api (index.js). Raise it for single-machine load tests.
+  API_RATE_LIMIT: Number(process.env.API_RATE_LIMIT) || 600,
   
   // Cloudflare R2 / S3
   r2: {

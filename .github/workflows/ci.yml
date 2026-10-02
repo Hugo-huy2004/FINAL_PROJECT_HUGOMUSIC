@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Read-only token: CI only checks out code and runs tests.
+permissions:
+  contents: read
+
 jobs:
   test-and-build:
     name: Test & Build Suite

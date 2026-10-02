@@ -194,7 +194,7 @@ async function suggest(io, socket, id, songId) {
   if (st.now?.song._id === String(songId) || st.queue.some((e) => e.song._id === String(songId))) {
     throw new Error('Bài này đang phát hoặc đã có trong hàng chờ');
   }
-  const doc = await Song.findOne({ _id: songId, status: 'published', duration: { $gt: 30 } }).select(PLAYABLE).lean().catch(() => null);
+  const doc = await Song.findOne({ _id: String(songId), status: 'published', duration: { $gt: 30 } }).select(PLAYABLE).lean().catch(() => null);
   if (!doc) throw new Error('Không tìm thấy bài');
   st.queue.push({
     id: `${st.meta.id}-${++st.seq}`, song: toSong(doc), addedBy: userId, addedByName: socket.data.name,
@@ -242,7 +242,7 @@ async function adminEnqueue(io, id, songId, admin) {
   const st = await wake(io, id);
   if (!st) throw new Error('Kênh không tồn tại hoặc đang ẩn');
   if (st.queue.some((e) => e.song._id === String(songId))) throw new Error('Bài đã có trong hàng chờ');
-  const doc = await Song.findOne({ _id: songId, status: 'published', duration: { $gt: 30 } }).select(PLAYABLE).lean().catch(() => null);
+  const doc = await Song.findOne({ _id: String(songId), status: 'published', duration: { $gt: 30 } }).select(PLAYABLE).lean().catch(() => null);
   if (!doc) throw new Error('Không tìm thấy bài (chưa xuất bản hoặc quá ngắn)');
   st.queue.push({
     id: `${st.meta.id}-${++st.seq}`, song: toSong(doc), addedBy: String(admin._id), addedByName: 'Quản trị viên',

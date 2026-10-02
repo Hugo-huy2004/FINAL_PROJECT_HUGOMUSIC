@@ -13,6 +13,9 @@ connectDB();
 
 // 2. Middlewares & Routing
 const { notFound, errorHandler } = require('./core/middleware/errors');
+const { sanitizeBody } = require('./core/middleware/sanitizeBody');
+const rateLimit = require('express-rate-limit');
+const { RedisRateLimitStore } = require('./core/rateLimitStore');
 const path = require('path');
 const { discoverModules, mountModules } = require('hugo-server');
 
@@ -26,6 +29,7 @@ app.use(helmet({ crossOriginResourcePolicy: false })); // Allows cross-origin au
 app.use(compression());                                // gzip compression of returned data
 app.use(cors());
 app.use(express.json());
+app.use(sanitizeBody); // NoSQL injection guard (core/middleware/sanitizeBody.js)
 
 // Each response specifies which instance to process — proof of load distribution when measured, and to trace errors to a copy.
 // Draining: tells the client to close the keep-alive connection to go to another instance next time.
@@ -43,6 +47,14 @@ app.use('/api', (req, res, next) => {
   if (req.method === 'GET') res.set('Cache-Control', 'no-cache');
   next();
 });
+
+// One rate limit for the whole API per client IP, counted in Redis so every instance shares it (memory fallback when
+// Redis is down). Generous: a page load makes a few dozen calls and audio goes through the CDN, not here. Raise
+// API_RATE_LIMIT for load tests from a single machine (hugo-balancer bench). Sign-in routes keep their stricter limit.
+app.use('/api', rateLimit({
+  windowMs: 60_000, limit: env.API_RATE_LIMIT, standardHeaders: 'draft-8', legacyHeaders: false,
+  store: new RedisRateLimitStore('rl:api:'),
+}));
 
 // Healthcheck
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'hugo-music-api' }));

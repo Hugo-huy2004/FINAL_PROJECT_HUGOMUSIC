@@ -65,7 +65,8 @@ const first = (v) => (Array.isArray(v) ? v[0] : v);
 function plainDescription(v) {
   const text = String(first(v) || '')
     .replace(/<br\s*\/?>|<\/p>/gi, '\n').replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&') // last, so "&amp;lt;" stays the text "&lt;" instead of being decoded twice
     .replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
   return text.length > DESCRIPTION_MAX ? `${text.slice(0, DESCRIPTION_MAX).replace(/\s+\S*$/, '')}…` : text || undefined;
 }
